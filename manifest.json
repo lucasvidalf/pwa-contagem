@@ -8,12 +8,12 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://github.com/lucasvidalf/pwa-contagem/blob/main/logo-192.png",
+      "src": "https://raw.githubusercontent.com/lucasvidalf/pwa-contagem/main/logo-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://github.com/lucasvidalf/pwa-contagem/blob/main/logo-512.png",
+      "src": "https://raw.githubusercontent.com/lucasvidalf/pwa-contagem/main/logo-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
