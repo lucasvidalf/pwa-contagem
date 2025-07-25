@@ -393,8 +393,40 @@
   function fecharModal() {
     document.getElementById('modalOverlay').style.display = 'none';
   }
-   /* ====================== CARREGAR PRODUTOS ====================== */
   
+  /* ====================== ABRIR CONTAGEM ====================== */
+  function abrirContagem(nova) {
+    // ✅ Esconde o menu principal
+    document.getElementById('bemVindoBox').style.display = 'none';
+    document.getElementById('contagemBox').style.display = 'block';
+  
+    // ✅ Preenche automaticamente o usuário logado e a data atual
+    document.getElementById('usuarioContagem').innerText = usuarioLogado;
+    document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');
+  
+    // ✅ Se for uma NOVA contagem, limpa todos os campos e itens registrados
+    if (nova) {
+      itensRegistrados = [];
+      nomeArquivoAtual = ""; // nova contagem não tem cache ainda
+  
+      document.getElementById('contagem').value = "";
+      document.getElementById('filial').value = "";
+      document.getElementById('almoxarifado').value = "";
+      document.getElementById('codigo').value = "";
+      document.getElementById('nomeItem').value = "";
+      document.getElementById('quantidade').value = "";
+      document.getElementById('comentario').value = "";
+      document.getElementById('foto').value = "";
+  
+      // também limpa a lista visual de itens
+      atualizarListaItens();
+    }
+  
+    // ✅ Sempre chama o backend para buscar produtos da planilha
+    carregarProdutos();
+  }  
+  
+  /* ====================== CARREGAR PRODUTOS ====================== */
   async function carregarProdutos() {
     try {
       const response = await fetch(`${API_URL}?action=getProdutos`);
