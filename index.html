@@ -488,8 +488,6 @@
   /* ================= SALVAR ESTADO TELA ================= */
 
 
-  const API_URL = "https://script.google.com/macros/s/AKfycbweF6DIyx-vOxv8i7eVr4baeKtDbzk3IZEIs-aOTc99B8VYRezBKwW3RG2dd4Ee0XSuPQ/exec"; // sua URL de backend
-
   async function carregarProdutos() {
     const res = await fetch(`${API_URL}?action=getProdutos`);
     const produtos = await res.json();
