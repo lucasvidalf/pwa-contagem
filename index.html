@@ -424,9 +424,9 @@
     }
     msg.innerHTML = "⏳ Verificando...";
   
-    const response = await fetch(
-      `https://script.google.com/macros/s/SEU_DEPLOY/exec?action=login&codigo=${codigo}`
-    );
+    const API_URL = "https://script.google.com/macros/s/SEU_DEPLOY/exec";
+    
+    const response = await fetch(`${API_URL}?action=login&codigo=${codigo}`);
     const data = await response.json();
   
     if (data.sucesso) {
@@ -439,7 +439,6 @@
       msg.innerHTML = "<span class='erro'>❌ Código inválido!</span>";
     }
   }
-
   window.addEventListener("load", function() {
     const usuarioSalvo = localStorage.getItem("usuarioLogado");
     const estadoSalvo = JSON.parse(localStorage.getItem("estadoTelaAtual") || "{}");
