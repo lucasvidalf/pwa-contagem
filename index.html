@@ -414,28 +414,30 @@
   }
 
   /* ========== LOGIN ========== */
-  function fazerLogin() {
+  async function fazerLogin() {
     let codigo = document.getElementById('codigoLogin').value.trim();
     let msg = document.getElementById('msgLogin');
+  
     if (!codigo) {
       msg.innerHTML = "<span class='erro'>⚠️ Digite seu código!</span>";
       return;
     }
     msg.innerHTML = "⏳ Verificando...";
-    google.script.run.withSuccessHandler(function(resposta) {
-      if (resposta.sucesso) {
-        usuarioLogado = resposta.nome;
-        filialUsuario = resposta.filial; // ✅ salva filial do usuário
-        localStorage.setItem("usuarioLogado", usuarioLogado);
-        localStorage.setItem("filialUsuario", filialUsuario); // ✅ armazena filial local
-
-        document.getElementById('loginBox').style.display = 'none';
-        document.getElementById('bemVindoBox').style.display = 'flex';
-        document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + resposta.nome + "!";
-      } else {
-        msg.innerHTML = "<span class='erro'>❌ Código inválido!</span>";
-      }
-    }).autenticarUsuario(codigo);
+  
+    const response = await fetch(
+      `https://script.google.com/macros/s/SEU_DEPLOY/exec?action=login&codigo=${codigo}`
+    );
+    const data = await response.json();
+  
+    if (data.sucesso) {
+      usuarioLogado = data.nome;
+      localStorage.setItem("usuarioLogado", usuarioLogado);
+      document.getElementById('loginBox').style.display = 'none';
+      document.getElementById('bemVindoBox').style.display = 'flex';
+      document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + data.nome + "!";
+    } else {
+      msg.innerHTML = "<span class='erro'>❌ Código inválido!</span>";
+    }
   }
 
   window.addEventListener("load", function() {
