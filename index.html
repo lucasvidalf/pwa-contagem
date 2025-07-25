@@ -13,132 +13,170 @@
   <link rel="apple-touch-icon" sizes="512x512" href="https://raw.githubusercontent.com/lucasvidalf/pwa-contagem/main/logo-512.png">
 
   <style>
-    /* ====================== CSS EMBUTIDO ====================== */
     html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
+      height: 100%; margin: 0; padding: 0;
       font-family: Arial, sans-serif;
       background: #f4f4f4;
     }
-
-    /* Centraliza telas (login, menu, etc) */
     .centered-screen {
-      display: flex;
-      padding: 20px;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      width: 100%;
+      display: flex; padding: 20px;
+      justify-content: center; align-items: center;
+      height: 100vh; width: 100%;
       box-sizing: border-box;
     }
-
     .container {
-      background: #fff;
-      padding: 20px;
-      width: 90%;
-      max-width: 500px;
-      border-radius: 12px;
-      text-align: center;
+      background: #fff; padding: 20px;
+      width: 90%; max-width: 500px;
+      border-radius: 12px; text-align: center;
       box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
       margin: 20px auto;
     }
-
-    /* Elementos padrões */
+    .fullscreen-scroll {
+      display: flex; justify-content: center;
+      align-items: center; width: 100%;
+    }
     h1, h2, h3 { color: #2c7be5; }
     label {
-      display: block;
-      margin-top: 12px;
-      text-align: left;
-      font-weight: bold;
+      display: block; margin-top: 12px;
+      text-align: left; font-weight: bold;
     }
     input, select, textarea {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      margin-top: 6px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-sizing: border-box;
+      width: 100%; padding: 12px; font-size: 16px;
+      margin-top: 6px; border: 1px solid #ccc;
+      border-radius: 8px; box-sizing: border-box;
+      -webkit-text-size-adjust: 100%;
     }
-
     button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 15px;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background: #2c7be5;
+      width: 100%; padding: 14px; margin-top: 15px;
+      font-size: 16px; font-weight: bold;
+      border: none; border-radius: 8px;
+      cursor: pointer; background: #2c7be5;
       color: #fff;
     }
-
     button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+      opacity: 0.6; cursor: not-allowed;
     }
-
     .msg { margin-top: 10px; font-weight: bold; }
     .sucesso { color: green; }
     .erro { color: red; }
-
-    /* Tabelas */
     table {
-      width: 100%;
-      border-collapse: collapse;
+      width: 100%; border-collapse: collapse;
       margin-top: 15px;
     }
     th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-      font-size: 14px;
+      border: 1px solid #ddd; padding: 8px;
+      text-align: left; font-size: 14px;
     }
     th { background: #eee; }
-
     footer {
-      text-align: center;
-      font-size: 12px;
-      color: #888;
-      margin: 15px 0;
+      text-align: center; font-size: 12px;
+      color: #888; margin: 15px 0;
     }
-
-    /* Modal para mensagens */
     #modalOverlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
+      display: none; position: fixed;
+      top: 0; left: 0; width: 100%;
       height: 100%;
       background: rgba(0,0,0,0.4);
       backdrop-filter: blur(2px);
-      align-items: center;
-      justify-content: center;
+      align-items: center; justify-content: center;
       z-index: 9999;
     }
-
     #modalBox {
-      background: white;
-      padding: 20px;
-      width: 90%;
-      max-width: 400px;
-      border-radius: 12px;
-      text-align: center;
+      background: white; padding: 20px;
+      width: 90%; max-width: 400px;
+      border-radius: 12px; text-align: center;
       box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
-
+    #modalBox h2 { margin-top: 0; }
     #modalBotoes button {
-      width: auto;
-      min-width: 100px;
-      margin: 8px;
-      padding: 10px;
+      width: auto; min-width: 100px;
+      margin: 8px; padding: 10px;
       font-size: 15px;
     }
     #modalBotoes .confirmar { background: #28a745; }
     #modalBotoes .cancelar { background: #dc3545; }
+    .item-lancado {
+      display: flex; justify-content: space-between;
+      align-items: center;
+      padding: 6px 0; border-bottom: 1px solid #ddd;
+    }
+    .item-info { flex: 1; font-size: 14px; }
+    .item-remove {
+      color: red; cursor: pointer;
+      font-weight: bold; margin-left: 10px;
+    }
+
+    /* === CONSULTAR ENCERRADAS === */
+    #consultarBox .container {
+      max-width: 900px !important;
+      width: 95%;
+      text-align: center;
+    }
+    
+    #listaContagens > div {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+   
+    #listaContagens table {
+      width: 100%;
+      max-width: 860px;
+      border-collapse: collapse;
+      font-size: 14px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      margin: 0 auto;
+    }
+
+    #listaContagens table th,
+    #listaContagens table td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    #listaContagens table thead tr {
+      background: #f7f7f7;     
+    }
+
+    #listaContagens table td:nth-child(4),
+    #listaContagens table td:nth-child(5) {
+      text-align: center;
+    }
+
+    #listaContagens {
+      max-height: 450px; /* altura máxima */
+      overflow-y: auto; /* barra vertical se ultrapassar */
+      overflow-x: auto; /* barra horizontal se precisar */
+      margin-top: 15px;
+    }
+
+    #listaContagens table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #listaContagens table th {
+      position: sticky;
+      top: 0;
+      background: #f7f7f7;
+      z-index: 1;
+    }
+
+    @media (max-width: 768px) {
+      #consultarBox .container {
+        max-width: 100% !important;
+        padding: 10px;
+      }
+      #listaContagens {
+        overflow-x: auto;
+      }
+      #listaContagens table {
+        min-width: 700px;
+        font-size: 13px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -164,6 +202,99 @@
       <button style="background:#ffc107;" onclick="menuContagensAbertas()">⏳ Contagens em Aberto</button>
       <button style="background:#17a2b8;" onclick="menuConsultas()">🔍 Consultar Contagens Encerradas</button>
       <button style="background:#6c757d;" onclick="fazerLogout()">🚪 Sair</button>
+    </div>
+  </div>
+
+  <!-- CONTAGENS EM ABERTO -->
+  <div id="contagensAbertasBox" class="centered-screen" style="display:none;">
+    <div class="container" style="max-width: 900px;">
+      <h2>⏳ Contagens em Aberto</h2>
+
+      <label>Filtrar por Filial</label>
+      <select id="filtroFilialAberta" onchange="filtrarContagensAbertas()">
+        <option value="">Todas</option>
+      </select>
+
+      <label>Filtrar por Contagem</label>
+      <select id="filtroNumeroContagem" onchange="filtrarContagensAbertas()">
+        <option value="">Todas</option>
+      </select>
+
+      <div id="listaContagensAbertas" style="margin-top:20px; text-align:left;"></div>
+
+      <button style="background:#6c757d; margin-top:20px;" onclick="voltarMenu()">⬅ Voltar ao Menu</button>
+    </div>
+  </div>
+
+  <!-- CONSULTAR ENCERRADAS -->
+  <div id="consultarBox" class="centered-screen" style="display:none;">
+    <div class="container">
+      <h2>🔍 Consultar Contagens Encerradas</h2>
+      <label>Filtrar por Filial</label>
+      <select id="filtroFilialEncerrada" onchange="filtrarEncerradas()">
+        <option value="">Todas</option>
+      </select>
+      <label>Filtrar por Contagem</label>
+      <select id="filtroContagemEncerrada" onchange="filtrarEncerradas()">
+        <option value="">Todas</option>
+      </select>
+      <label>Filtrar por Almoxarifado</label>
+      <select id="filtroAlmoxEncerrada" onchange="filtrarEncerradas()">
+        <option value="">Todos</option>
+      </select>
+      <label>Filtrar por Data</label>
+      <input type="date" id="filtroDataEncerrada" onchange="filtrarEncerradas()">       
+      <div id="listaContagens" style="margin-top:20px; text-align:left;"></div>
+      <div id="tabelaCSV" style="margin-top:20px;"></div>
+      <button style="background:#6c757d;" onclick="voltarMenu()">⬅ Voltar ao Menu</button>
+    </div>
+  </div>
+
+  <!-- TELA DE CONTAGEM -->
+  <div id="contagemBox" class="fullscreen-scroll" style="display:none; align-items:flex-start; overflow-y:auto;">
+    <div class="container">
+      <h1>📋 Contagem</h1>
+      <p><b>Usuário:</b> <span id="usuarioContagem"></span></p>
+
+      <label>Data</label>
+      <input type="text" id="dataContagem" readonly>
+
+      <label>Contagem</label>
+      <select id="contagem"></select>
+
+      <label>Filial</label>
+      <input type="text" id="filial" readonly>
+
+      <label>Almoxarifado</label>
+      <input type="text" id="almoxarifado" readonly>
+      
+      <label>Código</label>
+      <input list="listaCodigos" id="codigo" placeholder="Digite ou selecione">
+      <datalist id="listaCodigos"></datalist>
+
+      <label>Nome do item</label>
+      <input type="text" id="nomeItem" readonly>
+
+      <label>Quantidade</label>
+      <input type="number" id="quantidade" min="1">
+
+      <label>Foto</label>
+      <input type="file" id="foto" accept="image/*" capture="camera">
+
+      <label>Comentário (opcional)</label>
+      <textarea id="comentario" rows="2" placeholder="Observações..."></textarea>
+
+      <button onclick="registrarItem()" id="btnRegistrar">✅ Registrar Item</button>
+      <button style="background:#d9534f;" onclick="confirmarEncerrar()">🚪 Encerrar Contagem</button>
+      <button style="background:#6c757d;" onclick="confirmarCancelar()">❌ Cancelar Contagem</button>
+      <button style="background:#6c757d;" onclick="voltarMenu()">⬅ Voltar ao Menu</button>
+
+      <div class="msg" id="msgContagem"></div>
+
+      <div id="resumoItens" style="margin-top:20px; text-align:left;">
+        <h3 id="tituloItens">📦 Itens lançados (0)</h3>
+        <div id="listaItens"></div>
+      </div>
     </div>
   </div>
 
