@@ -427,17 +427,93 @@
   }  
   
   /* ====================== CARREGAR PRODUTOS ====================== */
-  async function carregarProdutos() {
-    try {
-      const response = await fetch(`${API_URL}?action=getProdutos`);
-      const produtos = await response.json();
-  
-      console.log("✅ Produtos recebidos:", produtos);
-      popularProdutos(produtos); // mesma função que popula o select
-    } catch (error) {
-      console.error("❌ Erro ao carregar produtos:", error);
+  // URL do seu Google Apps Script publicado como Web App
+const BACKEND_URL = "SUA_URL_DO_SCRIPT/exec";
+
+// Variável global para armazenar os produtos carregados
+let produtosCarregados = [];
+
+// Função para buscar produtos e preencher os selects
+async function carregarProdutos() {
+  try {
+    const res = await fetch(`${BACKEND_URL}?action=getProdutos`);
+    const data = await res.json();
+
+    if (!Array.isArray(data)) {
+      console.error("⚠️ Resposta inesperada do backend:", data);
+      return;
     }
+
+    produtosCarregados = data; // guarda todos os produtos para uso posterior
+    console.log("✅ Produtos carregados:", produtosCarregados);
+
+    preencherSelects(data);
+
+  } catch (err) {
+    console.error("❌ Erro ao buscar produtos:", err);
   }
+}
+
+// Preenche os selects com os produtos carregados
+function preencherSelects(lista) {
+  const selectContagem = document.getElementById("selectContagem");
+  const selectFilial = document.getElementById("selectFilial");
+  const selectCodigo = document.getElementById("selectCodigo");
+
+  // Limpa e adiciona um placeholder
+  selectContagem.innerHTML = `<option value="">Selecione...</option>`;
+  selectFilial.innerHTML = `<option value="">Selecione...</option>`;
+  selectCodigo.innerHTML = `<option value="">Selecione...</option>`;
+
+  // Cria listas únicas de valores
+  const contagensUnicas = [...new Set(lista.map(p => p.contagem).filter(Boolean))];
+  const filiaisUnicas = [...new Set(lista.map(p => p.filial).filter(Boolean))];
+  const codigosUnicos = [...new Set(lista.map(p => p.codigo).filter(Boolean))];
+
+  // Preenche Contagem
+  contagensUnicas.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.textContent = c;
+    selectContagem.appendChild(opt);
+  });
+
+  // Preenche Filial
+  filiaisUnicas.forEach(f => {
+    const opt = document.createElement("option");
+    opt.value = f;
+    opt.textContent = f;
+    selectFilial.appendChild(opt);
+  });
+
+  // Preenche Código
+  codigosUnicos.forEach(cd => {
+    const opt = document.createElement("option");
+    opt.value = cd;
+    opt.textContent = cd;
+    selectCodigo.appendChild(opt);
+  });
+}
+
+// Quando escolher um código, preencher nome e almoxarifado automaticamente
+document.getElementById("selectCodigo").addEventListener("change", function () {
+  const codigoSelecionado = this.value;
+  const produto = produtosCarregados.find(p => p.codigo === codigoSelecionado);
+
+  if (produto) {
+    document.getElementById("nomeItem").value = produto.nome || "";
+    document.getElementById("almoxarifado").value = produto.almoxarifado || "";
+  }
+});
+
+// Ao carregar a tela de Nova Contagem, chama a função
+document.addEventListener("DOMContentLoaded", () => {
+  // Define a data atual automaticamente
+  document.getElementById("dataAtual").value = new Date().toLocaleDateString("pt-BR");
+
+  // Carrega os produtos
+  carregarProdutos();
+});
   
   /* ====================== CONTAGENS EM ABERTO (via fetch) ====================== */
   async function menuContagensAbertas() {
