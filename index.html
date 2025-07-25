@@ -331,17 +331,7 @@
     };
     localStorage.setItem("estadoTelaAtual", JSON.stringify(dadosEstado));
   }
-  /* ================= SALVAR ESTADO TELA ================= */
-
-
-  const API_URL = "https://script.google.com/macros/s/AKfycbweF6DIyx-vOxv8i7eVr4baeKtDbzk3IZEIs-aOTc99B8VYRezBKwW3RG2dd4Ee0XSuPQ/exec"; // sua URL de backend
-
-  async function carregarProdutos() {
-    const res = await fetch(`${API_URL}?action=getProdutos`);
-    const produtos = await res.json();
-    popularProdutos(produtos); // usa a função que já popula os produtos na tela
-  }
-
+  
    /* ================= RESTAURAR ESTADO TELA ================= */
   function restaurarEstadoTela(estado) {
     const tela = estado.tela;
@@ -425,22 +415,24 @@
   /* ========== LOGIN ========== */
   const API_URL ="https://script.google.com/macros/s/AKfycbweF6DIyx-vOxv8i7eVr4baeKtDbzk3IZEIs-aOTc99B8VYRezBKwW3RG2dd4Ee0XSuPQ/exec";
   
-  async function fazerLogin() {
+ async function fazerLogin() {
     let codigo = document.getElementById('codigoLogin').value.trim();
     let msg = document.getElementById('msgLogin');
-    
+  
     if (!codigo) {
       msg.innerHTML = "<span class='erro'>⚠️ Digite seu código!</span>";
       return;
     }
-    
     msg.innerHTML = "⏳ Verificando...";
   
-    const response = await fetch(${API_URL}?action=login&codigo=${codigo});
+    const response = await fetch(
+      `https://script.google.com/macros/s/AKfycbweF6DIyx-vOxv8i7eVr4baeKtDbzk3IZEIs-aOTc99B8VYRezBKwW3RG2dd4Ee0XSuPQ/exec?action=login&codigo=${codigo}`
+    );
     const data = await response.json();
-    
+  
     if (data.sucesso) {
       usuarioLogado = data.nome;
+      localStorage.setItem("usuarioLogado", usuarioLogado);
       document.getElementById('loginBox').style.display = 'none';
       document.getElementById('bemVindoBox').style.display = 'flex';
       document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + data.nome + "!";
@@ -448,22 +440,6 @@
       msg.innerHTML = "<span class='erro'>❌ Código inválido!</span>";
     }
   }
-  window.addEventListener("load", function() {
-    const usuarioSalvo = localStorage.getItem("usuarioLogado");
-    const estadoSalvo = JSON.parse(localStorage.getItem("estadoTelaAtual") || "{}");
-
-    if (usuarioSalvo) {
-      usuarioLogado = usuarioSalvo;
-      document.getElementById('loginBox').style.display = 'none';
-      document.getElementById('bemVindoBox').style.display = 'flex';
-      document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + usuarioSalvo + "!";
-    }
-
-    // ✅ Se existe um estado salvo, restaura
-    if (estadoSalvo?.tela) {
-      restaurarEstadoTela(estadoSalvo);
-    }
-  });
 
   function fazerLogout() {
     usuarioLogado = "";
@@ -508,6 +484,16 @@
 
     // ✅ Agora sim, volta ao menu principal limpo
     document.getElementById('bemVindoBox').style.display = 'flex';
+  }
+  /* ================= SALVAR ESTADO TELA ================= */
+
+
+  const API_URL = "https://script.google.com/macros/s/AKfycbweF6DIyx-vOxv8i7eVr4baeKtDbzk3IZEIs-aOTc99B8VYRezBKwW3RG2dd4Ee0XSuPQ/exec"; // sua URL de backend
+
+  async function carregarProdutos() {
+    const res = await fetch(`${API_URL}?action=getProdutos`);
+    const produtos = await res.json();
+    popularProdutos(produtos); // usa a função que já popula os produtos na tela
   }
 
   /* ========== CONTAGENS EM ABERTO ========== */
