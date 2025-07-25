@@ -616,15 +616,13 @@ function removerCachesPorArquivo(listaArquivos) {
  * FRONT-END
  **************************************/
 function doGet(e) {
-  // Se for pedido explicitamente o manifest.json
-  if (e && e.parameter && e.parameter['file'] === 'manifest.json') {
+  const action = e.parameter.action;
+  if (action === "login") {
+    const codigo = e.parameter.codigo;
     return ContentService.createTextOutput(
-      HtmlService.createHtmlOutputFromFile('manifest').getContent()
+      JSON.stringify(autenticarUsuario(codigo))
     ).setMimeType(ContentService.MimeType.JSON);
   }
-
-  // Caso contrário, carrega normalmente o index.html
-  return HtmlService.createHtmlOutputFromFile('index')
-    .setTitle("Contagem de Estoque")
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  
+  return HtmlService.createHtmlOutput("API Online");
 }
