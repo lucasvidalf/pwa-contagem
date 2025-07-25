@@ -126,6 +126,86 @@ function abrirContagem(nova) {
   document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');
   carregarProdutosJSONP();
 }
+
+  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxvBSz2Jq8GN6oTIdKZ1RsI_xfW80Mxr1B_oA_GDXknR1XrXnVFUA2zCfi0ss_yZkvWig/exec"; 
+let produtosCarregados = [];
+
+// Carrega os produtos via JSONP
+function carregarProdutosJSONP() {
+  const script = document.createElement("script");
+  script.src = `${BACKEND_URL}?action=getProdutos&callback=handleProdutos`;
+  document.body.appendChild(script);
+}
+
+// Essa função será chamada automaticamente pelo backend JSONP
+function handleProdutos(data) {
+  if (!Array.isArray(data)) {
+    console.error("⚠️ Resposta inesperada do backend:", data);
+    return;
+  }
+
+  produtosCarregados = data;
+  console.log("✅ Produtos recebidos:", produtosCarregados);
+
+  preencherSelects(produtosCarregados);
+}
+
+// Preenche os selects com os produtos
+function preencherSelects(lista) {
+  const selectContagem = document.getElementById("selectContagem");
+  const selectFilial = document.getElementById("selectFilial");
+  const selectCodigo = document.getElementById("selectCodigo");
+
+  selectContagem.innerHTML = `<option value="">Selecione...</option>`;
+  selectFilial.innerHTML = `<option value="">Selecione...</option>`;
+  selectCodigo.innerHTML = `<option value="">Selecione...</option>`;
+
+  const contagensUnicas = [...new Set(lista.map(p => p.contagem).filter(Boolean))];
+  const filiaisUnicas = [...new Set(lista.map(p => p.filial).filter(Boolean))];
+  const codigosUnicos = [...new Set(lista.map(p => p.codigo).filter(Boolean))];
+
+  contagensUnicas.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.textContent = c;
+    selectContagem.appendChild(opt);
+  });
+
+  filiaisUnicas.forEach(f => {
+    const opt = document.createElement("option");
+    opt.value = f;
+    opt.textContent = f;
+    selectFilial.appendChild(opt);
+  });
+
+  codigosUnicos.forEach(cd => {
+    const opt = document.createElement("option");
+    opt.value = cd;
+    opt.textContent = cd;
+    selectCodigo.appendChild(opt);
+  });
+}
+
+// Quando escolher código → preenche nome/almoxarifado
+document.getElementById("selectCodigo").addEventListener("change", function() {
+  const codigoSelecionado = this.value;
+  const produto = produtosCarregados.find(p => p.codigo === codigoSelecionado);
+
+  if (produto) {
+    document.getElementById("nomeItem").value = produto.nome || "";
+    document.getElementById("almoxarifado").value = produto.almoxarifado || "";
+  }
+});
+
+// Ao abrir contagem, chama JSONP
+function abrirContagem() {
+  document.getElementById('bemVindoBox').style.display = 'none';
+  document.getElementById('contagemBox').style.display = 'block';
+
+  // sempre carrega os produtos via JSONP
+  carregarProdutosJSONP();
+}
+  
 </script>
 </body>
 </html>
