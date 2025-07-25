@@ -262,7 +262,20 @@
   function fecharModal() {
     document.getElementById('modalOverlay').style.display = 'none';
   }
-
+   /* ====================== CARREGAR PRODUTOS ====================== */
+  
+  async function carregarProdutos() {
+    try {
+      const response = await fetch(`${API_URL}?action=getProdutos`);
+      const produtos = await response.json();
+  
+      console.log("✅ Produtos recebidos:", produtos);
+      popularProdutos(produtos); // mesma função que popula o select
+    } catch (error) {
+      console.error("❌ Erro ao carregar produtos:", error);
+    }
+  }
+  
   /* ====================== CONTAGENS EM ABERTO (via fetch) ====================== */
   async function menuContagensAbertas() {
     showModal("⏳ Aguarde", "Carregando contagens em aberto...");
