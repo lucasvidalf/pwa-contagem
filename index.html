@@ -313,42 +313,44 @@
   let usuarioLogado = "";
 
   /* ====================== LOGIN (via fetch) ====================== */
+  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxvBSz2Jq8GN6oTIdKZ1RsI_xfW80Mxr1B_oA_GDXknR1XrXnVFUA2zCfi0ss_yZkvWig/exec";
+  let usuarioLogado = "";
+  let produtosCarregados = [];
+
   async function fazerLogin() {
     const codigo = document.getElementById('codigoLogin').value.trim();
     const msg = document.getElementById('msgLogin');
-
     if (!codigo) {
       msg.innerHTML = "<span class='erro'>⚠️ Digite seu código!</span>";
       return;
     }
-
     msg.innerHTML = "⏳ Verificando...";
-
     try {
-      // Agora usamos fetch ao invés de google.script.run
-      const response = await fetch(`${API_URL}?action=login&codigo=${codigo}`);
-      const data = await response.json();
-
-      if (data.sucesso) {
-        usuarioLogado = data.nome;
-        localStorage.setItem("usuarioLogado", usuarioLogado);
-        document.getElementById('loginBox').style.display = 'none';
-        document.getElementById('bemVindoBox').style.display = 'flex';
-        document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + data.nome + "!";
-      } else {
-        msg.innerHTML = "<span class='erro'>❌ Código inválido!</span>";
-      }
+      const script = document.createElement('script');
+      script.src = `${BACKEND_URL}?action=login&codigo=${codigo}&callback=handleLogin`;
+      document.body.appendChild(script);
     } catch (err) {
       console.error(err);
       msg.innerHTML = "<span class='erro'>❌ Erro ao conectar ao servidor.</span>";
     }
   }
 
+  function handleLogin(data) {
+    const msg = document.getElementById('msgLogin');
+    if (data.sucesso) {
+      usuarioLogado = data.nome;
+      document.getElementById('loginBox').style.display = 'none';
+      document.getElementById('bemVindoBox').style.display = 'flex';
+      document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + data.nome + "!";
+    } else {
+      msg.innerHTML = "<span class='erro'>❌ Código inválido!</span>";
+    }
+  }
+
+ 
   /* ====================== LOGOUT ====================== */
   function fazerLogout() {
     usuarioLogado = "";
-    localStorage.removeItem("usuarioLogado");
-
     document.getElementById('bemVindoBox').style.display = 'none';
     document.getElementById('loginBox').style.display = 'flex';
     document.getElementById('codigoLogin').value = "";
@@ -396,93 +398,22 @@
    
   /* ====================== CARREGAR PRODUTOS ====================== */
   
-  // URL do seu Google Apps Script publicado como Web App
-const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxvBSz2Jq8GN6oTIdKZ1RsI_xfW80Mxr1B_oA_GDXknR1XrXnVFUA2zCfi0ss_yZkvWig/exec";
+   function carregarProdutosJSONP() {
+    const url = `${BACKEND_URL}?action=getProdutos&callback=handleProdutos`;
+    const script = document.createElement('script');
+    script.src = url;
+    document.body.appendChild(script);
+  }
 
-// Variável global para armazenar os produtos carregados
-let produtosCarregados = [];
-
-// Função para buscar produtos e preencher os selects
-async function carregarProdutos() {
-  try {
-    const res = await fetch(`${BACKEND_URL}?action=getProdutos`);
-    const data = await res.json();
-
+  function handleProdutos(data) {
     if (!Array.isArray(data)) {
-      console.error("⚠️ Resposta inesperada do backend:", data);
+      console.error("⚠️ Resposta inesperada:", data);
       return;
     }
-
-    produtosCarregados = data; // guarda todos os produtos para uso posterior
-    console.log("✅ Produtos carregados:", produtosCarregados);
-
-    preencherSelects(data);
-
-  } catch (err) {
-    console.error("❌ Erro ao buscar produtos:", err);
+    produtosCarregados = data;
+    console.log("✅ Produtos recebidos:", produtosCarregados);
   }
-}
 
-// Preenche os selects com os produtos carregados
-function preencherSelects(lista) {
-  const selectContagem = document.getElementById("selectContagem");
-  const selectFilial = document.getElementById("selectFilial");
-  const selectCodigo = document.getElementById("selectCodigo");
-
-  // Limpa e adiciona um placeholder
-  selectContagem.innerHTML = `<option value="">Selecione...</option>`;
-  selectFilial.innerHTML = `<option value="">Selecione...</option>`;
-  selectCodigo.innerHTML = `<option value="">Selecione...</option>`;
-
-  // Cria listas únicas de valores
-  const contagensUnicas = [...new Set(lista.map(p => p.contagem).filter(Boolean))];
-  const filiaisUnicas = [...new Set(lista.map(p => p.filial).filter(Boolean))];
-  const codigosUnicos = [...new Set(lista.map(p => p.codigo).filter(Boolean))];
-
-  // Preenche Contagem
-  contagensUnicas.forEach(c => {
-    const opt = document.createElement("option");
-    opt.value = c;
-    opt.textContent = c;
-    selectContagem.appendChild(opt);
-  });
-
-  // Preenche Filial
-  filiaisUnicas.forEach(f => {
-    const opt = document.createElement("option");
-    opt.value = f;
-    opt.textContent = f;
-    selectFilial.appendChild(opt);
-  });
-
-  // Preenche Código
-  codigosUnicos.forEach(cd => {
-    const opt = document.createElement("option");
-    opt.value = cd;
-    opt.textContent = cd;
-    selectCodigo.appendChild(opt);
-  });
-}
-
-// Quando escolher um código, preencher nome e almoxarifado automaticamente
-document.getElementById("selectCodigo").addEventListener("change", function () {
-  const codigoSelecionado = this.value;
-  const produto = produtosCarregados.find(p => p.codigo === codigoSelecionado);
-
-  if (produto) {
-    document.getElementById("nomeItem").value = produto.nome || "";
-    document.getElementById("almoxarifado").value = produto.almoxarifado || "";
-  }
-});
-
-// Ao carregar a tela de Nova Contagem, chama a função
-document.addEventListener("DOMContentLoaded", () => {
-  // Define a data atual automaticamente
-  document.getElementById("dataAtual").value = new Date().toLocaleDateString("pt-BR");
-
-  // Carrega os produtos
-  carregarProdutos();
-});
 
     /* ====================== ABRIR CONTAGEM ====================== */
   function abrirContagem(nova) {
@@ -513,7 +444,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   
     // ✅ Sempre chama o backend para buscar produtos da planilha
-    carregarProdutos();
+      document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("dataAtual").value = new Date().toLocaleDateString("pt-BR");
+    
+      // Agora carrega via JSONP
+      carregarProdutosJSONP();
+    });
   }  
   
   /* ====================== CONTAGENS EM ABERTO (via fetch) ====================== */
