@@ -419,21 +419,19 @@
   async function fazerLogin() {
     let codigo = document.getElementById('codigoLogin').value.trim();
     let msg = document.getElementById('msgLogin');
-  
+    
     if (!codigo) {
       msg.innerHTML = "<span class='erro'>⚠️ Digite seu código!</span>";
       return;
     }
+    
     msg.innerHTML = "⏳ Verificando...";
   
-   
-    
-    const response = await fetch(`${API_URL}?action=login&codigo=${codigo}`);
+    const response = await fetch(${API_URL}?action=login&codigo=${codigo});
     const data = await response.json();
-  
+    
     if (data.sucesso) {
       usuarioLogado = data.nome;
-      localStorage.setItem("usuarioLogado", usuarioLogado);
       document.getElementById('loginBox').style.display = 'none';
       document.getElementById('bemVindoBox').style.display = 'flex';
       document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + data.nome + "!";
