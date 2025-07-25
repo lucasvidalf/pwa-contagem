@@ -1,6 +1,6 @@
 {
   "name": "InvDP",
-  "short_name": "Contagem",
+  "short_name": "InvDP",
   "start_url": "?standalone=true",
   "display": "standalone",
   "background_color": "#ffffff",
