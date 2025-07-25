@@ -1,7 +1,7 @@
 /**************************************
  * CONFIGURAÇÕES GERAIS
  **************************************/
-const PLANILHA_ID = SpreadsheetApp.getActiveSpreadsheet().getId(); 
+const PLANILHA_ID = "17TcbvfKHLyUE98iQ9BPUp4Y4f05tTuhK3ePuNXqUPUs"; 
 const ABA_USUARIOS = "Usuarios";
 const ABA_PRODUTOS = "Produtos";
 const ABA_EMAILS = "ListaEmail";
