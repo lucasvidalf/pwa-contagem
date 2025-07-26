@@ -15,20 +15,15 @@ const DRIVE_TEMP_FOLDER_ID = "1y1JhwusBPHR4jX71PS2N6dhZAyexFKCq"; // Pasta TEMPO
 function autenticarUsuario(codigo) {
   const sheet = SpreadsheetApp.openById(PLANILHA_ID).getSheetByName(ABA_USUARIOS);
   const dados = sheet.getDataRange().getValues();
-
+  
   for (let i = 1; i < dados.length; i++) {
     const codPlanilha = String(dados[i][0]).trim();
     const nomePlanilha = String(dados[i][1]).trim();
-    const filialPlanilha = String(dados[i][2]).trim(); // ✅ pega a filial da planilha
-
     if (codigo === codPlanilha) {
-      return { 
-        sucesso: true, 
-        nome: nomePlanilha,
-        filial: filialPlanilha // ✅ devolve filial junto
-      };
+      return { sucesso: true, nome: nomePlanilha };
     }
   }
+  
   return { sucesso: false };
 }
 
@@ -615,14 +610,28 @@ function removerCachesPorArquivo(listaArquivos) {
 /**************************************
  * FRONT-END
  **************************************/
+
 function doGet(e) {
   const action = e.parameter.action;
   if (action === "login") {
     const codigo = e.parameter.codigo;
+    const usuario = validarLogin(codigo);
     return ContentService.createTextOutput(
-      JSON.stringify(autenticarUsuario(codigo))
+      JSON.stringify(usuario)
     ).setMimeType(ContentService.MimeType.JSON);
   }
-  
-  return HtmlService.createHtmlOutput("API Online");
+  return ContentService.createTextOutput(
+    JSON.stringify({ sucesso: false, msg: "Ação inválida" })
+  ).setMimeType(ContentService.MimeType.JSON);
+}
+
+function validarLogin(codigo) {
+  const usuarios = {
+    "1000483": "Lucas Vidal",
+    "9999": "Administrador"
+  };
+  if (usuarios[codigo]) {
+    return { sucesso: true, nome: usuarios[codigo] };
+  }
+  return { sucesso: false };
 }
