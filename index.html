@@ -336,31 +336,39 @@
    /* ================= RESTAURAR ESTADO TELA ================= */
   
   /* ========== LOGIN ========== */
-  function fazerLogin() {
+  async function fazerLogin() {
     let codigo = document.getElementById('codigoLogin').value.trim();
     let msg = document.getElementById('msgLogin');
+  
     if (!codigo) {
-      msg.innerHTML = "<span class='erro'⚠️ Digite seu código!</span>";
+      msg.innerHTML = "<span class='erro'>⚠️ Digite seu código!</span>";
       return;
     }
+  
     msg.innerHTML = "⏳ Verificando...";
-    google.script.run.withSuccessHandler(function(resposta) {
-      if (resposta.sucesso) {
-        usuarioLogado = resposta.nome;
-        filialUsuario = resposta.filial; // ✅ salva filial do usuário
+  
+    try {
+      const resposta = await fetch(`${API_URL}?action=login&codigo=${codigo}`);
+      const data = await resposta.json();
+  
+      if (data.sucesso) {
+        usuarioLogado = data.nome;
+        filialUsuario = data.filial || "ADM"; // Se vier filial
         localStorage.setItem("usuarioLogado", usuarioLogado);
-        localStorage.setItem("filialUsuario", filialUsuario); // ✅ armazena filial local
-
+        localStorage.setItem("filialUsuario", filialUsuario);
+  
         document.getElementById('loginBox').style.display = 'none';
         document.getElementById('bemVindoBox').style.display = 'flex';
-        document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + resposta.nome + "!";
+        document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + data.nome + "!";
       } else {
         msg.innerHTML = "<span class='erro'>❌ Código inválido!</span>";
       }
-    }).autenticarUsuario(codigo);
+    } catch (erro) {
+      console.error("❌ Erro ao conectar:", erro);
+      msg.innerHTML = "<span class='erro'>❌ Erro ao conectar ao servidor.</span>";
+    }
   }
-  
-  });
+
   
 
 </script>
