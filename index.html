@@ -6,48 +6,180 @@
   <meta name="theme-color" content="#2c7be5">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>InvDP</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/lucasvidalf/pwa-contagem/main/logo-192.png">
-  <link rel="apple-touch-icon" sizes="512x512" href="https://raw.githubusercontent.com/lucasvidalf/pwa-contagem/main/logo-512.png">
+  <title>Contagem de Estoque</title>
+  <link rel="manifest" href="?file=manifest.json">
+  <link rel="apple-touch-icon" href="https://SEU_LOGO/icon-192.png">
+
   <style>
-    html, body { height: 100%; margin: 0; padding: 0; font-family: Arial, sans-serif; background: #f4f4f4; }
-    .centered-screen { display: flex; padding: 20px; justify-content: center; align-items: center; height: 100vh; width: 100%; box-sizing: border-box; }
-    .container { background: #fff; padding: 20px; width: 90%; max-width: 500px; border-radius: 12px; text-align: center; box-shadow: 0px 4px 12px rgba(0,0,0,0.1); margin: 20px auto; }
-    .fullscreen-scroll { display: flex; justify-content: center; align-items: center; width: 100%; }
+    html, body {
+      height: 100%; margin: 0; padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+    .centered-screen {
+      display: flex; padding: 20px;
+      justify-content: center; align-items: center;
+      height: 100vh; width: 100%;
+      box-sizing: border-box;
+    }
+    .container {
+      background: #fff; padding: 20px;
+      width: 90%; max-width: 500px;
+      border-radius: 12px; text-align: center;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+      margin: 20px auto;
+    }
+    .fullscreen-scroll {
+      display: flex; justify-content: center;
+      align-items: center; width: 100%;
+    }
     h1, h2, h3 { color: #2c7be5; }
-    label { display: block; margin-top: 12px; text-align: left; font-weight: bold; }
-    input, select, textarea { width: 100%; padding: 12px; font-size: 16px; margin-top: 6px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; -webkit-text-size-adjust: 100%; }
-    button { width: 100%; padding: 14px; margin-top: 15px; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; background: #2c7be5; color: #fff; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    label {
+      display: block; margin-top: 12px;
+      text-align: left; font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%; padding: 12px; font-size: 16px;
+      margin-top: 6px; border: 1px solid #ccc;
+      border-radius: 8px; box-sizing: border-box;
+      -webkit-text-size-adjust: 100%;
+    }
+    button {
+      width: 100%; padding: 14px; margin-top: 15px;
+      font-size: 16px; font-weight: bold;
+      border: none; border-radius: 8px;
+      cursor: pointer; background: #2c7be5;
+      color: #fff;
+    }
+    button:disabled {
+      opacity: 0.6; cursor: not-allowed;
+    }
     .msg { margin-top: 10px; font-weight: bold; }
     .sucesso { color: green; }
     .erro { color: red; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; }
+    table {
+      width: 100%; border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #ddd; padding: 8px;
+      text-align: left; font-size: 14px;
+    }
     th { background: #eee; }
-    footer { text-align: center; font-size: 12px; color: #888; margin: 15px 0; }
-    #modalOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); align-items: center; justify-content: center; z-index: 9999; }
-    #modalBox { background: white; padding: 20px; width: 90%; max-width: 400px; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    footer {
+      text-align: center; font-size: 12px;
+      color: #888; margin: 15px 0;
+    }
+    #modalOverlay {
+      display: none; position: fixed;
+      top: 0; left: 0; width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(2px);
+      align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    #modalBox {
+      background: white; padding: 20px;
+      width: 90%; max-width: 400px;
+      border-radius: 12px; text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
     #modalBox h2 { margin-top: 0; }
-    #modalBotoes button { width: auto; min-width: 100px; margin: 8px; padding: 10px; font-size: 15px; }
+    #modalBotoes button {
+      width: auto; min-width: 100px;
+      margin: 8px; padding: 10px;
+      font-size: 15px;
+    }
     #modalBotoes .confirmar { background: #28a745; }
     #modalBotoes .cancelar { background: #dc3545; }
-    .item-lancado { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #ddd; }
+    .item-lancado {
+      display: flex; justify-content: space-between;
+      align-items: center;
+      padding: 6px 0; border-bottom: 1px solid #ddd;
+    }
     .item-info { flex: 1; font-size: 14px; }
-    .item-remove { color: red; cursor: pointer; font-weight: bold; margin-left: 10px; }
-    #consultarBox .container { max-width: 900px !important; width: 95%; text-align: center; }
-    #listaContagens > div { display: flex; justify-content: center; width: 100%; }
-    #listaContagens table { width: 100%; max-width: 860px; border-collapse: collapse; font-size: 14px; background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); margin: 0 auto; }
-    #listaContagens table th, #listaContagens table td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-    #listaContagens table thead tr { background: #f7f7f7; }
-    #listaContagens table td:nth-child(4), #listaContagens table td:nth-child(5) { text-align: center; }
-    #listaContagens { max-height: 450px; overflow-y: auto; overflow-x: auto; margin-top: 15px; }
-    #listaContagens table th { position: sticky; top: 0; background: #f7f7f7; z-index: 1; }
-    @media (max-width: 768px) { #consultarBox .container { max-width: 100% !important; padding: 10px; } #listaContagens { overflow-x: auto; } #listaContagens table { min-width: 700px; font-size: 13px; } }
+    .item-remove {
+      color: red; cursor: pointer;
+      font-weight: bold; margin-left: 10px;
+    }
+
+    /* === CONSULTAR ENCERRADAS === */
+    #consultarBox .container {
+      max-width: 900px !important;
+      width: 95%;
+      text-align: center;
+    }
+    
+    #listaContagens > div {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+   
+    #listaContagens table {
+      width: 100%;
+      max-width: 860px;
+      border-collapse: collapse;
+      font-size: 14px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      margin: 0 auto;
+    }
+
+    #listaContagens table th,
+    #listaContagens table td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    #listaContagens table thead tr {
+      background: #f7f7f7;     
+    }
+
+    #listaContagens table td:nth-child(4),
+    #listaContagens table td:nth-child(5) {
+      text-align: center;
+    }
+
+    #listaContagens {
+      max-height: 450px; /* altura máxima */
+      overflow-y: auto; /* barra vertical se ultrapassar */
+      overflow-x: auto; /* barra horizontal se precisar */
+      margin-top: 15px;
+    }
+
+    #listaContagens table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #listaContagens table th {
+      position: sticky;
+      top: 0;
+      background: #f7f7f7;
+      z-index: 1;
+    }
+
+    @media (max-width: 768px) {
+      #consultarBox .container {
+        max-width: 100% !important;
+        padding: 10px;
+      }
+      #listaContagens {
+        overflow-x: auto;
+      }
+      #listaContagens table {
+        min-width: 700px;
+        font-size: 13px;
+      }
+    }
   </style>
 </head>
 <body>
+
+  <!-- LOGIN -->
   <div id="loginBox" class="centered-screen">
     <div class="container">
       <h1>🔐 Acesso</h1>
@@ -58,6 +190,8 @@
       <footer>Created by: Lucas Vidal</footer>
     </div>
   </div>
+
+  <!-- MENU PRINCIPAL -->
   <div id="bemVindoBox" class="centered-screen" style="display:none;">
     <div class="container">
       <h1>✅ Login realizado</h1>
@@ -68,144 +202,1094 @@
       <button style="background:#6c757d;" onclick="fazerLogout()">🚪 Sair</button>
     </div>
   </div>
-  <!-- ... resto do HTML omitido para brevidade ... -->
-<script>
-const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxvBSz2Jq8GN6oTIdKZ1RsI_xfW80Mxr1B_oA_GDXknR1XrXnVFUA2zCfi0ss_yZkvWig/exec";
-let usuarioLogado = "";
-let produtosCarregados = [];
 
-// === LOGIN VIA FETCH ===
-async function fazerLogin() {
-  const codigo = document.getElementById('codigoLogin').value.trim();
-  const msg = document.getElementById('msgLogin');
-  if (!codigo) { msg.innerHTML = "<span class='erro'>⚠️ Digite seu código!</span>"; return; }
-  msg.innerHTML = "⏳ Verificando...";
-  try {
-    const resp = await fetch(`${BACKEND_URL}?action=login&codigo=${codigo}`);
-    const data = await resp.json();
-    if (data.sucesso) {
-      usuarioLogado = data.nome;
+  <!-- CONTAGENS EM ABERTO -->
+  <div id="contagensAbertasBox" class="centered-screen" style="display:none;">
+    <div class="container" style="max-width: 900px;">
+      <h2>⏳ Contagens em Aberto</h2>
+
+      <label>Filtrar por Filial</label>
+      <select id="filtroFilialAberta" onchange="filtrarContagensAbertas()">
+        <option value="">Todas</option>
+      </select>
+
+      <label>Filtrar por Contagem</label>
+      <select id="filtroNumeroContagem" onchange="filtrarContagensAbertas()">
+        <option value="">Todas</option>
+      </select>
+
+      <div id="listaContagensAbertas" style="margin-top:20px; text-align:left;"></div>
+
+      <button style="background:#6c757d; margin-top:20px;" onclick="voltarMenu()">⬅ Voltar ao Menu</button>
+    </div>
+  </div>
+
+  <!-- CONSULTAR ENCERRADAS -->
+  <div id="consultarBox" class="centered-screen" style="display:none;">
+    <div class="container">
+      <h2>🔍 Consultar Contagens Encerradas</h2>
+      <label>Filtrar por Filial</label>
+      <select id="filtroFilialEncerrada" onchange="filtrarEncerradas()">
+        <option value="">Todas</option>
+      </select>
+      <label>Filtrar por Contagem</label>
+      <select id="filtroContagemEncerrada" onchange="filtrarEncerradas()">
+        <option value="">Todas</option>
+      </select>
+      <label>Filtrar por Almoxarifado</label>
+      <select id="filtroAlmoxEncerrada" onchange="filtrarEncerradas()">
+        <option value="">Todos</option>
+      </select>
+      <label>Filtrar por Data</label>
+      <input type="date" id="filtroDataEncerrada" onchange="filtrarEncerradas()">       
+      <div id="listaContagens" style="margin-top:20px; text-align:left;"></div>
+      <div id="tabelaCSV" style="margin-top:20px;"></div>
+      <button style="background:#6c757d;" onclick="voltarMenu()">⬅ Voltar ao Menu</button>
+    </div>
+  </div>
+
+  <!-- TELA DE CONTAGEM -->
+  <div id="contagemBox" class="fullscreen-scroll" style="display:none; align-items:flex-start; overflow-y:auto;">
+    <div class="container">
+      <h1>📋 Contagem</h1>
+      <p><b>Usuário:</b> <span id="usuarioContagem"></span></p>
+
+      <label>Data</label>
+      <input type="text" id="dataContagem" readonly>
+
+      <label>Contagem</label>
+      <select id="contagem"></select>
+
+      <label>Filial</label>
+      <input type="text" id="filial" readonly>
+
+      <label>Almoxarifado</label>
+      <input type="text" id="almoxarifado" readonly>
+      
+      <label>Código</label>
+      <input list="listaCodigos" id="codigo" placeholder="Digite ou selecione">
+      <datalist id="listaCodigos"></datalist>
+
+      <label>Nome do item</label>
+      <input type="text" id="nomeItem" readonly>
+
+      <label>Quantidade</label>
+      <input type="number" id="quantidade" min="1">
+
+      <label>Foto</label>
+      <input type="file" id="foto" accept="image/*" capture="camera">
+
+      <label>Comentário (opcional)</label>
+      <textarea id="comentario" rows="2" placeholder="Observações..."></textarea>
+
+      <button onclick="registrarItem()" id="btnRegistrar">✅ Registrar Item</button>
+      <button style="background:#d9534f;" onclick="confirmarEncerrar()">🚪 Encerrar Contagem</button>
+      <button style="background:#6c757d;" onclick="confirmarCancelar()">❌ Cancelar Contagem</button>
+      <button style="background:#6c757d;" onclick="voltarMenu()">⬅ Voltar ao Menu</button>
+
+      <div class="msg" id="msgContagem"></div>
+
+      <div id="resumoItens" style="margin-top:20px; text-align:left;">
+        <h3 id="tituloItens">📦 Itens lançados (0)</h3>
+        <div id="listaItens"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modalOverlay">
+    <div id="modalBox">
+      <h2 id="modalTitulo"></h2>
+      <p id="modalMensagem"></p>
+      <div id="modalBotoes"></div>
+    </div>
+  </div>
+
+<script>
+  /* ================= VARIÁVEIS GLOBAIS ================= */
+  let usuarioLogado = "";
+  let produtosLista = [];
+  let itensRegistrados = [];
+  let contagensAbertasCache = [];
+  let nomeArquivoAtual = "";
+
+
+  /* ================= SALVAR ESTADO TELA ================= */
+  function salvarEstadoTela(estado, extras = {}) {
+    const dadosEstado = {
+      tela: estado,
+      usuarioLogado: usuarioLogado,
+      itens: JSON.parse(JSON.stringify(itensRegistrados || [])),
+      campos: {
+        contagem: document.getElementById('contagem')?.value || "",
+        filial: document.getElementById('filial')?.value || "",
+        almoxarifado: document.getElementById('almoxarifado')?.value || "",
+        data: document.getElementById('dataContagem')?.value || new Date().toLocaleDateString('pt-BR')
+      },
+      extras: extras,
+      timestamp: Date.now()
+    };
+    localStorage.setItem("estadoTelaAtual", JSON.stringify(dadosEstado));
+  }
+
+
+   /* ================= RESTAURAR ESTADO TELA ================= */
+  function restaurarEstadoTela(estado) {
+    const tela = estado.tela;
+
+    // 🔄 Restaurar variáveis globais
+    usuarioLogado = estado.usuarioLogado || usuarioLogado;
+    itensRegistrados = estado.itens && estado.itens.length > 0 ? estado.itens : [];
+
+    // 🔄 Restaurar tela específica
+    if (tela === "contagem") {
+      document.getElementById('bemVindoBox').style.display = 'none';
+      document.getElementById('contagemBox').style.display = 'block';
+      document.getElementById('usuarioContagem').innerText = usuarioLogado;
+
+      // ✅ Restaurar os campos que estavam preenchidos
+      document.getElementById('contagem').value = estado.campos?.contagem || "";
+      document.getElementById('filial').value = estado.campos?.filial || "";
+      document.getElementById('almoxarifado').value = estado.campos?.almoxarifado || "";
+      document.getElementById('dataContagem').value = estado.campos?.data || new Date().toLocaleDateString('pt-BR');
+
+      // ✅ Recarregar lista de itens na tela
+      atualizarListaItens();
+
+      // ✅ Produtos devem ser carregados novamente
+      google.script.run.withSuccessHandler(popularProdutos).getProdutos();
+
+    } else if (tela === "consultarEncerradas") {
+      menuConsultas();
+
+    } else if (tela === "contagensAbertas") {
+      menuContagensAbertas();
+
+    } else {
+      // Caso contrário, volta pro menu
+      document.getElementById('bemVindoBox').style.display = 'flex';
+    }
+  }
+
+  /* ========== LIMPAR ESTADO ========== */
+  function limparEstadoTela() {
+    localStorage.removeItem("estadoTela");
+  }
+
+
+  /* ========== MODAL GENÉRICO ========== */
+  function showModal(titulo, mensagem, tipo, callback) {
+    document.getElementById('modalTitulo').innerHTML = titulo;
+    document.getElementById('modalMensagem').innerHTML = mensagem;
+    let botoesDiv = document.getElementById('modalBotoes');
+    botoesDiv.innerHTML = "";
+
+    if (tipo === 'confirm') {
+      let btnConfirmar = document.createElement("button");
+      btnConfirmar.innerText = "✅ Confirmar";
+      btnConfirmar.classList.add("confirmar");
+      btnConfirmar.onclick = function() {
+        fecharModal();
+        if (callback) callback(true);
+      };
+      let btnCancelar = document.createElement("button");
+      btnCancelar.innerText = "❌ Cancelar";
+      btnCancelar.classList.add("cancelar");
+      btnCancelar.onclick = function() {
+        fecharModal();
+        if (callback) callback(false);
+      };
+      botoesDiv.appendChild(btnConfirmar);
+      botoesDiv.appendChild(btnCancelar);
+    } else {
+      let btnOk = document.createElement("button");
+      btnOk.innerText = "OK";
+      btnOk.onclick = fecharModal;
+      botoesDiv.appendChild(btnOk);
+    }
+    document.getElementById('modalOverlay').style.display = 'flex';
+  }
+  function fecharModal() {
+    document.getElementById('modalOverlay').style.display = 'none';
+  }
+
+  /* ========== LOGIN ========== */
+  function fazerLogin() {
+    let codigo = document.getElementById('codigoLogin').value.trim();
+    let msg = document.getElementById('msgLogin');
+    if (!codigo) {
+      msg.innerHTML = "<span class='erro'⚠️ Digite seu código!</span>";
+      return;
+    }
+    msg.innerHTML = "⏳ Verificando...";
+    google.script.run.withSuccessHandler(function(resposta) {
+      if (resposta.sucesso) {
+        usuarioLogado = resposta.nome;
+        filialUsuario = resposta.filial; // ✅ salva filial do usuário
+        localStorage.setItem("usuarioLogado", usuarioLogado);
+        localStorage.setItem("filialUsuario", filialUsuario); // ✅ armazena filial local
+
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('bemVindoBox').style.display = 'flex';
+        document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + resposta.nome + "!";
+      } else {
+        msg.innerHTML = "<span class='erro'>❌ Código inválido!</span>";
+      }
+    }).autenticarUsuario(codigo);
+  }
+
+
+  window.addEventListener("load", function() {
+    const usuarioSalvo = localStorage.getItem("usuarioLogado");
+    const estadoSalvo = JSON.parse(localStorage.getItem("estadoTelaAtual") || "{}");
+
+    if (usuarioSalvo) {
+      usuarioLogado = usuarioSalvo;
       document.getElementById('loginBox').style.display = 'none';
       document.getElementById('bemVindoBox').style.display = 'flex';
-      document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + data.nome + "!";
-    } else { msg.innerHTML = "<span class='erro'>❌ Código inválido!</span>"; }
-  } catch(err){ msg.innerHTML = "<span class='erro'>❌ Erro ao conectar.</span>"; }
-}
+      document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + usuarioSalvo + "!";
+    }
 
-// === JSONP PARA PRODUTOS ===
-function carregarProdutosJSONP() {
-  const script = document.createElement('script');
-  script.src = `${BACKEND_URL}?action=getProdutos&callback=handleProdutos`;
-  document.body.appendChild(script);
-}
-function handleProdutos(data) {
-  if (!Array.isArray(data)) { console.error("⚠️ Resposta inválida", data); return; }
-  produtosCarregados = data;
-  console.log("✅ Produtos recebidos via JSONP:", data);
-  preencherSelects(data);
-}
-
-// === Preenche selects ===
-function preencherSelects(lista) {
-  const contSelect = document.getElementById("contagem");
-  const datalist = document.getElementById("listaCodigos");
-  contSelect.innerHTML = ""; datalist.innerHTML = "";
-  [...new Set(lista.map(p=>p.contagem))].forEach(c=>{
-    const opt=document.createElement("option"); opt.value=c; opt.textContent=c; contSelect.appendChild(opt);
+    // ✅ Se existe um estado salvo, restaura
+    if (estadoSalvo?.tela) {
+      restaurarEstadoTela(estadoSalvo);
+    }
   });
-  lista.forEach(p=>{
-    const opt=document.createElement("option"); opt.value=p.codigo; datalist.appendChild(opt);
-  });
-}
 
-// === Abrir contagem ===
-function abrirContagem(nova) {
-  document.getElementById('bemVindoBox').style.display='none';
-  document.getElementById('contagemBox').style.display='block';
-  document.getElementById('usuarioContagem').innerText = usuarioLogado;
-  document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');
-  carregarProdutosJSONP();
-}
+  function fazerLogout() {
+    usuarioLogado = "";
+    filialUsuario = "";
+    localStorage.removeItem("usuarioLogado");
+    localStorage.removeItem("filialUsuario");
+    localStorage.removeItem("estadoTelaAtual");
 
-  const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxvBSz2Jq8GN6oTIdKZ1RsI_xfW80Mxr1B_oA_GDXknR1XrXnVFUA2zCfi0ss_yZkvWig/exec"; 
-let produtosCarregados = [];
+    // ✅ Esconde telas
+    document.getElementById('bemVindoBox').style.display = 'none';
+    document.getElementById('contagemBox').style.display = 'none';
+    document.getElementById('consultarBox').style.display = 'none';
+    document.getElementById('contagensAbertasBox').style.display = 'none';
 
-// Carrega os produtos via JSONP
-function carregarProdutosJSONP() {
-  const script = document.createElement("script");
-  script.src = `${BACKEND_URL}?action=getProdutos&callback=handleProdutos`;
-  document.body.appendChild(script);
-}
-
-// Essa função será chamada automaticamente pelo backend JSONP
-function handleProdutos(data) {
-  if (!Array.isArray(data)) {
-    console.error("⚠️ Resposta inesperada do backend:", data);
-    return;
+    // ✅ Mostra tela de login limpa
+    document.getElementById('loginBox').style.display = 'flex';
+    document.getElementById('codigoLogin').value = "";
+    
+    // ✅ Limpa mensagem "Verificando..."
+    const msg = document.getElementById('msgLogin');
+    if (msg) msg.innerHTML = "";
   }
 
-  produtosCarregados = data;
-  console.log("✅ Produtos recebidos:", produtosCarregados);
+  function voltarMenu() {
+    // ✅ Esconde todas as seções
+    document.getElementById('consultarBox').style.display = 'none';
+    document.getElementById('contagensAbertasBox').style.display = 'none';
+    document.getElementById('contagemBox').style.display = 'none';
 
-  preencherSelects(produtosCarregados);
-}
+    // ✅ Limpa listas e mensagens para não ficarem "presas" na tela
+    const listaAbertas = document.getElementById('listaContagensAbertas');
+    const listaConsultas = document.getElementById('listaContagens');
+    const tabelaCSV = document.getElementById('tabelaCSV');
 
-// Preenche os selects com os produtos
-function preencherSelects(lista) {
-  const selectContagem = document.getElementById("selectContagem");
-  const selectFilial = document.getElementById("selectFilial");
-  const selectCodigo = document.getElementById("selectCodigo");
+    if (listaAbertas) listaAbertas.innerHTML = "";
+    if (listaConsultas) listaConsultas.innerHTML = "";
+    if (tabelaCSV) tabelaCSV.innerHTML = "";
 
-  selectContagem.innerHTML = `<option value="">Selecione...</option>`;
-  selectFilial.innerHTML = `<option value="">Selecione...</option>`;
-  selectCodigo.innerHTML = `<option value="">Selecione...</option>`;
+    // ✅ Limpa qualquer mensagem de carregamento
+    const msgContagem = document.getElementById('msgContagem');
+    if (msgContagem) msgContagem.innerHTML = "";
 
-  const contagensUnicas = [...new Set(lista.map(p => p.contagem).filter(Boolean))];
-  const filiaisUnicas = [...new Set(lista.map(p => p.filial).filter(Boolean))];
-  const codigosUnicos = [...new Set(lista.map(p => p.codigo).filter(Boolean))];
-
-  contagensUnicas.forEach(c => {
-    const opt = document.createElement("option");
-    opt.value = c;
-    opt.textContent = c;
-    selectContagem.appendChild(opt);
-  });
-
-  filiaisUnicas.forEach(f => {
-    const opt = document.createElement("option");
-    opt.value = f;
-    opt.textContent = f;
-    selectFilial.appendChild(opt);
-  });
-
-  codigosUnicos.forEach(cd => {
-    const opt = document.createElement("option");
-    opt.value = cd;
-    opt.textContent = cd;
-    selectCodigo.appendChild(opt);
-  });
-}
-
-// Quando escolher código → preenche nome/almoxarifado
-document.getElementById("selectCodigo").addEventListener("change", function() {
-  const codigoSelecionado = this.value;
-  const produto = produtosCarregados.find(p => p.codigo === codigoSelecionado);
-
-  if (produto) {
-    document.getElementById("nomeItem").value = produto.nome || "";
-    document.getElementById("almoxarifado").value = produto.almoxarifado || "";
+    // ✅ Agora sim, volta ao menu principal limpo
+    document.getElementById('bemVindoBox').style.display = 'flex';
   }
-});
 
-// Ao abrir contagem, chama JSONP
-function abrirContagem() {
-  document.getElementById('bemVindoBox').style.display = 'none';
-  document.getElementById('contagemBox').style.display = 'block';
+  /* ========== CONTAGENS EM ABERTO ========== */
+  function menuContagensAbertas(){
+    salvarEstadoTela("contagensAbertas");
 
-  // sempre carrega os produtos via JSONP
-  carregarProdutosJSONP();
+    document.getElementById('bemVindoBox').style.display='none';
+    document.getElementById('contagensAbertasBox').style.display='flex';
+
+    google.script.run.withSuccessHandler(function(lista){
+      contagensAbertasCache = lista;
+
+      let filiaisUnicas = [...new Set(lista.map(c=>c.filial))];
+      let contagensUnicas = [...new Set(lista.map(c=>c.contagem))];
+
+      let filtroFilial = document.getElementById('filtroFilialAberta');
+      let filtroContagem = document.getElementById('filtroNumeroContagem');
+
+      filtroFilial.innerHTML="<option value=''>Todas</option>";
+      filiaisUnicas.forEach(f=>filtroFilial.innerHTML+=`<option value="${f}">${f}</option>`);
+
+      filtroContagem.innerHTML="<option value=''>Todas</option>";
+      contagensUnicas.forEach(ct=>filtroContagem.innerHTML+=`<option value="${ct}">${ct}</option>`);
+
+      filtrarContagensAbertas();
+    }).listarContagensAbertas(filialUsuario);
+  }
+
+  function filtrarContagensAbertas() {
+    const filialSel = document.getElementById('filtroFilialAberta').value.trim().toUpperCase();
+    const contSel = document.getElementById('filtroNumeroContagem').value.trim().toUpperCase();
+    const listaDiv = document.getElementById("listaContagensAbertas");
+
+    let filtrados = contagensAbertasCache.filter(c => {
+      const filialBase = (c.filial || "").trim().toUpperCase();
+      const contagemBase = (c.contagem || "").trim().toUpperCase();
+      const matchFilial = filialSel === "" || filialBase === filialSel;
+      const matchContagem = contSel === "" || contagemBase === contSel;
+      return matchFilial && matchContagem;
+    });
+
+    if (filtrados.length === 0) {
+      listaDiv.innerHTML = "<p>⚠️ Nenhuma contagem aberta encontrada.</p>";
+      return;
+    }
+
+    let html = `
+      <h3 style="margin-top:20px; text-align:center;">⏳ Contagens em Aberto</h3>
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr style="background:#f7f7f7;">
+            <th style="text-align:center;"><input type="checkbox" id="selectAllCaches" onclick="toggleSelecionarTodos()"></th>
+            <th>Contagem</th>
+            <th>Filial</th>
+            <th>Usuário</th>
+            <th>Itens</th>
+            <th>Início</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    filtrados.forEach(c => {
+      html += `
+        <tr>
+          <td style="text-align:center;">
+            <input type="checkbox" class="cacheCheckbox" value="${c.arquivo}">
+          </td>
+          <td>${c.contagem}</td>
+          <td>${c.filial}</td>
+          <td>${c.usuario}</td>
+          <td>${c.itens}</td>
+          <td>${c.inicio}</td>
+          <td>
+            <button class="btn-continuar" onclick="continuarContagem('${c.arquivo}')">▶️ Continuar</button>           
+          </td>
+        </tr>
+      `;
+    });
+
+    html += `</tbody></table>
+      <div style="display:flex; gap:10px; margin-top:15px;">
+        <button style="background:#28a745; flex:1;" onclick="confirmarEncerrarMultiplosCaches()">✅ Encerrar Selecionados</button>
+        <button style="background:#d9534f; flex:1;" onclick="confirmarExcluirMultiplosCaches()">❌ Excluir Selecionados</button>
+      </div>
+    `;
+    listaDiv.innerHTML = html;
+  }
+
+  /* ========== CONFIRMAR EXCLUSÃO MENU CONSULTA EM ABERTO ========== */
+  function confirmarExcluirCache(nomeArquivo) {
+    showModal(
+      "Excluir Cache",
+      "Tem certeza que deseja excluir esta contagem em aberto?<br><b>Esta ação não poderá ser desfeita.</b>",
+      "confirm",
+      function(confirma) {
+        if (confirma) {
+          excluirCacheServidor([nomeArquivo]);
+        }
+      }
+    );
+  }
+
+   /* ========== CONFIRMAR MULTIPLA EXCLUSÃO MENU CONSULTA EM ABERTO ========== */
+  function confirmarExcluirMultiplosCaches() {
+    let selecionados = [...document.querySelectorAll(".cacheCheckbox:checked")].map(cb => cb.value);
+
+    if (selecionados.length === 0) {
+      showModal("⚠️ Atenção", "Nenhuma contagem selecionada para exclusão.");
+      return;
+    }
+
+    showModal(
+      "Excluir Selecionados",
+      `Tem certeza que deseja excluir <b>${selecionados.length}</b> contagem(ns) em aberto?`,
+      "confirm",
+      function(confirma) {
+        if (confirma) {
+          excluirCacheServidor(selecionados);
+        }
+      }
+    );
+  }
+
+   /* ========== VOLTAR AO MENU PRINCIPAL ========== */
+  function voltarAoMenuPrincipal() {
+  showModal(
+    "Voltar ao Menu Principal",
+    "Você deseja voltar ao menu principal?",
+    "confirm",
+    function(conf) {
+      if (!conf) return;
+
+      // Apenas volta para o menu e mantém cache
+      document.getElementById('contagemBox').style.display = 'none';
+      document.getElementById('bemVindoBox').style.display = 'flex';
+
+      // Atualiza a lista de contagens em aberto ao voltar
+      menuContagensAbertas();
+    }
+  );
 }
-  
+
+
+  /* ========== EXCLUIR CONTAGEM ========== */
+  function excluirCacheServidor(listaArquivos) {
+    google.script.run.withSuccessHandler(function() {
+      showModal("✅ Sucesso", "Cache(s) excluído(s) com sucesso!");
+      menuContagensAbertas(); // Atualiza lista após exclusão
+    }).removerCachesPorArquivo(listaArquivos);
+  }
+
+  function toggleSelecionarTodos() {
+    const checkAll = document.getElementById("selectAllCaches").checked;
+    document.querySelectorAll(".cacheCheckbox").forEach(cb => cb.checked = checkAll);
+  }
+
+  /* ========== ENCERRAR MULTIPA (CONSULTA CONTAGEM) ========== */
+  function confirmarEncerrarMultiplosCaches() {
+    let selecionados = [...document.querySelectorAll(".cacheCheckbox:checked")].map(cb => cb.value);
+
+    if (selecionados.length === 0) {
+      showModal("⚠️ Atenção", "Nenhuma contagem selecionada para encerramento.");
+      return;
+    }
+
+    showModal(
+      "Encerrar Contagens Selecionadas",
+      `Você selecionou <b>${selecionados.length}</b> contagem(ns).<br>Elas serão encerradas, gerando PDF + CSV, salvando na base e enviando e-mail.<br><br><b>Deseja continuar?</b>`,
+      "confirm",
+      function(confirma) {
+        if (confirma) {
+          encerrarCachesSelecionados(selecionados);
+        }
+      }
+    );
+  }
+
+  /* ========== CHAMA BACKEND PARA ENCERRAR CONTAGEM (MULTIPLA) ========== */
+
+  function encerrarCachesSelecionados(listaArquivos) {
+    if (!Array.isArray(listaArquivos) || listaArquivos.length === 0) return;
+
+    let total = listaArquivos.length;
+    let processados = 0;
+    let falhas = 0;
+
+    document.getElementById("listaContagensAbertas").innerHTML = `⏳ Encerrando ${total} contagem(ns)...`;
+
+    listaArquivos.forEach(nomeArquivo => {
+      google.script.run.withSuccessHandler(function(resposta) {
+        processados++;
+        if (!resposta.sucesso) falhas++;
+
+        if (processados === total) {
+          let msg = `✅ ${total - falhas} encerradas com sucesso.`;
+          if (falhas > 0) msg += ` ⚠️ ${falhas} falharam.`;
+          showModal("Resultado", msg);
+          voltarAoMenuPrincipal(); // Atualiza lista depois
+        }
+
+      }).withFailureHandler(function() {
+        processados++;
+        falhas++;
+        if (processados === total) {
+          let msg = `✅ ${total - falhas} encerradas com sucesso. ⚠️ ${falhas} falharam.`;
+          showModal("Resultado", msg);
+          voltarAoMenuPrincipal();
+        }
+      }).encerrarContagem(usuarioLogado, [], nomeArquivo); 
+      // ✅ Passa [] para forçar o backend a carregar do cache
+    });
+  }
+
+  /* ========== CONTINUAR CONTAGEM ========== */
+  function continuarContagem(nomeArquivo) {
+    // ✅ Identifica o botão clicado e mostra "Carregando..."
+    const btn = document.querySelector(`button[onclick="continuarContagem('${nomeArquivo}')"]`);
+    if (btn) {
+      btn.disabled = true;
+      btn.innerText = "⏳ Carregando...";
+    }
+
+    nomeArquivoAtual = nomeArquivo; // ✅ guarda para depois excluir no encerramento
+
+    google.script.run.withSuccessHandler(function(cache) {
+      if (!cache) {
+        showModal("❌ Erro", "Não foi possível carregar a contagem.");
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = "▶️ Continuar";
+        }
+        return;
+      }
+
+      // ✅ Recupera dados salvos
+      usuarioLogado = cache.usuario || "Desconhecido";
+      itensRegistrados = cache.itens || [];
+
+      // ✅ Preenche campos
+      document.getElementById('usuarioContagem').innerText = usuarioLogado;
+      document.getElementById('filial').value = cache.filial || "";
+      document.getElementById('dataContagem').value = cache.dataInicio 
+        ? new Date(cache.dataInicio).toLocaleDateString('pt-BR') 
+        : new Date().toLocaleDateString('pt-BR');
+
+      atualizarListaItens();
+
+      // ✅ Mostra a tela de contagem
+      document.getElementById('contagensAbertasBox').style.display = 'none';
+      document.getElementById('contagemBox').style.display = 'block';
+
+      // ✅ Carrega produtos e força seleção correta
+      google.script.run.withSuccessHandler(function(listaProdutos) {
+        popularProdutos(listaProdutos);
+
+        if (cache.contagem) {
+          const selectContagem = document.getElementById('contagem');
+          selectContagem.value = cache.contagem;
+
+          // ✅ BLOQUEIA troca de contagem ao continuar
+          selectContagem.disabled = true;
+
+          atualizarCodigos();
+        }
+
+        // ✅ Libera o botão de novo depois que terminou
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = "▶️ Continuar";
+        }
+
+      }).getProdutos();
+
+    }).carregarCacheEspecifico(nomeArquivo);
+  }
+
+  /* ========== CONSULTAR ENCERRADAS ========== */
+  function menuConsultas() {
+    salvarEstadoTela("consultarEncerradas");
+
+    document.getElementById('bemVindoBox').style.display = 'none';
+    document.getElementById('consultarBox').style.display = 'flex';
+
+    google.script.run.withSuccessHandler(function (registros) {
+      console.log("📊 Registros recebidos do getBaseCSV:", registros); // ✅ DEBUG no console do navegador
+
+      // ✅ Se não veio nada, mostra aviso e para aqui
+      if (!registros || registros.length === 0) {
+        showModal("⚠️ Nenhum registro encontrado na baseCSV.");
+        return;
+      }
+
+      // ✅ Remove espaços e ignora valores vazios
+      let filiais = [...new Set(registros.map(r => (r.filial || "").trim()))].filter(f => f !== "");
+      let contagens = [...new Set(registros.map(r => (r.contagem || "").trim()))].filter(c => c !== "");
+
+      let fFil = document.getElementById('filtroFilialEncerrada');
+      let fCon = document.getElementById('filtroContagemEncerrada');
+
+      // ✅ Sempre reseta antes de popular
+      fFil.innerHTML = `<option value="">Todas</option>`;
+      fCon.innerHTML = `<option value="">Todas</option>`;
+
+      // ✅ Preenche apenas se houver dados únicos
+      filiais.forEach(f => fFil.innerHTML += `<option>${f}</option>`);
+      contagens.forEach(c => fCon.innerHTML += `<option>${c}</option>`);
+
+      // ✅ Opcional: já mostra a lista completa assim que carrega
+      filtrarEncerradas(filialUsuario);
+
+    }).getBaseCSV(filialUsuario);
+  }
+
+  function filtrarEncerradas() {
+    const filialSel = document.getElementById("filtroFilialEncerrada").value.trim().toUpperCase();
+    const contSel   = document.getElementById("filtroContagemEncerrada").value.trim().toUpperCase();
+    const almoxSel  = document.getElementById("filtroAlmoxEncerrada").value.trim().toUpperCase();
+    const dataSel   = document.getElementById("filtroDataEncerrada").value.trim(); // agora é yyyy-mm-dd se for <input type="date">
+
+    const listaDiv = document.getElementById("listaContagens");
+
+    // ✅ Verifica se NENHUM filtro foi selecionado
+    const nenhumFiltro = filialSel === "" && contSel === "" && almoxSel === "" && dataSel === "";
+
+    if (nenhumFiltro) {
+      listaDiv.innerHTML = `<p style="text-align:center; color:#666; margin-top:10px;">
+        🔍 <b>Selecione ao menos um filtro</b> para visualizar registros.
+      </p>`;
+      return;
+    }
+
+    // ✅ Se pelo menos 1 filtro foi escolhido, então busca os registros
+    google.script.run.withSuccessHandler(function (registros) {
+      if (!registros || registros.length === 0) {
+        listaDiv.innerHTML = "<p>⚠️ Nenhum registro encontrado na base.</p>";
+        return;
+      }
+
+      // ✅ Filtra registros
+      let filtrados = registros.filter(r => {
+        const filialBase   = (r.filial || "").trim().toUpperCase();
+        const contagemBase = (r.contagem || "").trim().toUpperCase();
+        const almoxBase    = (r.almoxarifado || "").trim().toUpperCase();
+        const dataBase     = (r.data || "").trim(); // formato dd/mm/yyyy
+
+        // ✅ Converte para yyyy-mm-dd para comparar com o <input type="date">
+        let partes = dataBase.split("/");
+        let dataNormalizada = partes.length === 3 ? `${partes[2]}-${partes[1]}-${partes[0]}` : "";
+
+        const matchFilial   = filialSel === "" || filialBase === filialSel;
+        const matchContagem = contSel === "" || contagemBase === contSel;
+        const matchAlmox    = almoxSel === "" || almoxBase === almoxSel;
+        const matchData     = dataSel === "" || dataNormalizada === dataSel;
+
+        return matchFilial && matchContagem && matchAlmox && matchData;
+      });
+
+      if (filtrados.length === 0) {
+        listaDiv.innerHTML = "<p>⚠️ Nenhum registro encontrado para este filtro.</p>";
+        return;
+      }
+
+      // ✅ Monta tabela de resultados
+      let html = `
+        <h3 style="text-align:center;">📊 Registros Encontrados (${filtrados.length})</h3>
+        <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:14px; background:#fff; border-radius:8px;">
+          <thead>
+            <tr style="background:#f7f7f7;">
+              <th>Contagem</th>
+              <th>Código</th>
+              <th>Nome</th>
+              <th>Almoxarifado</th>
+              <th>Qtd</th>
+              <th>Data</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      filtrados.forEach(r => {
+        html += `
+          <tr>
+            <td>${r.contagem}</td>            
+            <td>${r.codigo}</td>
+            <td>${r.nome}</td>
+            <td>${r.almoxarifado}</td>  
+            <td style="text-align:center;">${r.quantidade}</td>
+            <td>${r.data}</td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table></div>`;
+      listaDiv.innerHTML = html;
+
+      // ✅ Atualiza select de almoxarifados com valores únicos
+      let almoxarifados = [...new Set(registros.map(r => (r.almoxarifado || "").trim()))].filter(a => a !== "");
+      let fAlmox = document.getElementById('filtroAlmoxEncerrada');
+      fAlmox.innerHTML = `<option value="">Todos</option>`;
+      almoxarifados.forEach(a => fAlmox.innerHTML += `<option>${a}</option>`);
+
+    }).getBaseCSV(filialUsuario);
+  }
+
+  /* ========== NOVA CONTAGEM ========== */
+  function abrirContagem(nova) {
+    // ✅ Sempre esconde o menu principal
+    document.getElementById('bemVindoBox').style.display = 'none';
+    document.getElementById('contagemBox').style.display = 'block';
+
+    document.getElementById('usuarioContagem').innerText = usuarioLogado;
+    document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');
+
+    // ✅ SEMPRE permite troca de contagem ao criar nova
+    document.getElementById('contagem').disabled = false;
+
+    if (nova) {
+      // ✅ Reset total para NOVA contagem
+      itensRegistrados = [];
+      limparEstadoTela();  // <-- limpa qualquer estado anterior salvo
+
+      // ✅ Gera novo identificador de cache apenas se registrar algo
+      const timestamp = Date.now();
+      nomeArquivoAtual = `contagem_temp_TEMP_${timestamp}.json`;
+
+      // ✅ Limpa campos do formulário
+      document.getElementById('contagem').value = "";
+      document.getElementById('filial').value = "";
+      document.getElementById('almoxarifado').value = "";
+      document.getElementById('codigo').value = "";
+      document.getElementById('nomeItem').value = "";
+      document.getElementById('quantidade').value = "";
+      document.getElementById('comentario').value = "";
+      document.getElementById('foto').value = "";
+
+    } else {
+      // ✅ Se for CONTINUAR contagem aberta
+      google.script.run.withSuccessHandler(function(lista) {
+        itensRegistrados = lista || [];
+        atualizarListaItens();
+      }).recuperarItensTemp();
+    }
+
+    atualizarListaItens(filialUsuario);
+
+    // ✅ Carrega produtos sempre
+    google.script.run.withSuccessHandler(popularProdutos).getProdutos(filialUsuario);
+  }
+
+  /* ========== PRODUTOS ========== */
+  function popularProdutos(lista) {
+    produtosLista = lista;
+
+    // ✅ Salva o valor atual (caso já tenha uma contagem selecionada)
+    const contagemSelecionadaAntes = document.getElementById('contagem').value;
+
+    let contagens = [...new Set(lista.map(p => p.contagem))];
+    let selContagem = document.getElementById('contagem');
+    selContagem.innerHTML = "<option value=''>Selecione</option>";
+    contagens.forEach(c => {
+      selContagem.innerHTML += `<option value="${c}">${c}</option>`;
+    });
+
+    // ✅ Se tinha uma seleção anterior, restaura
+    if (contagemSelecionadaAntes) {
+      selContagem.value = contagemSelecionadaAntes;
+    }
+
+    // ✅ Atualiza os códigos automaticamente se ainda tiver contagem válida
+    if (selContagem.value) {
+      atualizarCodigos();
+    }
+
+    // ✅ Garante que só adiciona o listener uma vez
+    selContagem.removeEventListener('change', atualizarCodigos);
+    selContagem.addEventListener('change', atualizarCodigos);
+  }
+
+  function atualizarCodigos() {
+    let contSel = document.getElementById('contagem').value;
+    let listaCodigos = document.getElementById('listaCodigos');
+    let filialInput = document.getElementById('filial');
+    let almoxInput = document.getElementById('almoxarifado');
+    listaCodigos.innerHTML = "";
+    filialInput.value = "";
+    almoxInput.value = "";
+    if (!contSel) return;
+    let produtosFiltrados = produtosLista.filter(p => p.contagem === contSel);
+    if (produtosFiltrados.length > 0) {
+      let filialUnica = [...new Set(produtosFiltrados.map(p => p.filial))];
+      let almoxUnico = [...new Set(produtosFiltrados.map(p => p.almoxarifado))];
+      filialInput.value = filialUnica.length === 1 ? filialUnica[0] : "";
+      almoxInput.value = almoxUnico.length === 1 ? almoxUnico[0] : "";
+      produtosFiltrados.forEach(p => {
+        listaCodigos.innerHTML += `<option value="${p.codigo}">`;
+      });
+    }
+  }
+
+  document.getElementById('codigo').addEventListener('change', function () {
+    let codigoSel = this.value.trim();
+    let produto = produtosLista.find(p => p.codigo === codigoSel);
+    document.getElementById('nomeItem').value = produto ? produto.nome : "";
+    document.getElementById('almoxarifado').value = produto ? produto.almoxarifado : "";
+    document.getElementById('filial').value = produto ? produto.filial : "";
+  });
+
+  /* ========== REGISTRAR ITEM ========== */
+  function registrarItem() {
+    const btn = document.getElementById('btnRegistrar');
+    btn.disabled = true;
+    btn.innerText = "⏳ Registrando...";
+    const contagemSel = document.getElementById('contagem').value;
+    const filialSel = document.getElementById('filial').value;
+    const almoxSel = document.getElementById('almoxarifado').value;
+    const codigo = document.getElementById('codigo').value.trim();
+    const nome = document.getElementById('nomeItem').value.trim();
+    const quantidade = document.getElementById('quantidade').value.trim();
+    const comentario = document.getElementById('comentario').value.trim();
+    const fotoInput = document.getElementById('foto').files[0];
+    if (!contagemSel || !filialSel || !almoxSel || !codigo || !nome || !quantidade || !fotoInput) {
+      showModal('Campos obrigatórios', '⚠️ Preencha todos os campos antes de registrar.');
+      btn.disabled = false;
+      btn.innerText = "✅ Registrar Item";
+      return;
+    }
+    let dados = {
+      usuario: usuarioLogado,
+      contagem: contagemSel,
+      filial: filialSel,
+      almoxarifado: almoxSel,
+      codigo: codigo,
+      nome: nome,
+      quantidade: quantidade,
+      comentario: comentario
+    };
+    if (fotoInput) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const MAX_WIDTH = 300;
+          const MAX_HEIGHT = 300;
+          let width = img.width;
+          let height = img.height;
+          if (width > height && width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          } else if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.5);
+          dados.fotoBase64 = compressedDataUrl.split(",")[1];
+          salvarItemServidor(dados, btn);
+        };
+        img.onerror = function() {
+          showModal("❌ Erro", "Falha ao carregar imagem.");
+          btn.disabled = false;
+          btn.innerText = "✅ Registrar Item";
+        };
+        img.src = e.target.result;
+      };
+      reader.onerror = function() {
+        showModal("❌ Erro", "Erro ao ler foto.");
+        btn.disabled = false;
+        btn.innerText = "✅ Registrar Item";
+      };
+      reader.readAsDataURL(fotoInput);
+    }
+  }
+
+  function salvarItemServidor(dados, btnRef) {
+    // 🔄 Chama o backend e salva no arquivo JSON correto
+    google.script.run.withSuccessHandler(function (resposta) {
+      btnRef.disabled = false;
+      btnRef.innerText = "✅ Registrar Item";
+
+      if (resposta.sucesso) {
+        // ✅ Atualiza a lista local de itens
+        itensRegistrados.push(dados);
+        atualizarListaItens();
+        
+        // ✅ Salva estado atualizado com itens no localStorage
+        salvarEstadoTela("contagem");
+
+        // ✅ Limpa os campos do formulário
+        document.getElementById('codigo').value = '';
+        document.getElementById('nomeItem').value = '';
+        document.getElementById('quantidade').value = '';
+        document.getElementById('comentario').value = '';
+        document.getElementById('foto').value = '';
+
+        showModal("✅ Sucesso", "Item registrado com sucesso!");
+      } else {
+        showModal("❌ Erro", "Falha ao salvar: " + resposta.mensagem);
+      }
+
+    }).withFailureHandler(function (err) {
+      btnRef.disabled = false;
+      btnRef.innerText = "✅ Registrar Item";
+      showModal("❌ Erro", "Erro ao salvar no servidor!");
+    }).salvarItemContagem(dados); // ✅ Sempre envia para o cache da contagem
+  }
+
+  function atualizarListaItens() {
+    const listaDiv = document.getElementById("listaItens");
+    const tituloItens = document.getElementById("tituloItens");
+    const total = itensRegistrados.length;
+    tituloItens.textContent = `📦 Itens lançados (${total})`;
+    if (total === 0) {
+      listaDiv.innerHTML = `<p>⚠️ Nenhum item registrado ainda.</p>`;
+      return;
+    }
+    let html = "";
+    itensRegistrados.forEach((item, index) => {
+      html += `
+        <div class="item-lancado">
+          <div class="item-info">
+            <b>${item.codigo}</b> - ${item.nome} (${item.quantidade})
+          </div>
+          <div class="item-remove" onclick="removerItem(${index})">❌</div>
+        </div>
+      `;
+    });
+    listaDiv.innerHTML = html;
+  }
+
+  function removerItem(index) {
+    const codigo = itensRegistrados[index].codigo;
+    showModal(
+      "Remover Item",
+      `Deseja remover <b>${itensRegistrados[index].nome}</b>?`,
+      "confirm",
+      function(conf) {
+        if (!conf) return;
+        google.script.run.removerItemContagem(codigo);
+        itensRegistrados.splice(index, 1);
+        atualizarListaItens();
+      }
+    );
+  }
+
+  function confirmarCancelar() {
+    showModal(
+      "Cancelar Contagem",
+      "Tem certeza que deseja cancelar?<br><b>Todos os itens lançados serão descartados e NÃO ficarão salvos.</b>",
+      "confirm",
+      function(conf) {
+        if (conf) cancelarContagem();
+      }
+    );
+  }
+
+  function limparCamposContagem() {
+    document.getElementById('contagem').value = '';
+    document.getElementById('filial').value = '';
+    document.getElementById('almoxarifado').value = '';
+    document.getElementById('codigo').value = '';
+    document.getElementById('nomeItem').value = '';
+    document.getElementById('quantidade').value = '';
+    document.getElementById('comentario').value = '';
+    document.getElementById('foto').value = '';
+    document.getElementById('listaItens').innerHTML = '';
+    document.getElementById('tituloItens').textContent = `📦 Itens lançados (0)`;
+  }
+
+
+  function cancelarContagem() {
+    // ❌ DESCARTA ITENS
+    itensRegistrados = [];
+    nomeArquivoAtual = "";
+    localStorage.removeItem("estadoTela"); // limpa estado salvo
+
+    // ✅ Limpa campos da tela
+    limparCamposContagem();
+
+    // ✅ Volta ao menu principal
+    document.getElementById('contagemBox').style.display = 'none';
+    document.getElementById('bemVindoBox').style.display = 'flex';
+  }
+
+  function confirmarEncerrar() {
+    showModal(
+      "Encerrar Contagem",
+      "Deseja encerrar? Será gerado PDF e CSV e enviado por e-mail.",
+      "confirm",
+      function(conf) {
+        if (conf) encerrarContagem();
+      }
+    );
+  }
+
+  function encerrarContagem() {
+    const btnEncerrar = document.querySelector('button[onclick="confirmarEncerrar()"]') || document.querySelector('button[onclick="encerrarContagem()"]');
+    btnEncerrar.disabled = true;
+    btnEncerrar.innerText = "⏳ Encerrando...";
+    document.getElementById('msgContagem').innerHTML = "⏳ Encerrando contagem...";
+
+    google.script.run.withSuccessHandler(function(resposta) {
+      btnEncerrar.disabled = false;
+      btnEncerrar.innerText = "🚪 Encerrar Contagem";
+
+      if (resposta.sucesso) {
+        // ✅ Mostra modal com links de PDF e CSV
+        showModal("🎉 Contagem Encerrada!", `
+          PDF: <a href="${resposta.pdfUrl}" target="_blank">Ver</a><br>
+          CSV: <a href="${resposta.csvUrl}" target="_blank">Ver</a>
+        `);
+
+        // ✅ LIMPA estado da tela depois de encerrar
+        limparEstadoTela();
+        itensRegistrados = [];
+        nomeArquivoAtual = "";
+
+        // ✅ Volta para menu principal
+        document.getElementById('contagemBox').style.display = 'none';
+        document.getElementById('bemVindoBox').style.display = 'flex';
+
+      } else {
+        showModal("❌ Erro", "Falha ao encerrar: " + resposta.mensagem);
+      }
+
+    }).withFailureHandler(function(err) {
+      btnEncerrar.disabled = false;
+      btnEncerrar.innerText = "🚪 Encerrar Contagem";
+      showModal("❌ Erro", "Erro ao encerrar contagem!");
+    }).encerrarContagem(usuarioLogado, itensRegistrados, nomeArquivoAtual);
+  }
+
+  function consultarContagens() {
+    const listaDiv = document.getElementById('listaContagens');
+    const tabelaDiv = document.getElementById('tabelaCSV');
+    tabelaDiv.innerHTML = "";
+    listaDiv.innerHTML = "⏳ Carregando contagens...";
+    google.script.run.withSuccessHandler(function(contagens) {
+      if (!contagens || contagens.length === 0) {
+        listaDiv.innerHTML = "<p>⚠️ Nenhuma contagem encontrada.</p>";
+        return;
+      }
+      let html = "<h3>📂 Contagens Anteriores</h3><ul>";
+      contagens.forEach(c => {
+        html += `<li>
+          <a href="#" onclick="abrirCSV('${c.csvUrl}')">📄 ${c.nome}</a>
+          &nbsp;|&nbsp;
+          <a href="${c.pdfUrl}" target="_blank">📑 PDF</a>
+        </li>`;
+      });
+      html += "</ul>";
+      listaDiv.innerHTML = html;
+    }).listarContagens();
+  }
+ 
+  function abrirCSV(urlCSV) {
+    const tabelaDiv = document.getElementById('tabelaCSV');
+    tabelaDiv.innerHTML = "⏳ Lendo CSV...";
+
+    google.script.run.withSuccessHandler(function(linhas) {
+      if (!linhas || linhas.length === 0) {
+        tabelaDiv.innerHTML = "<p>⚠️ Não foi possível ler este CSV.</p>";
+        return;
+      }
+
+      let html = "<h3>📊 Itens da Contagem</h3><table><tr><th>Ctg</th><th>Cód</th><th>Nome</th><th>Filial</th><th>Qtd</th><th>Data</th></tr>";
+
+      // ✅ Pula a primeira linha (cabeçalho do CSV)
+      for (let i = 1; i < linhas.length; i++) {
+        let l = linhas[i]; // <-- aqui está correto agora
+        html += `<tr>
+          <td>${l[0]}</td>
+          <td>${l[1]}</td>
+          <td>${l[2]}</td>       
+          <td>${l[5]}</td>
+          <td>${l[6]}</td>
+          <td>${l[7]}</td>
+        </tr>`;
+      }
+
+      html += "</table>";
+      tabelaDiv.innerHTML = html;
+
+    }).lerCSVContagem(urlCSV);
+  }
 </script>
 </body>
 </html>
