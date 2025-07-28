@@ -432,23 +432,26 @@
     //**ATUALIZAR LISTA ITENS**//
 
     function atualizarListaItens() {
-      const lista = document.getElementById("listaItens");
-      const titulo = document.getElementById("tituloItens");
-      lista.innerHTML = "";
-
-      if (!itensRegistrados.length) {
-        titulo.innerText = "Itens lançados (0)";
-        lista.innerHTML = "<p style='color:gray;'>Nenhum item registrado.</p>";
+      const listaDiv = document.getElementById("listaItens");
+      const tituloItens = document.getElementById("tituloItens");
+      const total = itensRegistrados.length;
+      tituloItens.textContent = `📦 Itens lançados (${total})`;
+      if (total === 0) {
+        listaDiv.innerHTML = `<p>⚠️ Nenhum item registrado ainda.</p>`;
         return;
       }
-
-      titulo.innerText = `Itens lançados (${itensRegistrados.length})`;
-      itensRegistrados.forEach((item, i) => {
-        const div = document.createElement("div");
-        div.className = "item-lancado";
-        div.innerHTML = `${item.codigo} - ${item.nome} | Qtd: ${item.quantidade}`;
-        lista.appendChild(div);
+      let html = "";
+      itensRegistrados.forEach((item, index) => {
+        html += `
+          <div class="item-lancado">
+            <div class="item-info">
+              <b>${item.codigo}</b> - ${item.nome} (${item.quantidade})
+            </div>
+            <div class="item-remove" onclick="removerItem(${index})">❌</div>
+          </div>
+        `;
       });
+      listaDiv.innerHTML = html;
     }
 
       //***REGISTRAR ITEM***//    
@@ -678,7 +681,16 @@
             if (conf) encerrarContagem();
           }
         );
-      }  
+      }
+
+    function fazerLogout() {
+      usuarioLogado = "";
+      localStorage.removeItem("usuarioLogado");
+      document.getElementById('bemVindoBox').style.display = 'none';
+      document.getElementById('contagemBox').style.display = 'none';
+      document.getElementById('loginBox').style.display = 'flex';
+      document.getElementById('codigoLogin').value = "";
+    }
 
   
   </script>
