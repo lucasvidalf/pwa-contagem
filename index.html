@@ -348,7 +348,7 @@
       limparEstadoTela();
   
       const timestamp = Date.now();
-      nomeArquivoAtual = contagem_temp_TEMP_${timestamp}.json;
+      nomeArquivoAtual = `contagem_temp_TEMP_${timestamp}.json`;
   
       document.getElementById('contagem').value = "";
       document.getElementById('filial').value = "";
@@ -362,7 +362,7 @@
       carregarProdutos();
   
       } else {
-        fetch(${API_URL}?action=recuperarItensTemp)
+        fetch(`${API_URL}?action=recuperarItensTemp`)
           .then(res => res.json())
           .then(data => {
             itensRegistrados = data.itens || [];
