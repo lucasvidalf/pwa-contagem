@@ -330,20 +330,7 @@
         console.error("Erro ao conectar:", erro);
         msg.innerHTML = "<span class='erro'>❌ Erro ao conectar ao servidor.</span>";
       }
-    }
-
-    funtion abrirContagem(){
-      //Esconde o menu principal
-      document.getElementById('bemVindoBox').style.display = 'none';
-
-      //Mostra a tela de contagem
-      document.getElementById('contagemBox').style.display = 'block';
-
-      //Preenche dados básicos
-      document.getElementById('usuarioContagem').innerText = localStorage.getItem("usuarioLogado") || "";
-      document.getElementById('dataContagem').value = new Date ().toLocaleDateString('pt-BR');
-    }
-    
+    }    
     
   </script>
 </body>
