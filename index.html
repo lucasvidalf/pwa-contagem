@@ -400,34 +400,40 @@
       // Preenche dados básicos
       document.getElementById('usuarioContagem').innerText = localStorage.getItem("usuarioLogado") || "";
       document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');
-
+    
       document.getElementById('contagem').disabled = false;
-
-          if (nova){
-            itensRegistrados = [];      
-        
-              const timestamp = Date.now();
-              nomeArquivoAtual = `contagem_temp_TEMP_${timestamp}.json`;
-          
-              document.getElementById('contagem').value = "";
-              document.getElementById('filial').value = "";
-              document.getElementById('almoxarifado').value = "";
-              document.getElementById('codigo').value = "";
-              document.getElementById('nomeItem').value = "";
-              document.getElementById('quantidade').value = "";
-              document.getElementById('comentario').value = "";
-              document.getElementById('foto').value = "";
-          
-              carregarProdutos();
-        
-          }else {
-            fetch(`${API_URL}?action=recuperarItensTemp`)
-              .then(res => res.json())
-              .then(data => {
-                itensRegistrados = data.itens || [];
-                atualizarListaItens();
-              });
-          }
+    
+      if (nova) {
+        // Inicia nova contagem
+        itensRegistrados = [];
+    
+        const timestamp = Date.now();
+        nomeArquivoAtual = `contagem_temp_TEMP_${timestamp}.json`;
+    
+        // Limpa os campos
+        document.getElementById('contagem').value = "";
+        document.getElementById('filial').value = "";
+        document.getElementById('almoxarifado').value = "";
+        document.getElementById('codigo').value = "";
+        document.getElementById('nomeItem').value = "";
+        document.getElementById('quantidade').value = "";
+        document.getElementById('comentario').value = "";
+        document.getElementById('foto').value = "";
+    
+        carregarProdutos();
+    
+      } else {
+        // Continua contagem anterior
+        fetch(`${API_URL}?action=recuperarItensTemp`)
+          .then(res => res.json())
+          .then(data => {
+            itensRegistrados = data.itens || [];
+            atualizarListaItens();
+          })
+          .catch(err => {
+            console.error("Erro ao recuperar itens temporários:", err);
+          });
+      }
     }
       
     
