@@ -332,30 +332,21 @@
       }
     }
 
-    // Armazena usuário e filial
-    let usuarioLogado = localStorage.getItem("usuarioLogado") || "";
+   let usuarioLogado = localStorage.getItem("usuarioLogado") || "";
     let filialUsuario = localStorage.getItem("filialUsuario") || "";
-    
-    // Armazena produtos carregados
     let produtosCarregados = [];
-    
-    // Abrir contagem (nova ou continuar)
+
     function abrirContagem(nova) {
       document.getElementById('bemVindoBox').style.display = 'none';
       document.getElementById('contagemBox').style.display = 'block';
-    
       document.getElementById('usuarioContagem').innerText = usuarioLogado;
       document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');
-    
       document.getElementById('contagem').disabled = false;
-    
       if (nova) {
         itensRegistrados = [];
         limparEstadoTela();
-    
         const timestamp = Date.now();
         nomeArquivoAtual = contagem_temp_TEMP_${timestamp}.json;
-    
         document.getElementById('contagem').value = "";
         document.getElementById('filial').value = "";
         document.getElementById('almoxarifado').value = "";
@@ -364,9 +355,7 @@
         document.getElementById('quantidade').value = "";
         document.getElementById('comentario').value = "";
         document.getElementById('foto').value = "";
-    
         carregarProdutos();
-    
       } else {
         fetch(${API_URL}?action=recuperarItensTemp)
           .then(res => res.json())
@@ -376,55 +365,27 @@
           });
       }
     }
-    
-    //POPULAR SELECTS DE PRODUTOS
+
     function popularProdutos(lista) {
-      const selectContagem = document.getElementById("selectContagem");
-      const selectFilial = document.getElementById("selectFilial");
-      const selectCodigo = document.getElementById("selectCodigo");
-    
-      selectContagem.innerHTML = <option value="">Selecione...</option>;
-      selectFilial.innerHTML = <option value="">Selecione...</option>;
-      selectCodigo.innerHTML = <option value="">Selecione...</option>;
-    
-      const contagensUnicas = [...new Set(lista.map(p => p.contagem).filter(Boolean))];
-      const filiaisUnicas = [...new Set(lista.map(p => p.filial).filter(Boolean))];
-      const codigosUnicos = [...new Set(lista.map(p => p.codigo).filter(Boolean))];
-    
-      contagensUnicas.forEach(c => {
+      const selectCodigo = document.getElementById("codigo");
+      const datalist = document.getElementById("listaCodigos");
+      datalist.innerHTML = "";
+      lista.forEach(p => {
         const opt = document.createElement("option");
-        opt.value = c;
-        opt.textContent = c;
-        selectContagem.appendChild(opt);
-      });
-    
-      filiaisUnicas.forEach(f => {
-        const opt = document.createElement("option");
-        opt.value = f;
-        opt.textContent = f;
-        selectFilial.appendChild(opt);
-      });
-    
-      codigosUnicos.forEach(cd => {
-        const opt = document.createElement("option");
-        opt.value = cd;
-        opt.textContent = cd;
-        selectCodigo.appendChild(opt);
+        opt.value = p.codigo;
+        datalist.appendChild(opt);
       });
     }
-    
-    // Listener: ao trocar código, preenche os dados
-    document.getElementById("selectCodigo").addEventListener("change", function () {
+
+    document.getElementById("codigo").addEventListener("change", function () {
       const codigoSelecionado = this.value;
       const produto = produtosCarregados.find(p => p.codigo === codigoSelecionado);
-    
       if (produto) {
         document.getElementById("nomeItem").value = produto.nome || "";
         document.getElementById("almoxarifado").value = produto.almoxarifado || "";
       }
     });
-    
-    //CARREGA PRODUTOS DO BACKEND
+
     function carregarProdutos() {
       fetch(${API_URL}?action=getProdutos)
         .then(res => res.json())
@@ -433,23 +394,6 @@
           popularProdutos(data);
         })
         .catch(err => console.error("Erro ao carregar produtos:", err));
-    } 
-       
-    //RECUPERAR ITENS
-
-    async function recuperarItensTemp() {
-      try {
-        const resposta = await fetch(`${API_URL}?action=recuperarItensTemp`);
-        const dados = await resposta.json();
-        if (dados.sucesso) {
-          itensRegistrados = dados.itens || [];
-          atualizarListaItens();
-        } else {
-          console.error("Erro ao recuperar itens temporários:", dados.msg);
-        }
-      } catch (e) {
-        console.error("Erro de conexão ao recuperar itens temporários:", e);
-      }
     }
     
   </script>
