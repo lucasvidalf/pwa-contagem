@@ -332,6 +332,32 @@
       }
     }
 
+    //***CARREGAR PRODUTOS***//
+    async function carregarProdutos() {
+      try {
+        const resposta = await fetch(`${API_URL}?action=getProdutos`);
+        const produtos = await resposta.json();
+    
+        // Armazena globalmente se quiser reutilizar depois
+        produtosCarregados = produtos;
+    
+        // Popular datalist
+        const datalist = document.getElementById("listaCodigos");
+        datalist.innerHTML = ""; // limpa antes
+        produtos.forEach(p => {
+          if (p.codigo) {
+            const opt = document.createElement("option");
+            opt.value = p.codigo;
+            datalist.appendChild(opt);
+          }
+        });
+      } catch (e) {
+        console.error("Erro ao carregar produtos:", e);
+      }
+    }
+    
+    //***ABRIR CONTAGEM***//
+    
     function abrirContagem() {
       // Esconde o menu principal
       document.getElementById('bemVindoBox').style.display = 'none';       
