@@ -298,7 +298,8 @@
   <script>
     
     const API_URL = "https://script.google.com/macros/s/AKfycbzlk1OSzzxcrXldTaD_AlErrMEvJDwfyX_jDc9IL_grO95NPc1RXcTvGuEyK2jjGtcT9g/exec";
-
+    let itensRegistrados = [];
+    
     //***FAZER LOGIN***//
     async function fazerLogin() {
       const codigo = document.getElementById('codigoLogin').value.trim();
@@ -355,6 +356,39 @@
         console.error("Erro ao carregar produtos:", e);
       }
     }
+
+    //**ATUALIZAR LISTA ITENS**//
+
+    function atualizarListaItens() {
+      const listaDiv = document.getElementById("listaItens");
+      const tituloItens = document.getElementById("tituloItens");
+    
+      listaDiv.innerHTML = ""; // limpa antes de atualizar
+    
+      if (!itensRegistrados || itensRegistrados.length === 0) {
+        tituloItens.innerText = "📦 Itens lançados (0)";
+        listaDiv.innerHTML = "<p style='color:gray;'>Nenhum item lançado ainda.</p>";
+        return;
+      }
+    
+      tituloItens.innerText = `📦 Itens lançados (${itensRegistrados.length})`;
+    
+      itensRegistrados.forEach((item, index) => {
+        const divItem = document.createElement("div");
+        divItem.className = "item-lancado";
+    
+        divItem.innerHTML = `
+          <div class="item-info">
+            <b>${item.codigo}</b> - ${item.nome} <br>
+            Qtd: ${item.quantidade} | ${item.almoxarifado} | ${item.filial}
+            ${item.comentario ? <br><i>${item.comentario}</i> : ""}
+          </div>
+          <div class="item-remove" onclick="removerItem(${index})">🗑</div>
+        `;
+    
+        listaDiv.appendChild(divItem);
+      });
+    }    
     
     //***ABRIR CONTAGEM***//
     
@@ -370,8 +404,7 @@
       document.getElementById('contagem').disabled = false;
 
       if (nova) {
-      itensRegistrados = [];
-      limparEstadoTela();
+      itensRegistrados = [];      
   
       const timestamp = Date.now();
       nomeArquivoAtual = `contagem_temp_TEMP_${timestamp}.json`;
