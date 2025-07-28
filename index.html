@@ -534,7 +534,31 @@
           document.getElementById("nomeItem").value = "";
         }
       });
+
+     function voltarMenu() {
+    // ✅ Esconde todas as seções
+        document.getElementById('consultarBox').style.display = 'none';
+        document.getElementById('contagensAbertasBox').style.display = 'none';
+        document.getElementById('contagemBox').style.display = 'none';
     
+        // ✅ Limpa listas e mensagens para não ficarem "presas" na tela
+        const listaAbertas = document.getElementById('listaContagensAbertas');
+        const listaConsultas = document.getElementById('listaContagens');
+        const tabelaCSV = document.getElementById('tabelaCSV');
+    
+        if (listaAbertas) listaAbertas.innerHTML = "";
+        if (listaConsultas) listaConsultas.innerHTML = "";
+        if (tabelaCSV) tabelaCSV.innerHTML = "";
+    
+        // ✅ Limpa qualquer mensagem de carregamento
+        const msgContagem = document.getElementById('msgContagem');
+        if (msgContagem) msgContagem.innerHTML = "";
+    
+        // ✅ Agora sim, volta ao menu principal limpo
+        document.getElementById('bemVindoBox').style.display = 'flex';
+      }
+
+  
   </script>
 </body>
 </html>
