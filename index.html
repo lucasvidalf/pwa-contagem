@@ -300,7 +300,7 @@
     
     const API_URL = "https://script.google.com/macros/s/AKfycbzlk1OSzzxcrXldTaD_AlErrMEvJDwfyX_jDc9IL_grO95NPc1RXcTvGuEyK2jjGtcT9g/exec";
     let itensRegistrados = [];
-    let produtosCarregados = produtos;
+    let produtosCarregados = [];
     
     //***FAZER LOGIN***//
     async function fazerLogin() {
@@ -340,6 +340,8 @@
       try {
         const resposta = await fetch(`${API_URL}?action=getProdutos`);
         const produtos = await resposta.json();  
+
+        produtosCarregados = produtos;
         
         // Popular datalist
         const datalist = document.getElementById("listaCodigos");
@@ -351,6 +353,7 @@
             datalist.appendChild(opt);
           }
         });
+        return produtos;        
       } catch (e) {
         console.error("Erro ao carregar produtos:", e);
       }
