@@ -493,6 +493,24 @@
           });
         }
       });
+
+      // ✅ Preencher nome do item ao digitar código
+      document.getElementById("codigo").addEventListener("input", () => {
+        const codigoDigitado = document.getElementById("codigo").value.trim();
+        const contagemSelecionada = document.getElementById("contagem").value;
+      
+        if (!codigoDigitado || !contagemSelecionada) return;
+      
+        const produto = produtosCarregados.find(p => 
+          p.codigo === codigoDigitado && p.contagem === contagemSelecionada
+        );
+      
+        if (produto) {
+          document.getElementById("nomeItem").value = produto.nome || "";
+        } else {
+          document.getElementById("nomeItem").value = "";
+        }
+      });
     
   </script>
 </body>
