@@ -320,7 +320,7 @@
       msg.innerHTML = "⏳ Verificando...";
 
       try {
-        const resposta = await fetch(${API_URL}?action=login&codigo=${codigo});
+        const resposta = await fetch(`${API_URL}?action=login&codigo=${codigo}`);
         const data = await resposta.json();
 
         if (data.sucesso) {
