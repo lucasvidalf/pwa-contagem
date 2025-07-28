@@ -355,7 +355,8 @@
       if (nova) {
         itensRegistrados = [];
         await carregarProdutos();
-        preencherContagensDisponiveis();
+        preencherContagensDisponiveis(produtosCarregados);
+      
         atualizarListaItens();
       } else {
         fetch(`${API_URL}?action=recuperarItensTemp`)
