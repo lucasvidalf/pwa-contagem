@@ -381,7 +381,7 @@
           <div class="item-info">
             <b>${item.codigo}</b> - ${item.nome} <br>
             Qtd: ${item.quantidade} | ${item.almoxarifado} | ${item.filial}
-            ${item.comentario ? <br><i>${item.comentario}</i> : ""}
+            ${item.comentario ? <br><i>`${item.comentario}</i>` : ""}
           </div>
           <div class="item-remove" onclick="removerItem(${index})">🗑</div>
         `;
@@ -392,7 +392,7 @@
     
     //***ABRIR CONTAGEM***//
     
-    function abrirContagem() {
+    function abrirContagem(nova) {
       // Esconde o menu principal
       document.getElementById('bemVindoBox').style.display = 'none';       
       document.getElementById('contagemBox').style.display = 'block';
