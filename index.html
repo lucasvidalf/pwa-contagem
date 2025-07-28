@@ -341,7 +341,7 @@
         const produtos = await resposta.json();
     
         // Armazena globalmente se quiser reutilizar depois
-        produtosCarregados = produtos;
+        let produtosCarregados = produtos;
     
         // Popular datalist
         const datalist = document.getElementById("listaCodigos");
@@ -382,7 +382,7 @@
           <div class="item-info">
             <b>${item.codigo}</b> - ${item.nome} <br>
             Qtd: ${item.quantidade} | ${item.almoxarifado} | ${item.filial}
-            ${item.comentario ? <br><i>`${item.comentario}</i>` : ""}
+            ${item.comentario ? `<br><i>${item.comentario}</i>` : ""}
           </div>
           <div class="item-remove" onclick="removerItem(${index})">🗑</div>
         `;
