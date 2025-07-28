@@ -332,9 +332,13 @@
       }
     }
 
-   let usuarioLogado = localStorage.getItem("usuarioLogado") || "";
+    let usuarioLogado = localStorage.getItem("usuarioLogado") || "";
     let filialUsuario = localStorage.getItem("filialUsuario") || "";
     let produtosCarregados = [];
+
+    function limparEstadoTela(){
+      //apenas para evitar erros
+    }
 
     function abrirContagem(nova) {
       document.getElementById('bemVindoBox').style.display = 'none';
@@ -346,7 +350,7 @@
         itensRegistrados = [];
         limparEstadoTela();
         const timestamp = Date.now();
-        nomeArquivoAtual = contagem_temp_TEMP_${timestamp}.json;
+        nomeArquivoAtual = `contagem_temp_TEMP_${timestamp}.json`;
         document.getElementById('contagem').value = "";
         document.getElementById('filial').value = "";
         document.getElementById('almoxarifado').value = "";
