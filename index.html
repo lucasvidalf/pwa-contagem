@@ -452,25 +452,74 @@
     }
 
       //***REGISTRAR ITEM***//    
-      function registrarItem() {
-      const codigo = document.getElementById("codigo").value.trim();
-      const nome = document.getElementById("nomeItem").value.trim();
-      const quantidade = parseInt(document.getElementById("quantidade").value.trim());
-      const comentario = document.getElementById("comentario").value.trim();
-
-      if (!codigo || !quantidade) {
-        alert("Código e quantidade são obrigatórios.");
+    function registrarItem() {
+      const btn = document.getElementById('btnRegistrar');
+      btn.disabled = true;
+      btn.innerText = "⏳ Registrando...";
+      const contagemSel = document.getElementById('contagem').value;
+      const filialSel = document.getElementById('filial').value;
+      const almoxSel = document.getElementById('almoxarifado').value;
+      const codigo = document.getElementById('codigo').value.trim();
+      const nome = document.getElementById('nomeItem').value.trim();
+      const quantidade = document.getElementById('quantidade').value.trim();
+      const comentario = document.getElementById('comentario').value.trim();
+      const fotoInput = document.getElementById('foto').files[0];
+      if (!contagemSel || !filialSel || !almoxSel || !codigo || !nome || !quantidade || !fotoInput) {
+        showModal('Campos obrigatórios', '⚠️ Preencha todos os campos antes de registrar.');
+        btn.disabled = false;
+        btn.innerText = "✅ Registrar Item";
         return;
       }
-
-      itensRegistrados.push({ codigo, nome, quantidade, comentario });
-      atualizarListaItens();
-
-      document.getElementById("codigo").value = "";
-      document.getElementById("nomeItem").value = "";
-      document.getElementById("quantidade").value = "";
-      document.getElementById("comentario").value = "";
-    }    
+      let dados = {
+        usuario: usuarioLogado,
+        contagem: contagemSel,
+        filial: filialSel,
+        almoxarifado: almoxSel,
+        codigo: codigo,
+        nome: nome,
+        quantidade: quantidade,
+        comentario: comentario
+      };
+      if (fotoInput) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onload = function() {
+            const MAX_WIDTH = 300;
+            const MAX_HEIGHT = 300;
+            let width = img.width;
+            let height = img.height;
+            if (width > height && width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            } else if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.5);
+            dados.fotoBase64 = compressedDataUrl.split(",")[1];
+            salvarItemServidor(dados, btn);
+          };
+          img.onerror = function() {
+            showModal("❌ Erro", "Falha ao carregar imagem.");
+            btn.disabled = false;
+            btn.innerText = "✅ Registrar Item";
+          };
+          img.src = e.target.result;
+        };
+        reader.onerror = function() {
+          showModal("❌ Erro", "Erro ao ler foto.");
+          btn.disabled = false;
+          btn.innerText = "✅ Registrar Item";
+        };
+        reader.readAsDataURL(fotoInput);
+      }
+    }   
     
     //***PREENCHER CONTAGEM***//
     
@@ -557,6 +606,31 @@
         // ✅ Agora sim, volta ao menu principal limpo
         document.getElementById('bemVindoBox').style.display = 'flex';
       }
+
+      function cancelarContagem() {
+        // ❌ DESCARTA ITENS
+        itensRegistrados = [];
+        nomeArquivoAtual = "";
+        localStorage.removeItem("estadoTela"); // limpa estado salvo
+    
+        // ✅ Limpa campos da tela
+        limparCamposContagem();
+    
+        // ✅ Volta ao menu principal
+        document.getElementById('contagemBox').style.display = 'none';
+        document.getElementById('bemVindoBox').style.display = 'flex';
+      }
+
+      function confirmarEncerrar() {
+        showModal(
+          "Encerrar Contagem",
+          "Deseja encerrar? Será gerado PDF e CSV e enviado por e-mail.",
+          "confirm",
+          function(conf) {
+            if (conf) encerrarContagem();
+          }
+        );
+      }  
 
   
   </script>
