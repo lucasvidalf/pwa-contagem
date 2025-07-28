@@ -520,6 +520,54 @@
         reader.readAsDataURL(fotoInput);
       }
     }   
+
+    //** SALVAR ITENS SERVIDOR**//
+
+    async function salvarItemServidor(dados, btnRef) {
+      btnRef.disabled = true;
+      btnRef.innerText = "⏳ Salvando...";
+    
+      try {
+        const resposta = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "salvarItemContagem",
+            dados: dados
+          }),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+    
+        const resultado = await resposta.json();
+    
+        btnRef.disabled = false;
+        btnRef.innerText = "✅ Registrar Item";
+    
+        if (resultado.sucesso) {
+          itensRegistrados.push(dados);
+          atualizarListaItens();
+          salvarEstadoTela("contagem");
+    
+          document.getElementById('codigo').value = '';
+          document.getElementById('nomeItem').value = '';
+          document.getElementById('quantidade').value = '';
+          document.getElementById('comentario').value = '';
+          document.getElementById('foto').value = '';
+    
+          showModal("✅ Sucesso", "Item registrado com sucesso!");
+        } else {
+          showModal("❌ Erro", "Falha ao salvar: " + resultado.mensagem);
+        }
+    
+      } catch (erro) {
+        console.error("Erro ao salvar no servidor:", erro);
+        btnRef.disabled = false;
+        btnRef.innerText = "✅ Registrar Item";
+        showModal("❌ Erro", "Erro ao salvar no servidor.");
+      }
+    }
+    
     
     //***PREENCHER CONTAGEM***//
     
