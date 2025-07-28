@@ -470,25 +470,28 @@
       // SELECIONAR CONTAGEM E TRAZER DADOS
       document.addEventListener("DOMContentLoaded", () => {
         const select = document.getElementById("contagem");
+      
         if (select) {
           select.addEventListener("change", () => {
             const contagemSelecionada = select.value;
             const produtosFiltrados = produtosCarregados.filter(p => p.contagem === contagemSelecionada);
+      
             if (produtosFiltrados.length > 0) {
               document.getElementById('filial').value = produtosFiltrados[0].filial;
               document.getElementById('almoxarifado').value = produtosFiltrados[0].almoxarifado;
-    
+      
               const datalist = document.getElementById("listaCodigos");
               datalist.innerHTML = "";
+      
               produtosFiltrados.forEach(p => {
                 const opt = document.createElement("option");
                 opt.value = p.codigo;
                 datalist.appendChild(opt);
               });
             }
-        });
-      }
-    }
+          });
+        }
+      });
     
   </script>
 </body>
