@@ -403,32 +403,33 @@
 
       document.getElementById('contagem').disabled = false;
 
-      if (nova) {
-      itensRegistrados = [];      
-  
-      const timestamp = Date.now();
-      nomeArquivoAtual = `contagem_temp_TEMP_${timestamp}.json`;
-  
-      document.getElementById('contagem').value = "";
-      document.getElementById('filial').value = "";
-      document.getElementById('almoxarifado').value = "";
-      document.getElementById('codigo').value = "";
-      document.getElementById('nomeItem').value = "";
-      document.getElementById('quantidade').value = "";
-      document.getElementById('comentario').value = "";
-      document.getElementById('foto').value = "";
-  
-      carregarProdutos();
-  
-      } else {
-        fetch(`${API_URL}?action=recuperarItensTemp`)
-          .then(res => res.json())
-          .then(data => {
-            itensRegistrados = data.itens || [];
-            atualizarListaItens();
-      });
+          if (nova){
+            itensRegistrados = [];      
+        
+              const timestamp = Date.now();
+              nomeArquivoAtual = `contagem_temp_TEMP_${timestamp}.json`;
+          
+              document.getElementById('contagem').value = "";
+              document.getElementById('filial').value = "";
+              document.getElementById('almoxarifado').value = "";
+              document.getElementById('codigo').value = "";
+              document.getElementById('nomeItem').value = "";
+              document.getElementById('quantidade').value = "";
+              document.getElementById('comentario').value = "";
+              document.getElementById('foto').value = "";
+          
+              carregarProdutos();
+        
+          }else {
+            fetch(`${API_URL}?action=recuperarItensTemp`)
+              .then(res => res.json())
+              .then(data => {
+                itensRegistrados = data.itens || [];
+                atualizarListaItens();
+              });
+          }
     }
-  }
+      
     
   </script>
 </body>
