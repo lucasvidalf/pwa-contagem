@@ -306,7 +306,39 @@
   </div>
 
   <script>
-    
+    const API_URL = "https://script.google.com/macros/s/AKfycbzlk1OSzzxcrXldTaD_AlErrMEvJDwfyX_jDc9IL_grO95NPc1RXcTvGuEyK2jjGtcT9g/exec";
+
+    async function fazerLogin() {
+      const codigo = document.getElementById('codigoLogin').value.trim();
+      const msg = document.getElementById('msgLogin');
+
+      if (!codigo) {
+        msg.innerHTML = "<span class='erro'>⚠️ Digite seu código!</span>";
+        return;
+      }
+
+      msg.innerHTML = "⏳ Verificando...";
+
+      try {
+        const resposta = await fetch(${API_URL}?action=login&codigo=${codigo});
+        const data = await resposta.json();
+
+        if (data.sucesso) {
+          localStorage.setItem("usuarioLogado", data.nome);
+          localStorage.setItem("filialUsuario", data.filial || "ADM");
+
+          document.getElementById('loginBox').style.display = 'none';
+          document.getElementById('bemVindoBox').style.display = 'block';
+          document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + data.nome + "!";
+        } else {
+          msg.innerHTML = "<span class='erro'>❌ Código inválido!</span>";
+        }
+
+      } catch (erro) {
+        console.error("Erro ao conectar:", erro);
+        msg.innerHTML = "<span class='erro'>❌ Erro ao conectar ao servidor.</span>";
+      }
+    }
   
   </script>
 </body>
