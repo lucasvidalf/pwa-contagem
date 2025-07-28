@@ -300,6 +300,7 @@
     
     const API_URL = "https://script.google.com/macros/s/AKfycbzlk1OSzzxcrXldTaD_AlErrMEvJDwfyX_jDc9IL_grO95NPc1RXcTvGuEyK2jjGtcT9g/exec";
     let itensRegistrados = [];
+    let produtosCarregados = produtos;
     
     //***FAZER LOGIN***//
     async function fazerLogin() {
@@ -338,11 +339,8 @@
     async function carregarProdutos() {
       try {
         const resposta = await fetch(`${API_URL}?action=getProdutos`);
-        const produtos = await resposta.json();
-    
-        // Armazena globalmente se quiser reutilizar depois
-        let produtosCarregados = produtos;
-    
+        const produtos = await resposta.json();  
+        
         // Popular datalist
         const datalist = document.getElementById("listaCodigos");
         datalist.innerHTML = ""; // limpa antes
@@ -393,7 +391,7 @@
     
     //***ABRIR CONTAGEM***//
     
-    function abrirContagem(nova) {
+    async function abrirContagem(nova) {
       // Esconde o menu principal
       document.getElementById('bemVindoBox').style.display = 'none';       
       document.getElementById('contagemBox').style.display = 'block';
@@ -421,7 +419,8 @@
         document.getElementById('comentario').value = "";
         document.getElementById('foto').value = "";
     
-        carregarProdutos();
+        await carregarProdutos();
+        preencherContagensDisponiveis(produtosCarregados);
     
       } else {
         // Continua contagem anterior
