@@ -297,6 +297,29 @@
   </div>
 
   <script>
+
+    let usuarioLogado = "";
+
+    window.addEventListener("load",function(){
+      const usuarioSalvo = localStorage.getItem("usuarioLogado");
+      const estadoSalvo = JSON.parse(localStorage.getItem("estadoTelaAtual") || "{}");
+
+      if (usuarioSalvo){
+        usuarioLogado = usuarioSalvo;
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('bemVindoBox').style.display='flex';
+        document.getElementById('nomeUsuario').innerText="Bem-vindo(a), "+ usuarioSalvo + "!";
+      }
+      if(estadoSalvo?.tela){
+        restaurarEstadoTela(estadoSalvo);
+      }
+    });
+
+    function restarurarEstadoTela(estado){
+      if (estado.tela === "contagem"){
+        abrirContagem(False);
+      }
+    }
     
     const API_URL = "https://script.google.com/macros/s/AKfycbzlk1OSzzxcrXldTaD_AlErrMEvJDwfyX_jDc9IL_grO95NPc1RXcTvGuEyK2jjGtcT9g/exec";
     let itensRegistrados = [];
