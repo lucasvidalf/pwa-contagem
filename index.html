@@ -296,9 +296,7 @@
     </div>
   </div>
 
-  <script>
-
-    let usuarioLogado = "";
+  <script>    
 
     window.addEventListener("load",function(){
       const usuarioSalvo = localStorage.getItem("usuarioLogado");
@@ -324,6 +322,7 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbzlk1OSzzxcrXldTaD_AlErrMEvJDwfyX_jDc9IL_grO95NPc1RXcTvGuEyK2jjGtcT9g/exec";
     let itensRegistrados = [];
     let produtosCarregados = [];
+    const = usuarioLogado = localStorage.getItem("usuarioLogado");
     
     //***FAZER LOGIN***//
     async function fazerLogin() {
@@ -459,6 +458,7 @@
       const btn = document.getElementById('btnRegistrar');
       btn.disabled = true;
       btn.innerText = "⏳ Registrando...";
+    
       const contagemSel = document.getElementById('contagem').value;
       const filialSel = document.getElementById('filial').value;
       const almoxSel = document.getElementById('almoxarifado').value;
@@ -467,13 +467,16 @@
       const quantidade = document.getElementById('quantidade').value.trim();
       const comentario = document.getElementById('comentario').value.trim();
       const fotoInput = document.getElementById('foto').files[0];
+      const usuarioLogado = localStorage.getItem("usuarioLogado");
+    
       if (!contagemSel || !filialSel || !almoxSel || !codigo || !nome || !quantidade || !fotoInput) {
         showModal('Campos obrigatórios', '⚠️ Preencha todos os campos antes de registrar.');
         btn.disabled = false;
         btn.innerText = "✅ Registrar Item";
         return;
       }
-      let dados = {
+    
+      const dados = {
         usuario: usuarioLogado,
         contagem: contagemSel,
         filial: filialSel,
@@ -483,46 +486,53 @@
         quantidade: quantidade,
         comentario: comentario
       };
-      if (fotoInput) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const img = new Image();
-          img.onload = function() {
-            const MAX_WIDTH = 300;
-            const MAX_HEIGHT = 300;
-            let width = img.width;
-            let height = img.height;
-            if (width > height && width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            } else if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
-            const canvas = document.createElement("canvas");
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0, width, height);
-            const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.5);
-            dados.fotoBase64 = compressedDataUrl.split(",")[1];
-            salvarItemServidor(dados, btn);
-          };
-          img.onerror = function() {
-            showModal("❌ Erro", "Falha ao carregar imagem.");
-            btn.disabled = false;
-            btn.innerText = "✅ Registrar Item";
-          };
-          img.src = e.target.result;
+    
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          const MAX_WIDTH = 300;
+          const MAX_HEIGHT = 300;
+          let width = img.width;
+          let height = img.height;
+    
+          if (width > height && width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          } else if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+    
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.5);
+          dados.fotoBase64 = compressedDataUrl.split(",")[1];
+    
+          // ✅ Envia pro backend
+          salvarItemServidor(dados, btn);
         };
-        reader.onerror = function() {
-          showModal("❌ Erro", "Erro ao ler foto.");
+    
+        img.onerror = function () {
+          showModal("❌ Erro", "Falha ao carregar imagem.");
           btn.disabled = false;
           btn.innerText = "✅ Registrar Item";
         };
-        reader.readAsDataURL(fotoInput);
-      }
-    }   
+    
+        img.src = e.target.result;
+      };
+    
+      reader.onerror = function () {
+        showModal("❌ Erro", "Erro ao ler a imagem.");
+        btn.disabled = false;
+        btn.innerText = "✅ Registrar Item";
+      };
+    
+      reader.readAsDataURL(fotoInput);
+    }
 
     //** SALVAR ITENS SERVIDOR**//
 
