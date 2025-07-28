@@ -335,10 +335,7 @@
     let usuarioLogado = localStorage.getItem("usuarioLogado") || "";
     let filialUsuario = localStorage.getItem("filialUsuario") || "";
     let produtosCarregados = [];
-
-    function limparEstadoTela(){
-      //apenas para evitar erros
-    }
+    
 
     function abrirContagem(nova) {
       document.getElementById('bemVindoBox').style.display = 'none';
@@ -347,8 +344,7 @@
       document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');
       document.getElementById('contagem').disabled = false;
       if (nova) {
-        itensRegistrados = [];
-        limparEstadoTela();
+        itensRegistrados = [];        
         const timestamp = Date.now();
         nomeArquivoAtual = `contagem_temp_TEMP_${timestamp}.json`;
         document.getElementById('contagem').value = "";
