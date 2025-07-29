@@ -273,7 +273,7 @@
       <label>Comentário (opcional)</label>
       <textarea id="comentario" rows="2" placeholder="Observações..."></textarea>
 
-      <button onclick="registrarItem()" id="btnRegistrar">✅ Registrar Item</button>
+      <button id="btnRegistrar" onclick="registrarItem()">✅ Registrar Item</button>
       <button style="background:#d9534f;" onclick="confirmarEncerrar()">🚪 Encerrar Contagem</button>
       <button style="background:#6c757d;" onclick="confirmarCancelar()">❌ Cancelar Contagem</button>
       <button style="background:#6c757d;" onclick="voltarMenu()">⬅ Voltar ao Menu</button>
@@ -467,7 +467,6 @@
       const quantidade = document.getElementById('quantidade').value.trim();
       const comentario = document.getElementById('comentario').value.trim();
       const fotoInput = document.getElementById('foto').files[0];
-      const usuarioLogado = localStorage.getItem("usuarioLogado");
     
       if (!contagemSel || !filialSel || !almoxSel || !codigo || !nome || !quantidade || !fotoInput) {
         showModal('Campos obrigatórios', '⚠️ Preencha todos os campos antes de registrar.');
@@ -481,10 +480,10 @@
         contagem: contagemSel,
         filial: filialSel,
         almoxarifado: almoxSel,
-        codigo: codigo,
-        nome: nome,
-        quantidade: quantidade,
-        comentario: comentario
+        codigo,
+        nome,
+        quantidade,
+        comentario
       };
     
       const reader = new FileReader();
@@ -509,10 +508,10 @@
           canvas.height = height;
           const ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, width, height);
+    
           const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.5);
           dados.fotoBase64 = compressedDataUrl.split(",")[1];
     
-          // ✅ Envia pro backend
           salvarItemServidor(dados, btn);
         };
     
@@ -526,59 +525,48 @@
       };
     
       reader.onerror = function () {
-        showModal("❌ Erro", "Erro ao ler a imagem.");
+        showModal("❌ Erro", "Erro ao ler a foto.");
         btn.disabled = false;
         btn.innerText = "✅ Registrar Item";
       };
     
       reader.readAsDataURL(fotoInput);
     }
-
     //** SALVAR ITENS SERVIDOR**//
 
-    async function salvarItemServidor(dados, btnRef) {
+    function salvarItemServidor(dados, btnRef) {
       btnRef.disabled = true;
       btnRef.innerText = "⏳ Salvando...";
     
-      try {
-        const resposta = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            action: "salvarItemContagem",
-            dados: dados
-          })
-        });
+      google.script.run
+        .withSuccessHandler(function (resposta) {
+          btnRef.disabled = false;
+          btnRef.innerText = "✅ Registrar Item";
     
-        const resultado = await resposta.json();
+          if (resposta.sucesso) {
+            itensRegistrados.push(dados);
+            atualizarListaItens();
+            salvarEstadoTela("contagem");
     
-        btnRef.disabled = false;
-        btnRef.innerText = "✅ Registrar Item";
+            // Limpa campos
+            document.getElementById('codigo').value = '';
+            document.getElementById('nomeItem').value = '';
+            document.getElementById('quantidade').value = '';
+            document.getElementById('comentario').value = '';
+            document.getElementById('foto').value = '';
     
-        if (resultado.sucesso) {
-          itensRegistrados.push(dados);
-          atualizarListaItens();
-          salvarEstadoTela("contagem");
-    
-          document.getElementById('codigo').value = '';
-          document.getElementById('nomeItem').value = '';
-          document.getElementById('quantidade').value = '';
-          document.getElementById('comentario').value = '';
-          document.getElementById('foto').value = '';
-    
-          showModal("✅ Sucesso", "Item registrado com sucesso!");
-        } else {
-          showModal("❌ Erro", "Falha ao salvar: " + resultado.mensagem);
-        }
-    
-      } catch (erro) {
-        console.error("Erro ao salvar no servidor:", erro);
-        btnRef.disabled = false;
-        btnRef.innerText = "✅ Registrar Item";
-        showModal("❌ Erro", "Erro ao salvar no servidor.");
-      }
+            showModal("✅ Sucesso", "Item registrado com sucesso!");
+          } else {
+            showModal("❌ Erro", "Falha ao salvar: " + resposta.mensagem);
+          }
+        })
+        .withFailureHandler(function (erro) {
+          btnRef.disabled = false;
+          btnRef.innerText = "✅ Registrar Item";
+          showModal("❌ Erro", "Erro ao salvar no servidor!");
+          console.error("Erro no Google Script:", erro);
+        })
+        .salvarItemContagem(dados); // Nome da função no .gs
     }
     
     
