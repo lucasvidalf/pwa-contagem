@@ -367,6 +367,17 @@
         });
       }
     
+    /* ================= CARREGAR PRODUTOS ================= */
+    async function carregarProdutos() {
+      try {
+        const resposta = await fetch(`${API_URL}?action=getProdutos`);
+        produtosCarregados = await resposta.json();
+      } catch (e) {
+        console.error("Erro ao carregar produtos:", e);
+        produtosCarregados = [];
+      }
+    }
+    
     /* ================= ABRIR CONTAGEM ================= */
     async function abrirContagem(nova) {
       document.getElementById('bemVindoBox').style.display = 'none';
@@ -378,32 +389,20 @@
         itensRegistrados = [];
         await carregarProdutos();
         preencherContagensDisponiveis(produtosCarregados);
-        configurarEventoContagem();
-        atualizarListaItens();
+        configurarEventoContagem();       
       } else {
         fetch(`${API_URL}?action=recuperarItensTemp`)
           .then(res => res.json())
           .then(data => {
             itensRegistrados = data.itens || [];
-            atualizarListaItens();
-            configurarEventoContagem();
+            atualizarListaItens();    
           });
       }
-    }
-     /* ================= CARREGAR PRODUTOS ================= */
-    async function carregarProdutos() {
-      try {
-        const resposta = await fetch(`${API_URL}?action=getProdutos`);
-        produtosCarregados = await resposta.json();
-      } catch (e) {
-        console.error("Erro ao carregar produtos:", e);
-        produtosCarregados = [];
-      }
-    }
+    }     
     /* ================= PREENCHER CONTAGENS DISPONÍVEIS ================= */
-    function preencherContagensDisponiveis(produtos) {
-      const filial = localStorage.getItem("filialUsuario");
-      const select = document.getElementById("contagem");
+    function preencherContagensDisponiveis() {
+      const select = localStorage.getItem("contagem");
+      const filial = document.getElementById("filialUsuario");
       const contagens = [...new Set(produtos
         .filter(p => p.filial === filial)
         .map(p => p.contagem)
@@ -417,6 +416,25 @@
         select.appendChild(opt);
       });
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("contagem").addEventListener("change", () => {
+        const selecionada = document.getElementById("contagem").value;
+        const produtos = produtosCarregados.filter(p => p.contagem === selecionada);
+        if (produtos.length > 0) {
+          document.getElementById("filial").value = produtos[0].filial;
+          document.getElementById("almoxarifado").value = produtos[0].almoxarifado;
+
+          const datalist = document.getElementById("listaCodigos");
+          datalist.innerHTML = "";
+          produtos.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p.codigo;
+            datalist.appendChild(opt);
+          });
+        }
+      });
+    });
     
     /* ================= ATUALIZAR LISTA DE ITENS ================= */
     function atualizarListaItens() {
