@@ -308,50 +308,7 @@
     function showModal(titulo, mensagem) {
       alert(`${titulo}\n\n${mensagem}`);
     }
-      
-    /* ================= RESTAURAR ESTADO TELA ================= */
-    function restaurarEstadoTela(estado) {
-      const tela = estado.tela;
-      usuarioLogado = estado.usuarioLogado || usuarioLogado;
-      itensRegistrados = estado.itens && estado.itens.length > 0 ? estado.itens : [];
-    
-      if (tela === "contagem") {
-        document.getElementById('bemVindoBox').style.display = 'none';
-        document.getElementById('contagemBox').style.display = 'block';
-        document.getElementById('usuarioContagem').innerText = usuarioLogado;
-    
-        document.getElementById('contagem').value = estado.campos?.contagem || "";
-        document.getElementById('filial').value = estado.campos?.filial || "";
-        document.getElementById('almoxarifado').value = estado.campos?.almoxarifado || "";
-        document.getElementById('dataContagem').value = estado.campos?.data || new Date().toLocaleDateString('pt-BR');
-    
-        atualizarListaItens();
-    
-        fetch(`${API_URL}?action=getProdutos`)
-          .then(res => {
-            if (!res.ok) throw new Error("Erro na requisição");
-            return res.json();
-          })
-          .then(produtos => {
-            produtosCarregados = produtos;
-            popularProdutos(produtos);
-          })
-          .catch(err => {
-            console.error("Erro ao buscar produtos", err);
-            showModal("Erro", "Erro ao carregar produtos da API.");
-          });
-    
-      } else if (tela === "consultarEncerradas") {
-        menuConsultas();
-    
-      } else if (tela === "contagensAbertas") {
-        menuContagensAbertas();
-    
-      } else {
-        document.getElementById('bemVindoBox').style.display = 'flex';
-      }
-    }
-    
+          
     /* ================= LOGIN ================= */
     async function fazerLogin() {
       const codigo = document.getElementById('codigoLogin').value.trim();
@@ -386,16 +343,7 @@
       }
     }
     
-    /* ================= CARREGAR PRODUTOS ================= */
-    async function carregarProdutos() {
-      try {
-        const resposta = await fetch(`${API_URL}?action=getProdutos`);
-        produtosCarregados = await resposta.json();
-      } catch (e) {
-        console.error("Erro ao carregar produtos:", e);
-        produtosCarregados = [];
-      }
-    }
+   
     /*==========EVENTO CONTAGEM=========*/
 
       function configurarEventoContagem() {
@@ -442,7 +390,16 @@
           });
       }
     }
-    
+     /* ================= CARREGAR PRODUTOS ================= */
+    async function carregarProdutos() {
+      try {
+        const resposta = await fetch(`${API_URL}?action=getProdutos`);
+        produtosCarregados = await resposta.json();
+      } catch (e) {
+        console.error("Erro ao carregar produtos:", e);
+        produtosCarregados = [];
+      }
+    }
     /* ================= PREENCHER CONTAGENS DISPONÍVEIS ================= */
     function preencherContagensDisponiveis(produtos) {
       const filial = localStorage.getItem("filialUsuario");
