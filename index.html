@@ -308,25 +308,7 @@
     function showModal(titulo, mensagem) {
       alert(`${titulo}\n\n${mensagem}`);
     }
-    
-    /* ================= SALVAR ESTADO TELA ================= */
-    function salvarEstadoTela(estado, extras = {}) {
-      const dadosEstado = {
-        tela: estado,
-        usuarioLogado: usuarioLogado,
-        itens: JSON.parse(JSON.stringify(itensRegistrados || [])),
-        campos: {
-          contagem: document.getElementById('contagem')?.value || "",
-          filial: document.getElementById('filial')?.value || "",
-          almoxarifado: document.getElementById('almoxarifado')?.value || "",
-          data: document.getElementById('dataContagem')?.value || new Date().toLocaleDateString('pt-BR')
-        },
-        extras: extras,
-        timestamp: Date.now()
-      };
-      localStorage.setItem("estadoTelaAtual", JSON.stringify(dadosEstado));
-    }
-    
+      
     /* ================= RESTAURAR ESTADO TELA ================= */
     function restaurarEstadoTela(estado) {
       const tela = estado.tela;
