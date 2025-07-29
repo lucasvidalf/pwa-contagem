@@ -448,6 +448,7 @@
         itensRegistrados = [];
         await carregarProdutos();
         preencherContagensDisponiveis(produtosCarregados);
+        configurarEventoContagem();
         atualizarListaItens();
       } else {
         fetch(`${API_URL}?action=recuperarItensTemp`)
