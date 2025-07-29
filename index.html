@@ -325,7 +325,7 @@
       }
     }
     
-    const API_URL = "https://script.google.com/macros/s/AKfycbzlk1OSzzxcrXldTaD_AlErrMEvJDwfyX_jDc9IL_grO95NPc1RXcTvGuEyK2jjGtcT9g/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyonnEFK65-f1EtJ8WsrzQYsSwCAf4XylYX493aozTsNf4ZxNzwQGa-PBppfrctyJp87Q/exec";
     let itensRegistrados = [];
     let produtosCarregados = [];    
     
@@ -545,7 +545,7 @@
 
     async function salvarItemServidor(dados, btnRef) {
       try {
-        const resposta = await fetch("https://script.google.com/macros/s/AKfycbzlk1OSzzxcrXldTaD_AlErrMEvJDwfyX_jDc9IL_grO95NPc1RXcTvGuEyK2jjGtcT9g/exec", {
+        const resposta = await fetch("https://script.google.com/macros/s/AKfycbyonnEFK65-f1EtJ8WsrzQYsSwCAf4XylYX493aozTsNf4ZxNzwQGa-PBppfrctyJp87Q/exec", {
         method: "POST",
         body: `dados=${encodeURIComponent(JSON.stringify({
           action: "salvarItemContagem",
@@ -669,6 +669,44 @@
     
         // ✅ Agora sim, volta ao menu principal limpo
         document.getElementById('bemVindoBox').style.display = 'flex';
+      }
+
+      function encerrarContagem() {
+        if (itensRegistrados.length === 0) {
+          showModal("⚠️ Atenção", "Não há itens para encerrar a contagem.");
+          return;
+        }
+      
+        const dados = {
+          usuario: usuarioLogado,
+          filial: document.getElementById("filial").value,
+          contagem: document.getElementById("contagem").value,
+          itens: itensRegistrados
+        };
+      
+        fetch(`${API_URL}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: `dados=${encodeURIComponent(JSON.stringify({
+            action: "encerrarContagem",
+            dados: dados
+          }))}`
+        })
+        .then(res => res.json())
+        .then(resposta => {
+          if (resposta.sucesso) {
+            showModal("✅ Contagem Encerrada", "Contagem encerrada com sucesso. PDF/CSV foram enviados por e-mail.");
+            voltarMenu();
+          } else {
+            showModal("❌ Erro", "Erro ao encerrar: " + resposta.mensagem);
+          }
+        })
+        .catch(erro => {
+          console.error("Erro ao encerrar contagem:", erro);
+          showModal("❌ Erro", "Erro ao conectar ao servidor.");
+        });
       }
 
       function cancelarContagem() {
