@@ -324,6 +324,10 @@
     let produtosCarregados = [];
     const usuarioLogado = localStorage.getItem("usuarioLogado");
     
+    function showModal(titulo,mensagem){
+      alert('${titulo}\n\n${mensagem}');
+    }
+    
     //***FAZER LOGIN***//
     async function fazerLogin() {
       const codigo = document.getElementById('codigoLogin').value.trim();
