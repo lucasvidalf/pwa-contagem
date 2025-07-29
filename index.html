@@ -288,11 +288,12 @@
   </div>
 
   <!-- MODAL -->
-  <div id="modalOverlay">
+  <div id="modalOverlay" style="display:none;">
     <div id="modalBox">
       <h2 id="modalTitulo"></h2>
       <p id="modalMensagem"></p>
       <div id="modalBotoes"></div>
+        <button onclick="fecharModal()">OK</button>button>
     </div>
   </div>
 
@@ -699,6 +700,9 @@
       document.getElementById('codigoLogin').value = "";
     }
 
+    function fecharModal(){
+      document.getElementById("modalOverlay")
+    }
   
   </script>
 </body>
