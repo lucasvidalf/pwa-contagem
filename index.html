@@ -297,7 +297,12 @@
     </div>
   </div>
 
-  <script>    
+  <script> 
+
+    function salvarEstadoTela(tela) {
+      const estado = { tela };
+      localStorage.setItem("estadoTelaAtual", JSON.stringify(estado));
+    }
 
     window.addEventListener("load",function(){
       const usuarioSalvo = localStorage.getItem("usuarioLogado");
@@ -702,6 +707,11 @@
 
     function fecharModal(){
       document.getElementById("modalOverlay")
+    }
+
+    function removerItem(index) {
+      itensRegistrados.splice(index, 1); // Remove 1 item na posição 'index'
+      atualizarListaItens(); // Atualiza a lista exibida
     }
   
   </script>
