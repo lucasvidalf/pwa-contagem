@@ -325,7 +325,7 @@
     let produtosCarregados = [];    
     
     function showModal(titulo,mensagem){
-      alert('${titulo}\n\n${mensagem}');
+      alert(`${titulo}\n\n${mensagem}`);
     }
     
     //***FAZER LOGIN***//
@@ -448,7 +448,7 @@
         html += `
           <div class="item-lancado">
             <div class="item-info">
-              <b>${item.codigo}</b> - ${item.nomeItem} (${item.quantidade})
+              <b>${item.codigo}</b> - ${item.nome} (${item.quantidade})
             </div>
             <div class="item-remove" onclick="removerItem(${index})">❌</div>
           </div>
