@@ -299,31 +299,70 @@
 
   <script> 
 
-    function salvarEstadoTela(tela) {
-      const estado = { tela };
-      localStorage.setItem("estadoTelaAtual", JSON.stringify(estado));
+    function salvarEstadoTela(estado, extras = {}) {
+      const dadosEstado = {
+        tela: estado,
+        usuarioLogado: usuarioLogado,
+        itens: JSON.parse(JSON.stringify(itensRegistrados || [])),
+        campos: {
+          contagem: document.getElementById('contagem')?.value || "",
+          filial: document.getElementById('filial')?.value || "",
+          almoxarifado: document.getElementById('almoxarifado')?.value || "",
+          data: document.getElementById('dataContagem')?.value || new Date().toLocaleDateString('pt-BR')
+        },
+        extras: extras,
+        timestamp: Date.now()
+      };
+      localStorage.setItem("estadoTelaAtual", JSON.stringify(dadosEstado));
     }
 
-    window.addEventListener("load",function(){
-      const usuarioSalvo = localStorage.getItem("usuarioLogado");
-      const estadoSalvo = JSON.parse(localStorage.getItem("estadoTelaAtual") || "{}");
-
-      if (usuarioSalvo){
-        usuarioLogado = usuarioSalvo;
-        document.getElementById('loginBox').style.display = 'none';
-        document.getElementById('bemVindoBox').style.display='flex';
-        document.getElementById('nomeUsuario').innerText="Bem-vindo(a), "+ usuarioSalvo + "!";
-      }
-      if(estadoSalvo?.tela){
-        restaurarEstadoTela(estadoSalvo);
-      }
-    });
-
-    function restaurarEstadoTela(estado){
-      if (estado.tela === "contagem"){
-        abrirContagem(false);
+    /* ================= RESTAURAR ESTADO TELA ================= */
+    function restaurarEstadoTela(estado) {
+      const tela = estado.tela;
+  
+      // 🔄 Restaurar variáveis globais
+      usuarioLogado = estado.usuarioLogado || usuarioLogado;
+      itensRegistrados = estado.itens && estado.itens.length > 0 ? estado.itens : [];
+  
+      // 🔄 Restaurar tela específica
+      if (tela === "contagem") {
+        document.getElementById('bemVindoBox').style.display = 'none';
+        document.getElementById('contagemBox').style.display = 'block';
+        document.getElementById('usuarioContagem').innerText = usuarioLogado;
+  
+        // ✅ Restaurar os campos que estavam preenchidos
+        document.getElementById('contagem').value = estado.campos?.contagem || "";
+        document.getElementById('filial').value = estado.campos?.filial || "";
+        document.getElementById('almoxarifado').value = estado.campos?.almoxarifado || "";
+        document.getElementById('dataContagem').value = estado.campos?.data || new Date().toLocaleDateString('pt-BR');
+  
+        // ✅ Recarregar lista de itens na tela
+        atualizarListaItens();
+  
+        // ✅ Produtos devem ser carregados novamente
+        fetch({API_URL)
+          .then(res => {
+            if (!res.ok) throw new Error("Erro na requisição");
+            return res.json();
+          })
+          .then (produtos => popularProdutos(produtos));
+          .catch(err => {
+            console.error("Erro ao buscar produtos", err);
+            .showModal("Erro ao carregar produtos da API.");
+          });
+  
+      } else if (tela === "consultarEncerradas") {
+        menuConsultas();
+  
+      } else if (tela === "contagensAbertas") {
+        menuContagensAbertas();
+  
+      } else {
+        // Caso contrário, volta pro menu
+        document.getElementById('bemVindoBox').style.display = 'flex';
       }
     }
+
     
     const API_URL = "https://script.google.com/macros/s/AKfycbyonnEFK65-f1EtJ8WsrzQYsSwCAf4XylYX493aozTsNf4ZxNzwQGa-PBppfrctyJp87Q/exec";
     let itensRegistrados = [];
