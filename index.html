@@ -543,13 +543,13 @@
       try {
         const resposta = await fetch(API_URL, {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             action: "salvarItemContagem",
             dados: dados
-          }),
-          headers: {
-            "Content-Type": "application/json"
-          }
+          })
         });
     
         const resultado = await resposta.json();
