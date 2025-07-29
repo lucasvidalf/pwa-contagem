@@ -536,7 +536,7 @@
 
     async function salvarItemServidor(dados, btnRef) {
       try {
-        const resposta = await fetch(API_URL, {
+        const resposta = await fetch("https://script.google.com/macros/s/AKfycbzlk1OSzzxcrXldTaD_AlErrMEvJDwfyX_jDc9IL_grO95NPc1RXcTvGuEyK2jjGtcT9g/exec", {
         method: "POST",
         body: `dados=${encodeURIComponent(JSON.stringify({
           action: "salvarItemContagem",
