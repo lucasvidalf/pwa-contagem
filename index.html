@@ -444,7 +444,7 @@
         html += `
           <div class="item-lancado">
             <div class="item-info">
-              <b>${item.codigo}</b> - ${item.nome} (${item.quantidade})
+              <b>${item.codigo}</b> - ${item.nomeItem} (${item.quantidade})
             </div>
             <div class="item-remove" onclick="removerItem(${index})">❌</div>
           </div>
@@ -553,6 +553,7 @@
     
         if (result.sucesso) {
           itensRegistrados.push(dados);
+          console.log("Item registrado:",dados);
           atualizarListaItens();
           salvarEstadoTela("contagem");
     
