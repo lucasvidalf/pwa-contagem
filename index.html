@@ -534,39 +534,44 @@
     }
     //** SALVAR ITENS SERVIDOR**//
 
-    function salvarItemServidor(dados, btnRef) {
-      btnRef.disabled = true;
-      btnRef.innerText = "⏳ Salvando...";
-    
-      google.script.run
-        .withSuccessHandler(function (resposta) {
-          btnRef.disabled = false;
-          btnRef.innerText = "✅ Registrar Item";
-    
-          if (resposta.sucesso) {
-            itensRegistrados.push(dados);
-            atualizarListaItens();
-            salvarEstadoTela("contagem");
-    
-            // Limpa campos
-            document.getElementById('codigo').value = '';
-            document.getElementById('nomeItem').value = '';
-            document.getElementById('quantidade').value = '';
-            document.getElementById('comentario').value = '';
-            document.getElementById('foto').value = '';
-    
-            showModal("✅ Sucesso", "Item registrado com sucesso!");
-          } else {
-            showModal("❌ Erro", "Falha ao salvar: " + resposta.mensagem);
+    async function salvarItemServidor(dados, btnRef) {
+      try {
+        const resposta = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "salvarItemContagem",
+            dados: dados
+          }),
+          headers: {
+            "Content-Type": "application/json"
           }
-        })
-        .withFailureHandler(function (erro) {
-          btnRef.disabled = false;
-          btnRef.innerText = "✅ Registrar Item";
-          showModal("❌ Erro", "Erro ao salvar no servidor!");
-          console.error("Erro no Google Script:", erro);
-        })
-        .salvarItemContagem(dados); // Nome da função no .gs
+        });
+    
+        const result = await resposta.json();
+        btnRef.disabled = false;
+        btnRef.innerText = "✅ Registrar Item";
+    
+        if (result.sucesso) {
+          itensRegistrados.push(dados);
+          atualizarListaItens();
+          salvarEstadoTela("contagem");
+    
+          document.getElementById('codigo').value = '';
+          document.getElementById('nomeItem').value = '';
+          document.getElementById('quantidade').value = '';
+          document.getElementById('comentario').value = '';
+          document.getElementById('foto').value = '';
+    
+          showModal("✅ Sucesso", "Item registrado com sucesso!");
+        } else {
+          showModal("❌ Erro", "Falha ao salvar: " + result.mensagem);
+        }
+      } catch (e) {
+        console.error("Erro ao salvar:", e);
+        btnRef.disabled = false;
+        btnRef.innerText = "✅ Registrar Item";
+        showModal("❌ Erro", "Erro ao conectar ao servidor.");
+      }
     }
     
     
