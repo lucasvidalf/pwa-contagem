@@ -403,12 +403,17 @@
     function preencherContagensDisponiveis() {
       const select = document.getElementById("contagem");
       const filial = localStorage.getItem("filialUsuario");
-            
+
+      // Salva contagem selecionada
+      const contagemSelecionada = select.value;
+
+      // Filtra e extrai contagens únicas
       const contagens = [...new Set(produtosCarregados
         .filter(p => p.filial === filial)
         .map(p => p.contagem)
         .filter(c => c))];
-    
+
+      // Limpa e repopula o select
       select.innerHTML = "<option value=''>Selecione...</option>";
       contagens.forEach(c => {
         const opt = document.createElement("option");
@@ -416,6 +421,14 @@
         opt.innerText = c;
         select.appendChild(opt);
       });
+      
+      // Restaura contagem selecionada
+      if (contagemSelecionada && contagens.includes(contagemSelecionada)){
+        select.value = contagemSelecionada;
+
+        //Força o gatilho change
+        select.dispatchEvent(new Event("change"));
+      }
     }
       
       document.addEventListener("DOMContentLoaded", async () => {
