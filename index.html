@@ -400,25 +400,6 @@
       }
     }     
     /* ================= PREENCHER CONTAGENS DISPONÍVEIS ================= */
-      document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("contagem").addEventListener("change", () => {
-        const selecionada = document.getElementById("contagem").value;
-        const produtos = produtosCarregados.filter(p => p.contagem === selecionada);
-        if (produtos.length > 0) {
-          document.getElementById("filial").value = produtos[0].filial;
-          document.getElementById("almoxarifado").value = produtos[0].almoxarifado;
-
-          const datalist = document.getElementById("listaCodigos");
-          datalist.innerHTML = "";
-          produtos.forEach(p => {
-            const opt = document.createElement("option");
-            opt.value = p.codigo;
-            datalist.appendChild(opt);
-          });
-        }
-      });
-    });
-
     function preencherContagensDisponiveis() {
       const select = localStorage.getItem("contagem");
       const filial = document.getElementById("filialUsuario");
