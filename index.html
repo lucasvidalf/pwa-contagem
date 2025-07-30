@@ -401,9 +401,9 @@
     }     
     /* ================= PREENCHER CONTAGENS DISPONÍVEIS ================= */
     function preencherContagensDisponiveis() {
-      const select = localStorage.getItem("contagem");
-      const filial = document.getElementById("filialUsuario");
-      const contagens = [...new Set(produtos
+      const select = document.getElementById("contagem");
+      const filial = localStorage.getItem("filialUsuario");      
+      const contagens = [...new Set(produtosCarregados
         .filter(p => p.filial === filial)
         .map(p => p.contagem)
         .filter(c => c))];
@@ -416,6 +416,25 @@
         select.appendChild(opt);
       });
     }
+
+      document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("contagem").addEventListener("change", () => {
+        const selecionada = document.getElementById("contagem").value;
+        const produtos = produtosCarregados.filter(p => p.contagem === selecionada);
+        if (produtos.length > 0) {
+          document.getElementById("filial").value = produtos[0].filial;
+          document.getElementById("almoxarifado").value = produtos[0].almoxarifado;
+
+          const datalist = document.getElementById("listaCodigos");
+          datalist.innerHTML = "";
+          produtos.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p.codigo;
+            datalist.appendChild(opt);
+          });
+        }
+      });
+    });
     
     /* ================= ATUALIZAR LISTA DE ITENS ================= */
     function atualizarListaItens() {
