@@ -453,60 +453,45 @@
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
-      const estadoSalvo = localStorage.getItem("estadoTelaAtual");
-    
-      if (estadoSalvo) {
-        try {
-          const estado = JSON.parse(estadoSalvo);
-          usuarioLogado = estado.usuarioLogado || "";
-    
-          await carregarProdutos();
-    
-          switch (estado.tela) {
-            case "login":
-              document.getElementById("loginBox").style.display = "block";
-              break;
-    
-            case "menu":
-              document.getElementById("bemVindoBox").style.display = "block";
-              document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuarioLogado;
-              break;
-    
-            case "contagem":
-              abrirContagem(true); // carrega tela de contagem
-              document.getElementById("contagem").value = estado.campos.contagem;
-              document.getElementById("filial").value = estado.campos.filial;
-              document.getElementById("almoxarifado").value = estado.campos.almoxarifado;
-              document.getElementById("dataContagem").value = estado.campos.data;
-    
-              // Atualiza datalist de códigos
-              const produtos = produtosCarregados.filter(p => p.contagem === estado.campos.contagem);
-              const datalist = document.getElementById("listaCodigos");
-              datalist.innerHTML = "";
-              produtos.forEach(p => {
-                const opt = document.createElement("option");
-                opt.value = p.codigo;
-                datalist.appendChild(opt);
-              });
-    
-              // Restaura itens registrados
-              itensRegistrados = estado.itens || [];
-              atualizarListaItens();
-              break;
-    
-            default:
-              document.getElementById("loginBox").style.display = "block";
-          }
-    
-        } catch (e) {
-          console.warn("Erro ao restaurar estado:", e);
-          document.getElementById("loginBox").style.display = "block";
-        }
-    
-      } else {
-        document.getElementById("loginBox").style.display = "block";
-      }
-    });
+  let estado = null;
+  const estadoSalvo = localStorage.getItem("estadoTelaAtual");
+  const usuarioSalvo = localStorage.getItem("usuarioLogado");
+
+  if (estadoSalvo) {
+    try {
+      estado = JSON.parse(estadoSalvo);
+      usuarioLogado = estado.usuarioLogado || usuarioSalvo || "";
+    } catch (e) {
+      console.warn("⚠️ Estado corrompido, voltando ao login.");
+      estado = null;
+      usuarioLogado = usuarioSalvo || "";
+    }
+  } else {
+    usuarioLogado = usuarioSalvo || "";
+  }
+
+  if (!usuarioLogado) {
+    document.getElementById("loginBox").style.display = "block";
+    return;
+  }
+
+  localStorage.setItem("usuarioLogado", usuarioLogado); // garante persistência
+  await carregarProdutos();
+
+  if (estado && estado.tela === "contagem") {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("contagemBox").style.display = "block";
+    document.getElementById("usuarioContagem").innerText = usuarioLogado;
+
+    preencherContagensDisponiveis();
+    restaurarContagemDeEstado(estado);
+
+  } else {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("bemVindoBox").style.display = "block";
+    document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuarioLogado;
+  }
+});
 
     
     /* ================= RESTAURA ESTADO CONTAGEM ================= */
