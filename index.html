@@ -472,7 +472,7 @@
               try {
                 const estado = JSON.parse(estadoSalvo);
         
-                if (estadoSalvo.tela() === "contagem") {
+                if (estadoSalvo() === "contagem") {
                   restaurarContagemDeEstado(estado);
                 }
               } catch (e) {
