@@ -402,6 +402,7 @@
       document.getElementById('contagemBox').style.display = 'block';
       document.getElementById('usuarioContagem').innerText = localStorage.getItem("usuarioLogado");
       document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');
+      salvarEstadoTela()
     
       if (nova) {
         itensRegistrados = [];
