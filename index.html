@@ -437,7 +437,7 @@
     
         document.addEventListener("DOMContentLoaded", async () => {
         const usuario = localStorage.getItem("usuarioLogado");
-        const estadoSalvo = localStorage.getItem(estadoTelaAtual);
+        const estadoSalvo = localStorage.getItem("estadoTelaAtual");
         
           if (usuario) {
             usuarioLogado = usuario;
@@ -451,7 +451,7 @@
               try {
                 const estado = JSON.parse(estadoSalvo);
         
-                if (estado.tela.toLowerCase() === "contagem") {
+                if (estadoSalvo.tela.toLowerCase() === "contagem") {
                   restaurarContagemDeEstado(estado);
                 }
               } catch (e) {
