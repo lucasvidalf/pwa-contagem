@@ -167,7 +167,7 @@
   
   </style>
 </head>
-<body style="visibility:hidden;">
+<body>
 
   <!-- LOGIN -->
   <div id="loginBox" class="centered-screen">
@@ -308,26 +308,7 @@
     function showModal(titulo, mensagem) {
       alert(`${titulo}\n\n${mensagem}`);
     }
-    
-   /* ================= SALVAR ESTADO TELA ================= */
-     // SALVAR ESTADO DE TELA
-    function salvarEstadoTela(estado, extras = {}) {
-      const dadosEstado = {
-        tela: estado, // exemplo: "login", "menu", "contagem"
-        usuarioLogado: usuarioLogado || localStorage.getItem("usuarioLogado") || "",
-        itens: JSON.parse(JSON.stringify(itensRegistrados || [])),
-        campos: {
-          contagem: document.getElementById("contagem")?.value || "",
-          filial: document.getElementById("filial")?.value || "",
-          almoxarifado: document.getElementById("almoxarifado")?.value || "",
-          data: document.getElementById("dataContagem")?.value || new Date().toLocaleDateString("pt-BR")
-        },
-        extras: extras,
-        timestamp: Date.now()
-      };
-      localStorage.setItem("estadoTelaAtual", JSON.stringify(dadosEstado));
-    }
-        
+          
     /* ================= LOGIN ================= */
     async function fazerLogin() {
       const codigo = document.getElementById('codigoLogin').value.trim();
@@ -402,20 +383,23 @@
       document.getElementById('bemVindoBox').style.display = 'none';
       document.getElementById('contagemBox').style.display = 'block';
       document.getElementById('usuarioContagem').innerText = localStorage.getItem("usuarioLogado");
-      document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');     
+      document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');
+      salvarEstadoTela("contagem")
     
       if (nova) {
         itensRegistrados = [];
         await carregarProdutos();
-        salvarEstadoTela();
-       
+        preencherContagensDisponiveis(produtosCarregados);
+        configurarEventoContagem();
+
+        salvarEstadoTela("contagem");
         
       } else {
         fetch(`${API_URL}?action=recuperarItensTemp`)
           .then(res => res.json())
           .then(data => {
             itensRegistrados = data.itens || [];
-            atualizarListaItens();            
+            atualizarListaItens();    
           });
       }
     }     
@@ -453,50 +437,95 @@
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
-  let estado = null;
-  const estadoSalvo = localStorage.getItem("estadoTelaAtual");
-  const usuarioSalvo = localStorage.getItem("usuarioLogado");
+      const usuario = localStorage.getItem("usuarioLogado");
+      const estadoSalvo = localStorage.getItem("estadoTelaAtual");
+    
+      if (usuario) {
+        usuarioLogado = usuario;
+        document.getElementById("loginBox").style.display = "none";
+          
+        await carregarProdutos();
+    
+        if (estadoSalvo) {
+          try {
+            const estado = JSON.parse(estadoSalvo);
+    
+            if (estado.tela.toLowerCase() === "contagem") {
+              abrirContagem(true);
 
-  if (estadoSalvo) {
-    try {
-      estado = JSON.parse(estadoSalvo);
-      usuarioLogado = estado.usuarioLogado || usuarioSalvo || "";
-    } catch (e) {
-      console.warn("⚠️ Estado corrompido, voltando ao login.");
-      estado = null;
-      usuarioLogado = usuarioSalvo || "";
-    }
-  } else {
-    usuarioLogado = usuarioSalvo || "";
-  }
-
-  if (!usuarioLogado) {
-    document.getElementById("loginBox").style.display = "block";
-    return;
-  }
-
-  localStorage.setItem("usuarioLogado", usuarioLogado); // garante persistência
-  await carregarProdutos();
-
-  if (estado && estado.tela === "contagem") {
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("contagemBox").style.display = "block";
-    document.getElementById("usuarioContagem").innerText = usuarioLogado;
-
-    preencherContagensDisponiveis();
-    restaurarContagemDeEstado(estado);
-
-  } else {
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("bemVindoBox").style.display = "block";
-    document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuarioLogado;
-  }
-  document.body.style.visibility = "visible";
-});
-
+              // preenche os campos com o estado salvo
+                document.getElementById("contagem").value = estado.campos.contagem;
+                document.getElementById("filial").value = estado.campos.filial;
+                document.getElementById("almoxarifado").value = estado.campos.almoxarifado;
+                document.getElementById("dataContagem").value = estado.campos.data;
+        
+                // atualiza o datalist
+                const produtos = produtosCarregados.filter(p => p.contagem === estado.campos.contagem);
+                const datalist = document.getElementById("listaCodigos");
+                datalist.innerHTML = "";
+                produtos.forEach(p => {
+                  const opt = document.createElement("option");
+                  opt.value = p.codigo;
+                  datalist.appendChild(opt);
+                });
+        
+                itensRegistrados = estado.itens || [];
+                atualizarListaItens();
+                return; // ✅ já restaurou contagem, não exibe o menu
+              }
+            }
+          } catch (e) {
+            console.warn("❌ Erro ao restaurar estado:", e);
+          }
+        }
+          // se não houver estado salvo, vai para o menu
+          document.getElementById("bemVindoBox").style.display = "block";
+          document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario;
+      }
+    
+      // Atualiza campos ao mudar contagem
+      document.getElementById("contagem").addEventListener("change", () => {
+        const selecionada = document.getElementById("contagem").value;
+        const produtos = produtosCarregados.filter(p => p.contagem === selecionada);
+    
+        if (produtos.length > 0) {
+          document.getElementById("filial").value = produtos[0].filial;
+          document.getElementById("almoxarifado").value = produtos[0].almoxarifado;
+    
+          const datalist = document.getElementById("listaCodigos");
+          datalist.innerHTML = "";
+          produtos.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p.codigo;
+            datalist.appendChild(opt);
+          });
+        }
+      });
+    
+      // Atualiza nome do item ao digitar código
+      document.getElementById("codigo").addEventListener("input", () => {
+        const codigoDigitado = document.getElementById("codigo").value.trim();
+        const contagemSelecionada = document.getElementById("contagem").value;
+    
+        if (!codigoDigitado || !contagemSelecionada) {
+          document.getElementById("nomeItem").value = "";
+          return;
+        }
+    
+        const produto = produtosCarregados.find(p =>
+          p.codigo === codigoDigitado && p.contagem === contagemSelecionada
+        );
+    
+        document.getElementById("nomeItem").value = produto?.nome || "";
+      });
+    });
     
     /* ================= RESTAURA ESTADO CONTAGEM ================= */
-    function restaurarContagemDeEstado(estado) {    
+    function restaurarContagemDeEstado(estado) {
+      document.getElementById("bemVindoBox").style.display = "none";
+      document.getElementById("contagemBox").style.display = "block";
+      document.getElementById("usuarioContagem").innerText = usuarioLogado;
+    
       // Preenche campos salvos
       document.getElementById("contagem").value = estado.campos.contagem || "";
       document.getElementById("filial").value = estado.campos.filial || "";
@@ -527,10 +556,6 @@
       // Dispara mudança manualmente para atualizar campos
       document.getElementById("contagem").dispatchEvent(new Event("change"));
     }
-    /* ================= LIMPAR ESTADO TELA ================= */
-     function limparEstadoTela() {
-        localStorage.removeItem("estadoTela");
-      }
     /* ================= ATUALIZAR LISTA DE ITENS ================= */
     function atualizarListaItens() {
       const listaDiv = document.getElementById("listaItens");
@@ -644,6 +669,7 @@
         if (resultadoItem.sucesso) {
           itensRegistrados.push(dados);
           atualizarListaItens();
+          salvarEstadoTela("contagem");
     
           document.getElementById('codigo').value = '';
           document.getElementById('nomeItem').value = '';
@@ -662,6 +688,24 @@
         btn.innerText = "✅ Registrar Item";
         showModal("❌ Erro", "Erro ao processar o item: " + erro.message);
       }
+    }
+    
+    // SALVAR ESTADO DE TELA
+    function salvarEstadoTela(estado, extras = {}) {
+      const dadosEstado = {
+        tela: estado,
+        usuarioLogado: usuarioLogado,
+        itens: JSON.parse(JSON.stringify(itensRegistrados || [])),
+        campos: {
+          contagem: document.getElementById('contagem')?.value || "",
+          filial: document.getElementById('filial')?.value || "",
+          almoxarifado: document.getElementById('almoxarifado')?.value || "",
+          data: document.getElementById('dataContagem')?.value || new Date().toLocaleDateString('pt-BR')
+        },
+        extras: extras,
+        timestamp: Date.now()
+      };
+      localStorage.setItem("estadoTelaAtual", JSON.stringify(dadosEstado));
     }
     
     /* ================= SALVAR ITEM NO SERVIDOR ================= */
