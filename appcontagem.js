@@ -1,6 +1,5 @@
 
 
-
 const API_URL = "https://script.google.com/macros/s/AKfycbxMXlGfKgoImTIsxtOZ4Uy451gQ9LqTVn2uknqfLL-BB6lcywsN93C1FKByAJ2idIQM2A/exec";
 
     let usuarioLogado = localStorage.getItem("usuarioLogado") || "";
