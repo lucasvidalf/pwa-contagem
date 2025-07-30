@@ -398,6 +398,7 @@
     
     /* ================= ABRIR CONTAGEM ================= */
     async function abrirContagem(nova) {
+      console.log("Função Abrir Contagem");
       document.getElementById('bemVindoBox').style.display = 'none';
       document.getElementById('contagemBox').style.display = 'block';
       document.getElementById('usuarioContagem').innerText = localStorage.getItem("usuarioLogado");
@@ -411,6 +412,7 @@
         configurarEventoContagem();
 
         salvarEstadoTela();
+        console.log("salvou estado");
         
       } else {
         fetch(`${API_URL}?action=recuperarItensTemp`)
