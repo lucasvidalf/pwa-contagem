@@ -402,9 +402,8 @@
     /* ================= PREENCHER CONTAGENS DISPONÍVEIS ================= */
     function preencherContagensDisponiveis() {
       const select = document.getElementById("contagem");
-      const filial = localStorage.getItem("filialUsuario");  
-      const contagemSelecionada = select.value;
-      
+      const filial = localStorage.getItem("filialUsuario");
+            
       const contagens = [...new Set(produtosCarregados
         .filter(p => p.filial === filial)
         .map(p => p.contagem)
@@ -418,8 +417,8 @@
         select.appendChild(opt);
       });
     }
-      if(contagemSelecionada){
-        select.value = contagemSelecionada;
+      if(opt){
+        select.value = opt;
       }
 
       document.addEventListener("DOMContentLoaded", async () => {
