@@ -451,7 +451,7 @@
             const estado = JSON.parse(estadoSalvo);
     
             if (estado.tela.toLowerCase() === "contagem") {
-              await abrirContagem(true);
+              abrirContagem(true);
 
               // preenche os campos com o estado salvo
                 document.getElementById("contagem").value = estado.campos.contagem;
