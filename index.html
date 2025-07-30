@@ -384,7 +384,6 @@
       document.getElementById('contagemBox').style.display = 'block';
       document.getElementById('usuarioContagem').innerText = localStorage.getItem("usuarioLogado");
       document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');
-      salvarEstadoTela("contagem")
     
       if (nova) {
         itensRegistrados = [];
@@ -443,7 +442,9 @@
       if (usuario) {
         usuarioLogado = usuario;
         document.getElementById("loginBox").style.display = "none";
-          
+        document.getElementById("bemVindoBox").style.display = "block";
+        document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario + "!";
+    
         await carregarProdutos();
     
         if (estadoSalvo) {
@@ -451,36 +452,12 @@
             const estado = JSON.parse(estadoSalvo);
     
             if (estado.tela.toLowerCase() === "contagem") {
-              abrirContagem(true);
-
-              // preenche os campos com o estado salvo
-                document.getElementById("contagem").value = estado.campos.contagem;
-                document.getElementById("filial").value = estado.campos.filial;
-                document.getElementById("almoxarifado").value = estado.campos.almoxarifado;
-                document.getElementById("dataContagem").value = estado.campos.data;
-        
-                // atualiza o datalist
-                const produtos = produtosCarregados.filter(p => p.contagem === estado.campos.contagem);
-                const datalist = document.getElementById("listaCodigos");
-                datalist.innerHTML = "";
-                produtos.forEach(p => {
-                  const opt = document.createElement("option");
-                  opt.value = p.codigo;
-                  datalist.appendChild(opt);
-                });
-        
-                itensRegistrados = estado.itens || [];
-                atualizarListaItens();
-                return; // ✅ já restaurou contagem, não exibe o menu
-              }
+              restaurarContagemDeEstado(estado);
             }
           } catch (e) {
             console.warn("❌ Erro ao restaurar estado:", e);
           }
         }
-          // se não houver estado salvo, vai para o menu
-          document.getElementById("bemVindoBox").style.display = "block";
-          document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario;
       }
     
       // Atualiza campos ao mudar contagem
@@ -669,7 +646,6 @@
         if (resultadoItem.sucesso) {
           itensRegistrados.push(dados);
           atualizarListaItens();
-          salvarEstadoTela("contagem");
     
           document.getElementById('codigo').value = '';
           document.getElementById('nomeItem').value = '';
