@@ -435,6 +435,20 @@
         }
       });
     });
+
+      document.getElementById("codigo").addEventListener("input", () =>{
+        const codigoDigitado = document.getElementById("codigo").value.trim();
+        const contagemSelecionada = document.getElementById("contagem").value;
+
+        if (!codigoDigitado || !contagemSelecionada){
+            document.getElementById("nomeItem").value = "";
+            return;
+        }
+        const produto = produtosCarregados.find(p =>
+          p.codigo === codigoDigitado && p.contagem === contagemSelecionada
+        );
+        document.getElementById("nomeItem").value = produto?.nome || "";
+      });
     
     /* ================= ATUALIZAR LISTA DE ITENS ================= */
     function atualizarListaItens() {
