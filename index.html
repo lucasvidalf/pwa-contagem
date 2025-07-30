@@ -452,47 +452,111 @@
       }
     }
 
-    document.addEventListener("DOMContentLoaded", async () => {
-  let estado = null;
-  const estadoSalvo = localStorage.getItem("estadoTelaAtual");
-  const usuarioSalvo = localStorage.getItem("usuarioLogado");
-
-  if (estadoSalvo) {
-    try {
-      estado = JSON.parse(estadoSalvo);
-      usuarioLogado = estado.usuarioLogado || usuarioSalvo || "";
-    } catch (e) {
-      console.warn("⚠️ Estado corrompido, voltando ao login.");
-      estado = null;
-      usuarioLogado = usuarioSalvo || "";
-    }
-  } else {
-    usuarioLogado = usuarioSalvo || "";
-  }
-
-  if (!usuarioLogado) {
-    document.getElementById("loginBox").style.display = "block";
-    return;
-  }
-
-  localStorage.setItem("usuarioLogado", usuarioLogado); // garante persistência
-  await carregarProdutos();
-
-  if (estado && estado.tela === "contagem") {
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("contagemBox").style.display = "block";
-    document.getElementById("usuarioContagem").innerText = usuarioLogado;
-
-    preencherContagensDisponiveis();
-    restaurarContagemDeEstado(estado);
-
-  } else {
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("bemVindoBox").style.display = "block";
-    document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuarioLogado;
-  }
-  document.body.style.visibility = "visible";
-});
+       document.addEventListener("DOMContentLoaded", async () => {
+      document.body.style.visibility = "hidden"; // 👈 previne transição indesejada
+    
+      const usuario = localStorage.getItem("usuarioLogado");
+      const estadoSalvo = localStorage.getItem("estadoTelaAtual");
+    
+      if (usuario) {
+        usuarioLogado = usuario;
+        await carregarProdutos(); // ⚠️ necessário para preencher contagem/filial
+    
+        if (estadoSalvo) {
+          try {
+            const estado = JSON.parse(estadoSalvo);
+            const tela = estado.tela?.toLowerCase();
+    
+            if (tela === "contagem") {
+              abrirContagem(true); // mostra tela contagem
+    
+              // Preenche campos com estado salvo
+              document.getElementById("contagem").value = estado.campos.contagem;
+              document.getElementById("filial").value = estado.campos.filial;
+              document.getElementById("almoxarifado").value = estado.campos.almoxarifado;
+              document.getElementById("dataContagem").value = estado.campos.data;
+    
+              // Atualiza datalist com os códigos
+              const produtos = produtosCarregados.filter(p => p.contagem === estado.campos.contagem);
+              const datalist = document.getElementById("listaCodigos");
+              datalist.innerHTML = "";
+              produtos.forEach(p => {
+                const opt = document.createElement("option");
+                opt.value = p.codigo;
+                datalist.appendChild(opt);
+              });
+    
+              // Restaura itens registrados
+              itensRegistrados = estado.itens || [];
+              atualizarListaItens();
+    
+              document.body.style.visibility = "visible"; // ✅ mostra depois de tudo carregado
+              return;
+            }
+    
+            if (tela === "menu") {
+              document.getElementById("bemVindoBox").style.display = "block";
+              document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario;
+              document.body.style.visibility = "visible";
+              return;
+            }
+    
+            if (tela === "login") {
+              document.getElementById("loginBox").style.display = "block";
+              document.body.style.visibility = "visible";
+              return;
+            }
+    
+          } catch (e) {
+            console.warn("⚠️ Erro ao restaurar estado salvo:", e);
+          }
+        }
+    
+        // 👉 Se não restaurou estado válido, exibe tela padrão
+        document.getElementById("bemVindoBox").style.display = "block";
+        document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario;
+      } else {
+        // Se não tem usuário logado, exibe tela de login
+        document.getElementById("loginBox").style.display = "block";
+      }
+    
+      document.body.style.visibility = "visible"; // ✅ sempre mostrar após decidir a tela
+    
+      // MONITORAMENTO DE EVENTOS ↓↓↓ (muda contagem / código)
+      document.getElementById("contagem").addEventListener("change", () => {
+        const selecionada = document.getElementById("contagem").value;
+        const produtos = produtosCarregados.filter(p => p.contagem === selecionada);
+    
+        if (produtos.length > 0) {
+          document.getElementById("filial").value = produtos[0].filial;
+          document.getElementById("almoxarifado").value = produtos[0].almoxarifado;
+    
+          const datalist = document.getElementById("listaCodigos");
+          datalist.innerHTML = "";
+          produtos.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p.codigo;
+            datalist.appendChild(opt);
+          });
+        }
+      });
+    
+      document.getElementById("codigo").addEventListener("input", () => {
+        const codigoDigitado = document.getElementById("codigo").value.trim();
+        const contagemSelecionada = document.getElementById("contagem").value;
+    
+        if (!codigoDigitado || !contagemSelecionada) {
+          document.getElementById("nomeItem").value = "";
+          return;
+        }
+    
+        const produto = produtosCarregados.find(p =>
+          p.codigo === codigoDigitado && p.contagem === contagemSelecionada
+        );
+    
+        document.getElementById("nomeItem").value = produto?.nome || "";
+      });
+    });
 
     
     /* ================= RESTAURA ESTADO CONTAGEM ================= */
