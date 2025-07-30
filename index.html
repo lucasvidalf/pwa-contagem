@@ -388,10 +388,8 @@
       if (nova) {
         itensRegistrados = [];
         await carregarProdutos();
-        preencherContagensDisponiveis(produtosCarregados);
-        configurarEventoContagem();
-
-        salvarEstadoTela("contagem");
+        limparEstadoTela();
+       
         
       } else {
         fetch(`${API_URL}?action=recuperarItensTemp`)
@@ -533,6 +531,10 @@
       // Dispara mudança manualmente para atualizar campos
       document.getElementById("contagem").dispatchEvent(new Event("change"));
     }
+    /* ================= LIMPAR ESTADO TELA ================= */
+     function limparEstadoTela() {
+        localStorage.removeItem("estadoTela");
+      }
     /* ================= ATUALIZAR LISTA DE ITENS ================= */
     function atualizarListaItens() {
       const listaDiv = document.getElementById("listaItens");
