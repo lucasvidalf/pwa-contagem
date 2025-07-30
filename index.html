@@ -452,112 +452,100 @@
       }
     }
 
-       document.addEventListener("DOMContentLoaded", async () => {
-      document.body.style.visibility = "hidden"; // 👈 previne transição indesejada
-    
-      const usuario = localStorage.getItem("usuarioLogado");
-      const estadoSalvo = localStorage.getItem("estadoTelaAtual");
-    
-      if (usuario) {
-        usuarioLogado = usuario;
-        await carregarProdutos(); // ⚠️ necessário para preencher contagem/filial
-    
-        if (estadoSalvo) {
-          try {
-            const estado = JSON.parse(estadoSalvo);
-            const tela = estado.tela?.toLowerCase();
-    
-            if (tela === "contagem") {
-              abrirContagem(true); // mostra tela contagem
-    
-              // Preenche campos com estado salvo
-              document.getElementById("contagem").value = estado.campos.contagem;
-              document.getElementById("filial").value = estado.campos.filial;
-              document.getElementById("almoxarifado").value = estado.campos.almoxarifado;
-              document.getElementById("dataContagem").value = estado.campos.data;
-    
-              // Atualiza datalist com os códigos
-              const produtos = produtosCarregados.filter(p => p.contagem === estado.campos.contagem);
-              const datalist = document.getElementById("listaCodigos");
-              datalist.innerHTML = "";
-              produtos.forEach(p => {
-                const opt = document.createElement("option");
-                opt.value = p.codigo;
-                datalist.appendChild(opt);
-              });
-    
-              // Restaura itens registrados
-              itensRegistrados = estado.itens || [];
-              atualizarListaItens();
-    
-              document.body.style.visibility = "visible"; // ✅ mostra depois de tudo carregado
-              return;
-            }
-    
-            if (tela === "menu") {
-              document.getElementById("bemVindoBox").style.display = "block";
-              document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario;
-              document.body.style.visibility = "visible";
-              return;
-            }
-    
-            if (tela === "login") {
-              document.getElementById("loginBox").style.display = "block";
-              document.body.style.visibility = "visible";
-              return;
-            }
-    
-          } catch (e) {
-            console.warn("⚠️ Erro ao restaurar estado salvo:", e);
+     document.addEventListener("DOMContentLoaded", async () => {
+    const usuario = localStorage.getItem("usuarioLogado");
+    const estadoSalvo = localStorage.getItem("estadoTelaAtual");
+  
+    if (usuario) {
+      usuarioLogado = usuario;
+      document.getElementById("loginBox").style.display = "none";
+  
+      await carregarProdutos(); // Espera carregar os produtos antes de preencher qualquer campo
+      console.log("✅ Produtos carregados:", produtosCarregados);
+  
+      if (estadoSalvo) {
+        try {
+          const estado = JSON.parse(estadoSalvo);
+          console.log("📦 Estado salvo:", estado);
+  
+          if (estado.tela.toLowerCase() === "contagem") {
+            abrirContagem(false); // Não limpa a tela ao reabrir
+  
+            // Preenche os campos do formulário
+            document.getElementById("contagem").value = estado.campos.contagem;
+            document.getElementById("filial").value = estado.campos.filial;
+            document.getElementById("almoxarifado").value = estado.campos.almoxarifado;
+            document.getElementById("dataContagem").value = estado.campos.data;
+  
+            // Preenche datalist com os códigos da contagem selecionada
+            const produtos = produtosCarregados.filter(p => p.contagem === estado.campos.contagem);
+            const datalist = document.getElementById("listaCodigos");
+            datalist.innerHTML = "";
+            produtos.forEach(p => {
+              const opt = document.createElement("option");
+              opt.value = p.codigo;
+              datalist.appendChild(opt);
+            });
+  
+            // Restaura os itens registrados
+            itensRegistrados = estado.itens || [];
+            atualizarListaItens();
+  
+            // Mostra a tela correta
+            document.getElementById("contagemBox").style.display = "block";
+            document.body.style.visibility = "visible";
+            return; // Encerra aqui para não exibir o menu
           }
+  
+        } catch (e) {
+          console.warn("❌ Erro ao restaurar estado:", e);
         }
-    
-        // 👉 Se não restaurou estado válido, exibe tela padrão
-        document.getElementById("bemVindoBox").style.display = "block";
-        document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario;
-      } else {
-        // Se não tem usuário logado, exibe tela de login
-        document.getElementById("loginBox").style.display = "block";
       }
-    
-      document.body.style.visibility = "visible"; // ✅ sempre mostrar após decidir a tela
-    
-      // MONITORAMENTO DE EVENTOS ↓↓↓ (muda contagem / código)
-      document.getElementById("contagem").addEventListener("change", () => {
-        const selecionada = document.getElementById("contagem").value;
-        const produtos = produtosCarregados.filter(p => p.contagem === selecionada);
-    
-        if (produtos.length > 0) {
-          document.getElementById("filial").value = produtos[0].filial;
-          document.getElementById("almoxarifado").value = produtos[0].almoxarifado;
-    
-          const datalist = document.getElementById("listaCodigos");
-          datalist.innerHTML = "";
-          produtos.forEach(p => {
-            const opt = document.createElement("option");
-            opt.value = p.codigo;
-            datalist.appendChild(opt);
-          });
-        }
-      });
-    
-      document.getElementById("codigo").addEventListener("input", () => {
-        const codigoDigitado = document.getElementById("codigo").value.trim();
-        const contagemSelecionada = document.getElementById("contagem").value;
-    
-        if (!codigoDigitado || !contagemSelecionada) {
-          document.getElementById("nomeItem").value = "";
-          return;
-        }
-    
-        const produto = produtosCarregados.find(p =>
-          p.codigo === codigoDigitado && p.contagem === contagemSelecionada
-        );
-    
-        document.getElementById("nomeItem").value = produto?.nome || "";
-      });
+  
+      // Caso não tenha estado salvo, exibe o menu principal
+      document.getElementById("bemVindoBox").style.display = "block";
+      document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario;
+    }
+  
+    // Se não tiver login, exibe tela de login
+    document.body.style.visibility = "visible";
+  
+    // Atualiza campos quando muda a contagem
+    document.getElementById("contagem").addEventListener("change", () => {
+      const selecionada = document.getElementById("contagem").value;
+      const produtos = produtosCarregados.filter(p => p.contagem === selecionada);
+  
+      if (produtos.length > 0) {
+        document.getElementById("filial").value = produtos[0].filial;
+        document.getElementById("almoxarifado").value = produtos[0].almoxarifado;
+  
+        const datalist = document.getElementById("listaCodigos");
+        datalist.innerHTML = "";
+        produtos.forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = p.codigo;
+          datalist.appendChild(opt);
+        });
+      }
     });
-
+  
+    // Atualiza o nome do item automaticamente ao digitar o código
+    document.getElementById("codigo").addEventListener("input", () => {
+      const codigoDigitado = document.getElementById("codigo").value.trim();
+      const contagemSelecionada = document.getElementById("contagem").value;
+  
+      if (!codigoDigitado || !contagemSelecionada) {
+        document.getElementById("nomeItem").value = "";
+        return;
+      }
+  
+      const produto = produtosCarregados.find(p =>
+        p.codigo === codigoDigitado && p.contagem === contagemSelecionada
+      );
+  
+      document.getElementById("nomeItem").value = produto?.nome || "";
+    });
+  });
     
     /* ================= RESTAURA ESTADO CONTAGEM ================= */
     function restaurarContagemDeEstado(estado) {    
