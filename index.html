@@ -451,7 +451,7 @@
           try {
             const estado = JSON.parse(estadoSalvo);
     
-            if (estado.tela.toLowerCase() === "contagem") {
+            if (estado.tela() === "contagem") {
               restaurarContagemDeEstado(estado);
             }
           } catch (e) {
