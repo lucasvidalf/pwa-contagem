@@ -305,6 +305,48 @@
     let produtosCarregados = [];
     let itensRegistrados = [];
 
+    
+   /* ================= LOGIN ================= */
+    async function fazerLogin() {
+      const codigo = document.getElementById('codigoLogin').value.trim();
+      const msg = document.getElementById('msgLogin');
+    
+      if (!codigo) {
+        msg.innerHTML = "<span class='erro'>⚠️ Digite seu código!</span>";
+        return;
+      }
+    
+      msg.innerHTML = "⏳ Verificando...";
+    
+      try {
+        const resposta = await fetch(${API_URL}?action=login&codigo=${codigo});
+        const data = await resposta.json();
+    
+        if (data.sucesso) {
+          usuarioLogado = data.nome;
+          localStorage.setItem("usuarioLogado", data.nome);
+          localStorage.setItem("filialUsuario", data.filial || "ADM");
+    
+          document.getElementById('loginBox').style.display = 'none';
+          document.getElementById('bemVindoBox').style.display = 'block';
+          document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + data.nome + "!";
+        } else {
+          msg.innerHTML = "<span class='erro'>❌ Código inválido!</span>";
+        }
+    
+      } catch (erro) {
+        console.error("Erro ao conectar:", erro);
+        msg.innerHTML = "<span class='erro'>❌ Erro ao conectar ao servidor.</span>";
+      }
+    }
+
+    /* ================= MODAL ================= */
+    function showModal(titulo, mensagem) {
+      alert(${titulo}\n\n${mensagem});
+    }
+
+     /* ================= SALVAR ESTADO TELA ================= */
+
     function salvarEstadoTela(tela) {
       const estado = {
         tela: tela,
@@ -394,17 +436,7 @@
       salvarEstadoTela("bemVindo");
     }
 
-    async function login() {
-      const codigo = document.getElementById("codigoUsuario").value;
-      if (!codigo) return;
-      usuarioLogado = codigo;
-      localStorage.setItem("usuarioLogado", codigo);
-      document.getElementById("loginBox").style.display = "none";
-      document.getElementById("bemVindoBox").style.display = "block";
-      document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + codigo;
-      await carregarProdutos();
-      salvarEstadoTela("bemVindo");
-    }
+    
 
     // DOM LOADED
     document.addEventListener("DOMContentLoaded", async () => {
