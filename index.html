@@ -342,8 +342,26 @@
         msg.innerHTML = "<span class='erro'>❌ Erro ao conectar ao servidor.</span>";
       }
     }
+
     
-   
+     // SALVAR ESTADO DE TELA
+    function salvarEstadoTela(estado, extras = {}) {
+      const dadosEstado = {
+        tela: estado,
+        usuarioLogado: usuarioLogado,
+        itens: JSON.parse(JSON.stringify(itensRegistrados || [])),
+        campos: {
+          contagem: document.getElementById('contagem')?.value || "",
+          filial: document.getElementById('filial')?.value || "",
+          almoxarifado: document.getElementById('almoxarifado')?.value || "",
+          data: document.getElementById('dataContagem')?.value || new Date().toLocaleDateString('pt-BR')
+        },
+        extras: extras,
+        timestamp: Date.now()
+      };
+      localStorage.setItem("estadoTelaAtual", JSON.stringify(dadosEstado));
+    }
+       
     /*==========EVENTO CONTAGEM=========*/
 
       function configurarEventoContagem() {
@@ -391,7 +409,7 @@
         preencherContagensDisponiveis(produtosCarregados);
         configurarEventoContagem();
 
-        salvarEstadoTela("contagem");
+        salvarEstadoTela();
         
       } else {
         fetch(`${API_URL}?action=recuperarItensTemp`)
@@ -666,24 +684,7 @@
       }
     }
     
-    // SALVAR ESTADO DE TELA
-    function salvarEstadoTela(estado, extras = {}) {
-      const dadosEstado = {
-        tela: estado,
-        usuarioLogado: usuarioLogado,
-        itens: JSON.parse(JSON.stringify(itensRegistrados || [])),
-        campos: {
-          contagem: document.getElementById('contagem')?.value || "",
-          filial: document.getElementById('filial')?.value || "",
-          almoxarifado: document.getElementById('almoxarifado')?.value || "",
-          data: document.getElementById('dataContagem')?.value || new Date().toLocaleDateString('pt-BR')
-        },
-        extras: extras,
-        timestamp: Date.now()
-      };
-      localStorage.setItem("estadoTelaAtual", JSON.stringify(dadosEstado));
-    }
-    
+   
     /* ================= SALVAR ITEM NO SERVIDOR ================= */
     async function salvarItemServidor(dados, btnRef) {
       try {
@@ -705,7 +706,7 @@
         if (result.sucesso) {
           itensRegistrados.push(dados);
           atualizarListaItens();
-          salvarEstadoTela("contagem");
+          salvarEstadoTela();
     
           document.getElementById('codigo').value = '';
           document.getElementById('nomeItem').value = '';
