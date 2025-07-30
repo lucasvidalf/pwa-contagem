@@ -167,7 +167,7 @@
   
   </style>
 </head>
-<body>
+<body style="visibility:hidden;">
 
   <!-- LOGIN -->
   <div id="loginBox" class="centered-screen">
@@ -314,7 +314,7 @@
     function salvarEstadoTela(estado, extras = {}) {
       const dadosEstado = {
         tela: estado, // exemplo: "login", "menu", "contagem"
-        usuarioLogado: usuarioLogado || "",
+        usuarioLogado: usuarioLogado || localStorage.getItem("usuarioLogado") || "",
         itens: JSON.parse(JSON.stringify(itensRegistrados || [])),
         campos: {
           contagem: document.getElementById("contagem")?.value || "",
@@ -491,6 +491,7 @@
     document.getElementById("bemVindoBox").style.display = "block";
     document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuarioLogado;
   }
+  document.body.style.visibility = "visible";
 });
 
     
