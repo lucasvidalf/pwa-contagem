@@ -383,8 +383,7 @@
       document.getElementById('bemVindoBox').style.display = 'none';
       document.getElementById('contagemBox').style.display = 'block';
       document.getElementById('usuarioContagem').innerText = localStorage.getItem("usuarioLogado");
-      document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');
-      salvarEstadoTela()
+      document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');     
     
       if (nova) {
         itensRegistrados = [];
@@ -397,8 +396,7 @@
           .then(res => res.json())
           .then(data => {
             itensRegistrados = data.itens || [];
-            atualizarListaItens();
-            salvarEstadoTela()
+            atualizarListaItens();            
           });
       }
     }     
@@ -436,13 +434,15 @@
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
+      console.log("DOM executado");
+      
       const usuario = localStorage.getItem("usuarioLogado");
       const estadoSalvo = localStorage.getItem("estadoTelaAtual");
     
       if (usuario) {
         usuarioLogado = usuario;
         document.getElementById("loginBox").style.display = "none";
-        document.getElementById("bemVindoBox").style.display = "block";
+        document.getElementById("bemVindoBox").style.display = "none";
         document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario + "!";
     
         await carregarProdutos();
