@@ -332,7 +332,6 @@
     async function fazerLogin() {
       const codigo = document.getElementById('codigoLogin').value.trim();
       const msg = document.getElementById('msgLogin');
-      salvarEstadoTela ();
     
       if (!codigo) {
         msg.innerHTML = "<span class='erro'>⚠️ Digite seu código!</span>";
@@ -403,8 +402,7 @@
       document.getElementById('bemVindoBox').style.display = 'none';
       document.getElementById('contagemBox').style.display = 'block';
       document.getElementById('usuarioContagem').innerText = localStorage.getItem("usuarioLogado");
-      document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');
-      salvarEstadoTela ();
+      document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');     
     
       if (nova) {
         itensRegistrados = [];
@@ -417,11 +415,9 @@
           .then(res => res.json())
           .then(data => {
             itensRegistrados = data.itens || [];
-            atualizarListaItens();
-            salvarEstadoTela ();
+            atualizarListaItens();            
           });
       }
-      salvarEstadoTela ();
     }     
     /* ================= PREENCHER CONTAGENS DISPONÍVEIS ================= */
     function preencherContagensDisponiveis() {
@@ -431,14 +427,12 @@
 
       // Salva contagem selecionada
       const contagemSelecionada = select.value;
-      salvarEstadoTela ();
 
       // Filtra e extrai contagens únicas
       const contagens = [...new Set(produtosCarregados
         .filter(p => p.filial === filial)
         .map(p => p.contagem)
         .filter(c => c))];
-      salvarEstadoTela ();
 
       // Limpa e repopula o select
       select.innerHTML = "<option value=''>Selecione...</option>";
@@ -448,29 +442,25 @@
         opt.innerText = c;
         select.appendChild(opt);
       });
-      salvarEstadoTela ();
       
       // Restaura contagem selecionada
       if (contagemSelecionada && contagens.includes(contagemSelecionada)){
         select.value = contagemSelecionada;
-        salvarEstadoTela ();
 
         //Força o gatilho change
         select.dispatchEvent(new Event("change"));
       }
     }
 
-     document.addEventListener("DOMContentLoaded", async () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       const estadoSalvo = localStorage.getItem("estadoTelaAtual");
-      const usuarioSalvo = localStorage.getITem("usuarioLogado");
     
       if (estadoSalvo) {
         try {
           const estado = JSON.parse(estadoSalvo);
           usuarioLogado = estado.usuarioLogado || "";
-          localStorage.setItem("usuarioLogado", usuarioLogado);
     
-          await carregarProdutos(); // carrega produtos antes de restaurar tela
+          await carregarProdutos();
     
           switch (estado.tela) {
             case "login":
@@ -483,13 +473,25 @@
               break;
     
             case "contagem":
-              document.getElementById("loginBox").style.display = "none";
-              document.getElementById("bemVindoBox").style.display = "none";
-              document.getElementById("contagemBox").style.display = "block";
-              document.getElementById("usuarioContagem").innerText = usuarioLogado;
+              abrirContagem(true); // carrega tela de contagem
+              document.getElementById("contagem").value = estado.campos.contagem;
+              document.getElementById("filial").value = estado.campos.filial;
+              document.getElementById("almoxarifado").value = estado.campos.almoxarifado;
+              document.getElementById("dataContagem").value = estado.campos.data;
     
-              preencherContagensDisponiveis(); // garante que o select esteja preenchido
-              restaurarContagemDeEstado(estado); // restaura os campos da contagem e os itens
+              // Atualiza datalist de códigos
+              const produtos = produtosCarregados.filter(p => p.contagem === estado.campos.contagem);
+              const datalist = document.getElementById("listaCodigos");
+              datalist.innerHTML = "";
+              produtos.forEach(p => {
+                const opt = document.createElement("option");
+                opt.value = p.codigo;
+                datalist.appendChild(opt);
+              });
+    
+              // Restaura itens registrados
+              itensRegistrados = estado.itens || [];
+              atualizarListaItens();
               break;
     
             default:
@@ -505,6 +507,7 @@
         document.getElementById("loginBox").style.display = "block";
       }
     });
+
     
     /* ================= RESTAURA ESTADO CONTAGEM ================= */
     function restaurarContagemDeEstado(estado) {    
