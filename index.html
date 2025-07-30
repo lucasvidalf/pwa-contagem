@@ -433,66 +433,90 @@
     }
       
       document.addEventListener("DOMContentLoaded", async () => {
-      const usuario = localStorage.getItem("usuarioLogado");
-    
-      // Se já está logado, mostra tela principal e carrega dados
-      if (usuario) {
-        usuarioLogado = usuario;
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("bemVindoBox").style.display = "block";
-        document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario + "!";
-    
-        await carregarProdutos();
-        abrirContagem(true); // mostra a tela de contagem
-    
-        // Restaura itens temporários se existirem
-        const temporarios = localStorage.getItem("itensTemporarios");
-        if (temporarios) {
-          try {
-            itensRegistrados = JSON.parse(temporarios);
-            atualizarListaItens();
-          } catch (e) {
-            console.warn("❌ Erro ao restaurar itens temporários:", e);
+        const usuario = localStorage.getItem("usuarioLogado");
+        const estadoSalvo = localStorage.getItem("estadoTelaAtual");
+      
+        if (usuario) {
+          usuarioLogado = usuario;
+          document.getElementById("loginBox").style.display = "none";
+          document.getElementById("bemVindoBox").style.display = "block";
+          document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario;
+      
+          await carregarProdutos();
+      
+          if (estadoSalvo) {
+            try {
+              const estado = JSON.parse(estadoSalvo);
+      
+              if (estado.tela === "contagem") {
+                abrirContagem(true);
+      
+                // Preencher campos
+                document.getElementById("contagem").value = estado.campos.contagem;
+                document.getElementById("filial").value = estado.campos.filial;
+                document.getElementById("almoxarifado").value = estado.campos.almoxarifado;
+                document.getElementById("dataContagem").value = estado.campos.data;
+      
+                // Atualizar datalist de códigos
+                const produtos = produtosCarregados.filter(p => p.contagem === estado.campos.contagem);
+                const datalist = document.getElementById("listaCodigos");
+                datalist.innerHTML = "";
+                produtos.forEach(p => {
+                  const opt = document.createElement("option");
+                  opt.value = p.codigo;
+                  datalist.appendChild(opt);
+                });
+      
+                // Restaurar itens
+                itensRegistrados = estado.itens || [];
+                atualizarListaItens();
+              }
+      
+            } catch (e) {
+              console.warn("❌ Erro ao restaurar estado anterior:", e);
+            }
           }
         }
-      }
-    
-      // Quando muda a contagem, atualiza os campos automaticamente
-      document.getElementById("contagem").addEventListener("change", () => {
-        const selecionada = document.getElementById("contagem").value;
-        const produtos = produtosCarregados.filter(p => p.contagem === selecionada);
-    
-        if (produtos.length > 0) {
-          document.getElementById("filial").value = produtos[0].filial;
-          document.getElementById("almoxarifado").value = produtos[0].almoxarifado;
-    
-          const datalist = document.getElementById("listaCodigos");
-          datalist.innerHTML = "";
-          produtos.forEach(p => {
-            const opt = document.createElement("option");
-            opt.value = p.codigo;
-            datalist.appendChild(opt);
-          });
-        }
+      
+        // Quando muda a contagem, atualiza os campos
+        document.getElementById("contagem").addEventListener("change", () => {
+          const selecionada = document.getElementById("contagem").value;
+          const produtos = produtosCarregados.filter(p => p.contagem === selecionada);
+      
+          if (produtos.length > 0) {
+            document.getElementById("filial").value = produtos[0].filial;
+            document.getElementById("almoxarifado").value = produtos[0].almoxarifado;
+      
+            const datalist = document.getElementById("listaCodigos");
+            datalist.innerHTML = "";
+            produtos.forEach(p => {
+              const opt = document.createElement("option");
+              opt.value = p.codigo;
+              datalist.appendChild(opt);
+            });
+          }
+      
+          // Salvar mudança no estado
+          salvarEstadoTela("contagem");
+        });
+      
+        // Quando digita o código, exibe o nome do item
+        document.getElementById("codigo").addEventListener("input", () => {
+          const codigoDigitado = document.getElementById("codigo").value.trim();
+          const contagemSelecionada = document.getElementById("contagem").value;
+      
+          if (!codigoDigitado || !contagemSelecionada) {
+            document.getElementById("nomeItem").value = "";
+            return;
+          }
+      
+          const produto = produtosCarregados.find(p =>
+            p.codigo === codigoDigitado && p.contagem === contagemSelecionada
+          );
+      
+          document.getElementById("nomeItem").value = produto?.nome || "";
+        });
       });
-    
-      // Quando digita o código, exibe o nome do item automaticamente
-      document.getElementById("codigo").addEventListener("input", () => {
-        const codigoDigitado = document.getElementById("codigo").value.trim();
-        const contagemSelecionada = document.getElementById("contagem").value;
-    
-        if (!codigoDigitado || !contagemSelecionada) {
-          document.getElementById("nomeItem").value = "";
-          return;
-        }
-    
-        const produto = produtosCarregados.find(p =>
-          p.codigo === codigoDigitado && p.contagem === contagemSelecionada
-        );
-    
-        document.getElementById("nomeItem").value = produto?.nome || "";
-      });
-    });
     
     /* ================= ATUALIZAR LISTA DE ITENS ================= */
     function atualizarListaItens() {
