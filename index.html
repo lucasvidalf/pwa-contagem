@@ -1,310 +1,52 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#2c7be5">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>Contagem de Estoque</title>
-  <link rel="manifest" href="?file=manifest.json">
-  <link rel="apple-touch-icon" href="https://SEU_LOGO/icon-192.png">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sistema de Contagem</title>
   <style>
-    html, body {
-      height: 100%; margin: 0; padding: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-    }
-    .centered-screen {
-      display: flex;
-      justify-content: center; 
-      align-items: center;
-      height: 100dvh; 
-      width: 98%;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    .container {
-      background: #fff; padding: 20px;
-      width: 90%; max-width: 500px;
-      border-radius: 12px; text-align: center;
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-      margin: 20px auto;
-    }
-    .fullscreen-scroll {
-      display: flex; justify-content: center;
-      align-items: center; width: 100%;
-    }
-    h1, h2, h3 { color: #2c7be5; }
-    label {
-      display: block; margin-top: 12px;
-      text-align: left; font-weight: bold;
-    }
-    input, select, textarea {
-      width: 100%; padding: 12px; font-size: 16px;
-      margin-top: 6px; border: 1px solid #ccc;
-      border-radius: 8px; box-sizing: border-box;
-      -webkit-text-size-adjust: 100%;
-    }
-    button {
-      width: 100%; padding: 14px; margin-top: 15px;
-      font-size: 16px; font-weight: bold;
-      border: none; border-radius: 8px;
-      cursor: pointer; background: #2c7be5;
-      color: #fff;
-    }
-    button:disabled {
-      opacity: 0.6; cursor: not-allowed;
-    }
-    .msg { margin-top: 10px; font-weight: bold; }
-    .sucesso { color: green; }
-    .erro { color: red; }
-    table {
-      width: 100%; border-collapse: collapse;
-      margin-top: 15px;
-    }
-    th, td {
-      border: 1px solid #ddd; padding: 8px;
-      text-align: left; font-size: 14px;
-    }
-    th { background: #eee; }
-    footer {
-      text-align: center; font-size: 12px;
-      color: #888; margin: 15px 0;
-    }
-    #modalOverlay {
-      display: none; position: fixed;
-      top: 0; left: 0; width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(2px);
-      align-items: center; justify-content: center;
-      z-index: 9999;
-    }
-    #modalBox {
-      background: white; padding: 20px;
-      width: 90%; max-width: 400px;
-      border-radius: 12px; text-align: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
-    #modalBox h2 { margin-top: 0; }
-    #modalBotoes button {
-      width: auto; min-width: 100px;
-      margin: 8px; padding: 10px;
-      font-size: 15px;
-    }
-    #modalBotoes .confirmar { background: #28a745; }
-    #modalBotoes .cancelar { background: #dc3545; }
-    .item-lancado {
-      display: flex; justify-content: space-between;
-      align-items: center;
-      padding: 6px 0; border-bottom: 1px solid #ddd;
-    }
-    .item-info { flex: 1; font-size: 14px; }
-    .item-remove {
-      color: red; cursor: pointer;
-      font-weight: bold; margin-left: 10px;
-    }
-
-    /* === CONSULTAR ENCERRADAS === */
-    #consultarBox .container {
-      max-width: 900px !important;
-      width: 95%;
-      text-align: center;
-    }
-    
-    #listaContagens > div {
-      display: flex;
-      justify-content: center;
-      width: 100%;
-    }
-   
-    #listaContagens table {
-      width: 100%;
-      max-width: 860px;
-      border-collapse: collapse;
-      font-size: 14px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      margin: 0 auto;
-    }
-
-    #listaContagens table th,
-    #listaContagens table td {
-      padding: 10px;
-      border: 1px solid #ddd;
-      text-align: left;
-    }
-    #listaContagens table thead tr {
-      background: #f7f7f7;     
-    }
-
-    #listaContagens table td:nth-child(4),
-    #listaContagens table td:nth-child(5) {
-      text-align: center;
-    }
-
-    #listaContagens {
-      max-height: 450px; /* altura máxima */
-      overflow-y: auto; /* barra vertical se ultrapassar */
-      overflow-x: auto; /* barra horizontal se precisar */
-      margin-top: 15px;
-    }
-
-    #listaContagens table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    #listaContagens table th {
-      position: sticky;
-      top: 0;
-      background: #f7f7f7;
-      z-index: 1;
-    } 
-  
+    body { font-family: Arial; visibility: hidden; margin: 0; padding: 20px; background: #f4f4f4; }
+    .box { display: none; }
+    input, select { margin: 5px 0; display: block; width: 100%; }
+    #listaItens { margin-top: 10px; }
   </style>
 </head>
 <body>
-
-  <!-- LOGIN -->
-  <div id="loginBox" class="centered-screen">
-    <div class="container">
-      <h1>🔐 Acesso</h1>
-      <p>Digite seu código de acesso</p>
-      <input type="text" id="codigoLogin" placeholder="Digite seu código">
-      <button onclick="fazerLogin()">Entrar</button>
-      <div class="msg" id="msgLogin"></div>
-      <footer>Created by: Lucas Vidal</footer>
-    </div>
+  <!-- Login -->
+  <div id="loginBox" class="box">
+    <h2>Login</h2>
+    <input id="codigoLogin" placeholder="Código de usuário"/>
+    <button onclick="fazerLogin()">Entrar</button>
   </div>
 
-  <!-- MENU PRINCIPAL -->
-  <div id="bemVindoBox" class="centered-screen" style="display:none;">
-    <div class="container">
-      <h1>✅ Login realizado</h1>
-      <p id="nomeUsuario"></p>
-      <button onclick="abrirContagem(true)">📋 Abrir Nova Contagem</button>
-      <button onclick="abrirContagem(false)">🔄 Continuar Contagem</button>
-      <button style="background:#ffc107;" onclick="menuContagensAbertas()">⏳ Contagens em Aberto</button>
-      <button style="background:#17a2b8;" onclick="menuConsultas()">🔍 Consultar Contagens Encerradas</button>
-      <button style="background:#6c757d;" onclick="fazerLogout()">🚪 Sair</button>
-    </div>
+  <!-- Tela inicial -->
+  <div id="bemVindoBox" class="box">
+    <h2 id="nomeUsuario"></h2>
+    <button onclick="abrirContagem(true)">Nova Contagem</button>
   </div>
 
-  <!-- CONTAGENS EM ABERTO -->
-  <div id="contagensAbertasBox" class="centered-screen" style="display:none;">
-    <div class="container" style="max-width: 900px;">
-      <h2>⏳ Contagens em Aberto</h2>
-
-      <label>Filtrar por Filial</label>
-      <select id="filtroFilialAberta" onchange="filtrarContagensAbertas()">
-        <option value="">Todas</option>
-      </select>
-
-      <label>Filtrar por Contagem</label>
-      <select id="filtroNumeroContagem" onchange="filtrarContagensAbertas()">
-        <option value="">Todas</option>
-      </select>
-
-      <div id="listaContagensAbertas" style="margin-top:20px; text-align:left;"></div>
-
-      <button style="background:#6c757d; margin-top:20px;" onclick="voltarMenu()">⬅ Voltar ao Menu</button>
-    </div>
-  </div>
-
-  <!-- CONSULTAR ENCERRADAS -->
-  <div id="consultarBox" class="centered-screen" style="display:none;">
-    <div class="container">
-      <h2>🔍 Consultar Contagens Encerradas</h2>
-      <label>Filtrar por Filial</label>
-      <select id="filtroFilialEncerrada" onchange="filtrarEncerradas()">
-        <option value="">Todas</option>
-      </select>
-      <label>Filtrar por Contagem</label>
-      <select id="filtroContagemEncerrada" onchange="filtrarEncerradas()">
-        <option value="">Todas</option>
-      </select>
-      <label>Filtrar por Almoxarifado</label>
-      <select id="filtroAlmoxEncerrada" onchange="filtrarEncerradas()">
-        <option value="">Todos</option>
-      </select>
-      <label>Filtrar por Data</label>
-      <input type="date" id="filtroDataEncerrada" onchange="filtrarEncerradas()">       
-      <div id="listaContagens" style="margin-top:20px; text-align:left;"></div>
-      <div id="tabelaCSV" style="margin-top:20px;"></div>
-      <button style="background:#6c757d;" onclick="voltarMenu()">⬅ Voltar ao Menu</button>
-    </div>
-  </div>
-
-  <!-- TELA DE CONTAGEM -->
-  <div id="contagemBox" class="fullscreen-scroll" style="display:none; align-items:flex-start; overflow-y:auto;">
-    <div class="container">
-      <h1>📋 Contagem</h1>
-      <p><b>Usuário:</b> <span id="usuarioContagem"></span></p>
-
-      <label>Data</label>
-      <input type="text" id="dataContagem" readonly>
-
-      <label>Contagem</label>
-      <select id="contagem"></select>
-
-      <label>Filial</label>
-      <input type="text" id="filial" readonly>
-
-      <label>Almoxarifado</label>
-      <input type="text" id="almoxarifado" readonly>
-      
-      <label>Código</label>
-      <input list="listaCodigos" id="codigo" placeholder="Digite ou selecione">
-      <datalist id="listaCodigos"></datalist>
-
-      <label>Nome do item</label>
-      <input type="text" id="nomeItem" readonly>
-
-      <label>Quantidade</label>
-      <input type="number" id="quantidade" min="1">
-
-      <label>Foto</label>
-      <input type="file" id="foto" accept="image/*" capture="camera">
-
-      <label>Comentário (opcional)</label>
-      <textarea id="comentario" rows="2" placeholder="Observações..."></textarea>
-
-      <button id="btnRegistrar" onclick="registrarItem()">✅ Registrar Item</button>
-      <button style="background:#d9534f;" onclick="confirmarEncerrar()">🚪 Encerrar Contagem</button>
-      <button style="background:#6c757d;" onclick="confirmarCancelar()">❌ Cancelar Contagem</button>
-      <button style="background:#6c757d;" onclick="voltarMenu()">⬅ Voltar ao Menu</button>
-
-      <div class="msg" id="msgContagem"></div>
-
-      <div id="resumoItens" style="margin-top:20px; text-align:left;">
-        <h3 id="tituloItens">📦 Itens lançados (0)</h3>
-        <div id="listaItens"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL -->
-  <div id="modalOverlay" style="display:none;">
-    <div id="modalBox">
-      <h2 id="modalTitulo"></h2>
-      <p id="modalMensagem"></p>
-      <div id="modalBotoes"></div>
-        <button onclick="fecharModal()">OK</button>button>
-    </div>
+  <!-- Contagem -->
+  <div id="contagemBox" class="box">
+    <h2>Contagem de Itens</h2>
+    <div>Usuário: <span id="usuarioContagem"></span></div>
+    <input id="dataContagem" readonly />
+    <select id="contagem"></select>
+    <input id="filial" placeholder="Filial" readonly/>
+    <input id="almoxarifado" placeholder="Almoxarifado" readonly/>
+    <input id="codigo" placeholder="Código" list="listaCodigos"/>
+    <datalist id="listaCodigos"></datalist>
+    <input id="nomeItem" placeholder="Nome do item" readonly/>
+    <button onclick="registrarItem()">Registrar</button>
+    <div id="listaItens"></div>
+    <button onclick="encerrarContagem()">Encerrar Contagem</button>
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxMXlGfKgoImTIsxtOZ4Uy451gQ9LqTVn2uknqfLL-BB6lcywsN93C1FKByAJ2idIQM2A/exec";
-
-    let usuarioLogado = localStorage.getItem("usuarioLogado") || "";
-    let itensRegistrados = [];
+    const API_URL = 'https://script.google.com/macros/s/SEU_ID/exec';
+    let usuarioLogado = "";
     let produtosCarregados = [];
+    let itensRegistrados = [];
 
-    /* ================= SALVAR ESTADO TELA ================= */
     function salvarEstadoTela(tela) {
       const estado = {
         tela,
@@ -326,117 +68,29 @@
       document.getElementById(id).style.display = "block";
     }
 
-    /* ================= MODAL ================= */
-    function showModal(titulo, mensagem) {
-      alert(`${titulo}\n\n${mensagem}`);
-    }
-          
-    /* ================= LOGIN ================= */
-    async function fazerLogin() {
-      const codigo = document.getElementById('codigoLogin').value.trim();
-      const msg = document.getElementById('msgLogin');
-    
-      if (!codigo) {
-        msg.innerHTML = "<span class='erro'>⚠️ Digite seu código!</span>";
-        return;
-      }
-    
-      msg.innerHTML = "⏳ Verificando...";
-    
-      try {
-        const resposta = await fetch(`${API_URL}?action=login&codigo=${codigo}`);
-        const data = await resposta.json();
-    
-        if (data.sucesso) {
-          usuarioLogado = data.nome;
-          localStorage.setItem("usuarioLogado", data.nome);
-          localStorage.setItem("filialUsuario", data.filial || "ADM");
-    
-          document.getElementById('loginBox').style.display = 'none';
-          document.getElementById('bemVindoBox').style.display = 'block';
-          document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + data.nome + "!";
-        } else {
-          msg.innerHTML = "<span class='erro'>❌ Código inválido!</span>";
-        }
-    
-      } catch (erro) {
-        console.error("Erro ao conectar:", erro);
-        msg.innerHTML = "<span class='erro'>❌ Erro ao conectar ao servidor.</span>";
-      }
-    }    
-   
-    /*==========EVENTO CONTAGEM=========*/
-
-      function configurarEventoContagem() {
-        const select = document.getElementById("contagem");
-        select.addEventListener("change", () => {
-          const contagemSelecionada = select.value;
-          const produtos = produtosCarregados.filter(p => p.contagem === contagemSelecionada);
-      
-          if (produtos.length > 0) {
-            document.getElementById("filial").value = produtos[0].filial;
-            document.getElementById("almoxarifado").value = produtos[0].almoxarifado;
-      
-            const datalist = document.getElementById("listaCodigos");
-            datalist.innerHTML = "";
-            produtos.forEach(p => {
-              const opt = document.createElement("option");
-              opt.value = p.codigo;
-              datalist.appendChild(opt);
-            });
-          }
-        });
-      }
-    
-    /* ================= CARREGAR PRODUTOS ================= */
     async function carregarProdutos() {
       try {
-        const resposta = await fetch(`${API_URL}?action=getProdutos`);
-        produtosCarregados = await resposta.json();
+        const res = await fetch(`${API_URL}?action=getProdutos`);
+        produtosCarregados = await res.json();
       } catch (e) {
         console.error("Erro ao carregar produtos:", e);
         produtosCarregados = [];
       }
     }
-    
-    /* ================= ABRIR CONTAGEM ================= */
-    async function abrirContagem(nova) {
-      document.getElementById('bemVindoBox').style.display = 'none';
-      document.getElementById('contagemBox').style.display = 'block';
-      document.getElementById('usuarioContagem').innerText = localStorage.getItem("usuarioLogado");
-      document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');
-    
-      if (nova) {
-        itensRegistrados = [];
-        await carregarProdutos();
-        preencherContagensDisponiveis(produtosCarregados);
-        configurarEventoContagem();    
-      } salvarEstadoTela("contagem");
-      else {
-        fetch(`${API_URL}?action=recuperarItensTemp`)
-          .then(res => res.json())
-          .then(data => {
-            itensRegistrados = data.itens || [];
-            atualizarListaItens();    
-          });
-      }
-    }     
-    /* ================= PREENCHER CONTAGENS DISPONÍVEIS ================= */
+
+    function atualizarListaItens() {
+      const lista = document.getElementById("listaItens");
+      lista.innerHTML = "";
+      itensRegistrados.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.textContent = `${index + 1}. ${item.codigo} - ${item.nome} (${item.quantidade || 1})`;
+        lista.appendChild(div);
+      });
+    }
+
     function preencherContagensDisponiveis() {
-      console.log("Função preencherContagensDisponíveis() foi chamada");
       const select = document.getElementById("contagem");
-      const filial = localStorage.getItem("filialUsuario");
-
-      // Salva contagem selecionada
-      const contagemSelecionada = select.value;
-
-      // Filtra e extrai contagens únicas
-      const contagens = [...new Set(produtosCarregados
-        .filter(p => p.filial === filial)
-        .map(p => p.contagem)
-        .filter(c => c))];
-
-      // Limpa e repopula o select
+      const contagens = [...new Set(produtosCarregados.map(p => p.contagem).filter(Boolean))];
       select.innerHTML = "<option value=''>Selecione...</option>";
       contagens.forEach(c => {
         const opt = document.createElement("option");
@@ -444,362 +98,122 @@
         opt.innerText = c;
         select.appendChild(opt);
       });
-      
-      // Restaura contagem selecionada
-      if (contagemSelecionada && contagens.includes(contagemSelecionada)){
-        select.value = contagemSelecionada;
-
-        //Força o gatilho change
-        select.dispatchEvent(new Event("change"));
-      }
     }
 
-      document.addEventListener("DOMContentLoaded", async () => {
-        document.body.style.visibility = "hidden"; // 👈 Oculta tudo até carregar
-        
-        const usuario = localStorage.getItem("usuarioLogado");
-        const estadoSalvo = localStorage.getItem("estadoTelaAtual");
-      
-        if (usuario) {
-          usuarioLogado = usuario;
-          await carregarProdutos();
-          
-          if (estadoSalvo?.tela === "contagem") {
-          document.getElementById("loginBox").style.display = "none";
-          document.getElementById("bemVindoBox").style.display = "none";
-          document.getElementById("contagemBox").style.display = "block";
-    
-          // Preenche campos
-          document.getElementById("usuarioContagem").innerText = usuario;
-          document.getElementById("dataContagem").value = estadoSalvo.campos.data || new Date().toLocaleDateString('pt-BR');
-          document.getElementById("contagem").value = estadoSalvo.campos.contagem || "";
-          document.getElementById("filial").value = estadoSalvo.campos.filial || "";
-          document.getElementById("almoxarifado").value = estadoSalvo.campos.almoxarifado || "";
-    
-          // Atualiza datalist
-          const produtos = produtosCarregados.filter(p => p.contagem === estadoSalvo.campos.contagem);
-          const datalist = document.getElementById("listaCodigos");
-          datalist.innerHTML = "";
-          produtos.forEach(p => {
-            const opt = document.createElement("option");
-            opt.value = p.codigo;
-            datalist.appendChild(opt);
-          });
-    
-          // Itens temporários
-          itensRegistrados = estadoSalvo.itens || [];
-          atualizarListaItens();
-    
-        } else {
-          // Qualquer outra tela (por ex. menu)
-          document.getElementById("loginBox").style.display = "none";
-          document.getElementById("bemVindoBox").style.display = "block";
-          document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario;
-        }
-      } else {
-        // Usuário não logado
-        document.getElementById("loginBox").style.display = "block";
-        document.getElementById("bemVindoBox").style.display = "none";
-        document.getElementById("contagemBox").style.display = "none";
+    function fazerLogin() {
+      const codigo = document.getElementById("codigoLogin").value;
+      if (!codigo.trim()) return;
+      usuarioLogado = codigo;
+      localStorage.setItem("usuarioLogado", usuarioLogado);
+      iniciarApp();
+    }
+
+    async function abrirContagem(nova) {
+      mostrarBox("contagemBox");
+      document.getElementById("usuarioContagem").innerText = usuarioLogado;
+      document.getElementById("dataContagem").value = new Date().toLocaleDateString("pt-BR");
+      if (nova) {
+        itensRegistrados = [];
+        preencherContagensDisponiveis();
+        atualizarListaItens();
       }
-    
-      // Só exibe a interface depois de restaurar corretamente
+      salvarEstadoTela("contagem");
+    }
+
+    function registrarItem() {
+      const codigo = document.getElementById("codigo").value;
+      const nome = document.getElementById("nomeItem").value;
+      if (!codigo || !nome) return;
+      itensRegistrados.push({ codigo, nome, quantidade: 1 });
+      atualizarListaItens();
+      salvarEstadoTela("contagem");
+      localStorage.setItem("itensTemporarios", JSON.stringify(itensRegistrados));
+    }
+
+    function encerrarContagem() {
+      if (itensRegistrados.length === 0) return alert("Nada registrado.");
+      localStorage.removeItem("itensTemporarios");
+      localStorage.removeItem("estadoTelaAtual");
+      alert("Contagem encerrada!");
+      mostrarBox("bemVindoBox");
+      salvarEstadoTela("menu");
+    }
+
+    // Eventos
+    document.addEventListener("DOMContentLoaded", async () => {
+      const estadoSalvo = localStorage.getItem("estadoTelaAtual");
+      const usuario = localStorage.getItem("usuarioLogado");
+
+      await carregarProdutos();
+
+      if (usuario) {
+        usuarioLogado = usuario;
+        document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario + "!";
+
+        if (estadoSalvo) {
+          try {
+            const estado = JSON.parse(estadoSalvo);
+            if (estado.tela === "contagem") {
+              mostrarBox("contagemBox");
+              document.getElementById("usuarioContagem").innerText = usuario;
+              document.getElementById("contagem").value = estado.campos.contagem;
+              document.getElementById("filial").value = estado.campos.filial;
+              document.getElementById("almoxarifado").value = estado.campos.almoxarifado;
+              document.getElementById("dataContagem").value = estado.campos.data;
+
+              const produtos = produtosCarregados.filter(p => p.contagem === estado.campos.contagem);
+              const datalist = document.getElementById("listaCodigos");
+              datalist.innerHTML = "";
+              produtos.forEach(p => {
+                const opt = document.createElement("option");
+                opt.value = p.codigo;
+                datalist.appendChild(opt);
+              });
+
+              itensRegistrados = estado.itens || [];
+              atualizarListaItens();
+              document.body.style.visibility = "visible";
+              return;
+            }
+          } catch (e) {
+            console.warn("Erro ao restaurar estado:", e);
+          }
+        }
+
+        mostrarBox("bemVindoBox");
+      } else {
+        mostrarBox("loginBox");
+      }
+
       document.body.style.visibility = "visible";
     });
-      
-        // Atualiza nome do item ao digitar código
-        document.getElementById("codigo").addEventListener("input", () => {
-          const codigoDigitado = document.getElementById("codigo").value.trim();
-          const contagemSelecionada = document.getElementById("contagem").value;
-      
-          if (!codigoDigitado || !contagemSelecionada) {
-            document.getElementById("nomeItem").value = "";
-            return;
-          }
-      
-          const produto = produtosCarregados.find(p =>
-            p.codigo === codigoDigitado && p.contagem === contagemSelecionada
-          );
-      
-          document.getElementById("nomeItem").value = produto?.nome || "";
+
+    document.getElementById("contagem").addEventListener("change", () => {
+      const selecionada = document.getElementById("contagem").value;
+      const produtos = produtosCarregados.filter(p => p.contagem === selecionada);
+      if (produtos.length > 0) {
+        document.getElementById("filial").value = produtos[0].filial;
+        document.getElementById("almoxarifado").value = produtos[0].almoxarifado;
+        const datalist = document.getElementById("listaCodigos");
+        datalist.innerHTML = "";
+        produtos.forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = p.codigo;
+          datalist.appendChild(opt);
         });
-      });
-    
-    /* ================= RESTAURA ESTADO CONTAGEM ================= */
-    function restaurarContagemDeEstado(estado) {
-      document.getElementById("bemVindoBox").style.display = "none";
-      document.getElementById("contagemBox").style.display = "block";
-      document.getElementById("usuarioContagem").innerText = usuarioLogado;
-    
-      // Preenche campos salvos
-      document.getElementById("contagem").value = estado.campos.contagem || "";
-      document.getElementById("filial").value = estado.campos.filial || "";
-      document.getElementById("almoxarifado").value = estado.campos.almoxarifado || "";
-      document.getElementById("dataContagem").value = estado.campos.data || "";
-    
-      // Preenche datalist com os códigos válidos
-      const produtos = produtosCarregados.filter(p => p.contagem === estado.campos.contagem);
-      const datalist = document.getElementById("listaCodigos");
-      datalist.innerHTML = "";
-      produtos.forEach(p => {
-        const opt = document.createElement("option");
-        opt.value = p.codigo;
-        datalist.appendChild(opt);
-      });
-    
-      // Restaura itens registrados
-      itensRegistrados = estado.itens || [];
-      atualizarListaItens();
-    
-      // Atualiza nome do item se já houver código preenchido
-      const codigo = document.getElementById("codigo").value.trim();
-      const produto = produtos.find(p => p.codigo === codigo);
-      if (produto) {
-        document.getElementById("nomeItem").value = produto.nome;
       }
-    
-      // Dispara mudança manualmente para atualizar campos
-      document.getElementById("contagem").dispatchEvent(new Event("change"));
-    }
-    /* ================= ATUALIZAR LISTA DE ITENS ================= */
-    function atualizarListaItens() {
-      const listaDiv = document.getElementById("listaItens");
-      const tituloItens = document.getElementById("tituloItens");
-      const total = itensRegistrados.length;
-      tituloItens.textContent = `📦 Itens lançados (${total})`;
-      if (total === 0) {
-        listaDiv.innerHTML = `<p>⚠️ Nenhum item registrado ainda.</p>`;
+    });
+
+    document.getElementById("codigo").addEventListener("input", () => {
+      const codigoDigitado = document.getElementById("codigo").value.trim();
+      const contagemSelecionada = document.getElementById("contagem").value;
+      if (!codigoDigitado || !contagemSelecionada) {
+        document.getElementById("nomeItem").value = "";
         return;
       }
-      let html = "";
-      itensRegistrados.forEach((item, index) => {
-        html += `
-          <div class="item-lancado">
-            <div class="item-info">
-              <b>${item.codigo}</b> - ${item.nome} (${item.quantidade})
-            </div>
-            <div class="item-remove" onclick="removerItem(${index})">❌</div>
-          </div>
-        `;
-      });
-      listaDiv.innerHTML = html;
-
-      localStorage.setItem("ItensTemporarios", JSON.stringify(itensRegistrados));
-    }
-    
-    //FUNÇÃO AUX. LER IMAGEM
-
-    function lerImagemBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = e => resolve(e.target.result.split(",")[1]);
-        reader.onerror = () => reject("Erro ao ler a imagem.");
-        reader.readAsDataURL(file);
-      });
-    }
-
-    
-    /* ================= REGISTRAR ITEM ================= */
-    async function registrarItem() {
-      const btn = document.getElementById('btnRegistrar');
-      btn.disabled = true;
-      btn.innerText = "⏳ Registrando...";
-    
-      const contagemSel = document.getElementById('contagem').value;
-      const filialSel = document.getElementById('filial').value;
-      const almoxSel = document.getElementById('almoxarifado').value;
-      const codigo = document.getElementById('codigo').value.trim();
-      const nome = document.getElementById('nomeItem').value.trim();
-      const quantidade = document.getElementById('quantidade').value.trim();
-      const comentario = document.getElementById('comentario').value.trim();
-      const fotoInput = document.getElementById('foto').files[0];
-    
-      if (!contagemSel || !filialSel || !almoxSel || !codigo || !nome || !quantidade || !fotoInput) {
-        showModal('Campos obrigatórios', '⚠️ Preencha todos os campos antes de registrar.');
-        btn.disabled = false;
-        btn.innerText = "✅ Registrar Item";
-        return;
-      }
-    
-      try {
-        // 1️⃣ Lê a imagem como base64
-        const base64 = await lerImagemBase64(fotoInput);
-    
-        // 2️⃣ Envia para o servidor para salvar no Drive
-        const respostaImagem = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `dados=${encodeURIComponent(JSON.stringify({
-            action: "salvarImagemTemporaria",
-            dados: {
-              base64: base64,
-              nome: fotoInput.name
-            }
-          }))}`
-        });
-    
-        const resultadoImagem = await respostaImagem.json();
-    
-        if (!resultadoImagem.sucesso) {
-          throw new Error("Erro ao salvar imagem: " + resultadoImagem.mensagem);
-        }
-    
-        const dados = {
-          usuario: usuarioLogado,
-          contagem: contagemSel,
-          filial: filialSel,
-          almoxarifado: almoxSel,
-          codigo,
-          nome,
-          quantidade,
-          comentario,
-          imagemURL: resultadoImagem.url || "", // ou resultadoImagem.id
-        };
-    
-        // 3️⃣ Envia os dados do item
-        const respostaItem = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `dados=${encodeURIComponent(JSON.stringify({
-            action: "salvarItemContagem",
-            dados: dados
-          }))}`
-        });
-    
-        const resultadoItem = await respostaItem.json();
-    
-        btn.disabled = false;
-        btn.innerText = "✅ Registrar Item";
-    
-        if (resultadoItem.sucesso) {
-          itensRegistrados.push(dados);
-          atualizarListaItens();
-    
-          document.getElementById('codigo').value = '';
-          document.getElementById('nomeItem').value = '';
-          document.getElementById('quantidade').value = '';
-          document.getElementById('comentario').value = '';
-          document.getElementById('foto').value = '';
-    
-          showModal("✅ Sucesso", "Item registrado com sucesso!");
-        } else {
-          showModal("❌ Erro", "Falha ao salvar item: " + resultadoItem.mensagem);
-        }
-    
-      } catch (erro) {
-        console.error(erro);
-        btn.disabled = false;
-        btn.innerText = "✅ Registrar Item";
-        showModal("❌ Erro", "Erro ao processar o item: " + erro.message);
-      }
-    }
-    
-  
-    /* ================= SALVAR ITEM NO SERVIDOR ================= */
-    async function salvarItemServidor(dados, btnRef) {
-      try {
-        const resposta = await fetch(API_URL, {
-          method: "POST",
-          body: `dados=${encodeURIComponent(JSON.stringify({
-            action: "salvarItemContagem",
-            dados: dados
-          }))}`,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          }
-        });
-    
-        const result = await resposta.json();
-        btnRef.disabled = false;
-        btnRef.innerText = "✅ Registrar Item";
-    
-        if (result.sucesso) {
-          itensRegistrados.push(dados);
-          atualizarListaItens();
-          salvarEstadoTela("contagem");
-    
-          document.getElementById('codigo').value = '';
-          document.getElementById('nomeItem').value = '';
-          document.getElementById('quantidade').value = '';
-          document.getElementById('comentario').value = '';
-          document.getElementById('foto').value = '';
-    
-          showModal("✅ Sucesso", "Item registrado com sucesso!");
-        } else {
-          showModal("❌ Erro", "Falha ao salvar: " + result.mensagem);
-        }
-      } catch (e) {
-        console.error("Erro ao salvar:", e);
-        btnRef.disabled = false;
-        btnRef.innerText = "✅ Registrar Item";
-        showModal("❌ Erro", "Erro ao conectar ao servidor.");
-      }
-    }
-    
-    /* ================= OUTRAS FUNÇÕES ================= */
-    function removerItem(index) {
-      itensRegistrados.splice(index, 1);
-      atualizarListaItens();
-    }
-    
-    function fazerLogout() {
-      usuarioLogado = "";
-      localStorage.removeItem("usuarioLogado");
-      document.getElementById('bemVindoBox').style.display = 'none';
-      document.getElementById('contagemBox').style.display = 'none';
-      document.getElementById('loginBox').style.display = 'flex';
-      document.getElementById('codigoLogin').value = "";
-    }
-    
-    function voltarMenu() {
-      document.getElementById('consultarBox').style.display = 'none';
-      document.getElementById('contagensAbertasBox').style.display = 'none';
-      document.getElementById('contagemBox').style.display = 'none';
-      document.getElementById('bemVindoBox').style.display = 'flex';
-      document.getElementById('listaItens').innerHTML = "";
-      document.getElementById('tituloItens').textContent = "";
-    }
-    
-    function encerrarContagem() {
-      if (itensRegistrados.length === 0) {
-        showModal("⚠️ Atenção", "Não há itens para encerrar a contagem.");
-        return;
-      }
-    
-      const dados = {
-        usuario: usuarioLogado,
-        filial: document.getElementById("filial").value,
-        contagem: document.getElementById("contagem").value,
-        itens: itensRegistrados
-      };
-    
-      fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: `dados=${encodeURIComponent(JSON.stringify({
-          action: "encerrarContagem",
-          dados: dados
-        }))}`
-      })
-        .then(res => res.json())
-        .then(resposta => {
-          if (resposta.sucesso) {
-            showModal("✅ Contagem Encerrada", "Contagem encerrada com sucesso. PDF/CSV foram enviados por e-mail.");
-            localStorage.removeItem("itensTemporarios");
-            voltarMenu();            
-          } else {
-            showModal("❌ Erro", "Erro ao encerrar: " + resposta.mensagem);
-          }
-        })
-        .catch(erro => {
-          console.error("Erro ao encerrar contagem:", erro);
-          showModal("❌ Erro", "Erro ao conectar ao servidor.");
-        });
-   
-    }
-    
+      const produto = produtosCarregados.find(p => p.codigo === codigoDigitado && p.contagem === contagemSelecionada);
+      document.getElementById("nomeItem").value = produto?.nome || "";
+    });
   </script>
 </body>
 </html>
