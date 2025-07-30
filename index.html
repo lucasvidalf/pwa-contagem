@@ -425,102 +425,132 @@
       }
     }     
     /* ================= PREENCHER CONTAGENS DISPONÍVEIS ================= */
-    function preencherContagensDisponiveis() {
-      console.log("Função preencherContagensDisponíveis() foi chamada");
-      const select = document.getElementById("contagem");
-      const filial = localStorage.getItem("filialUsuario");
+   function preencherContagensDisponiveis() {
+  console.log("Função preencherContagensDisponíveis() foi chamada");
+  const select = document.getElementById("contagem");
+  const filial = localStorage.getItem("filialUsuario");
 
-      // Salva contagem selecionada
-      const contagemSelecionada = select.value;
+  // Salva contagem selecionada (caso venha do estado salvo)
+  const contagemSelecionada = select.value;
 
-      // Filtra e extrai contagens únicas
-      const contagens = [...new Set(produtosCarregados
-        .filter(p => p.filial === filial)
-        .map(p => p.contagem)
-        .filter(c => c))];
+  const contagens = [...new Set(produtosCarregados
+    .filter(p => p.filial === filial)
+    .map(p => p.contagem)
+    .filter(Boolean))];
 
-      // Limpa e repopula o select
-      select.innerHTML = "<option value=''>Selecione...</option>";
-      contagens.forEach(c => {
-        const opt = document.createElement("option");
-        opt.value = c;
-        opt.innerText = c;
-        select.appendChild(opt);
-      });
+  select.innerHTML = "<option value=''>Selecione...</option>";
+  contagens.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.innerText = c;
+    select.appendChild(opt);
+  });
+
+  // Se havia uma contagem salva, restaura
+  if (contagemSelecionada && contagens.includes(contagemSelecionada)) {
+    select.value = contagemSelecionada;
+    select.dispatchEvent(new Event("change"));
+  }
+}
+
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        document.body.style.visibility = "hidden"; // esconde a interface até tudo carregar
       
-      // Restaura contagem selecionada
-      if (contagemSelecionada && contagens.includes(contagemSelecionada)){
-        select.value = contagemSelecionada;
-
-        //Força o gatilho change
-        select.dispatchEvent(new Event("change"));
-      }
-    }
-    
-        document.addEventListener("DOMContentLoaded", async () => {          
         const usuario = localStorage.getItem("usuarioLogado");
         const estadoSalvo = localStorage.getItem("estadoTelaAtual");
-        
-          if (usuario) {
-            usuarioLogado = usuario;
-            document.getElementById("loginBox").style.display = "none";
-            document.getElementById("bemVindoBox").style.display = "block";
-            document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario + "!";
-        
-            await carregarProdutos();
-            console.log("Carregou Produtos");
-        
-            if (estadoSalvo) {
-              try {
-                const estado = JSON.parse(estadoSalvo);
-        
-                if (salvarEstadoTela() === "contagem") {
-                  restaurarContagemDeEstado(estado);
-                  console.log("Restaurou Contagem Estado");
-                }
-              } catch (e) {
-                console.warn("❌ Erro ao restaurar estado:", e);
+      
+        if (usuario) {
+          usuarioLogado = usuario;
+          document.getElementById("loginBox").style.display = "none";
+      
+          await carregarProdutos();
+          console.log("✅ Carregou produtos");
+      
+          if (estadoSalvo) {
+            try {
+              const estado = JSON.parse(estadoSalvo);
+      
+              if (estado.tela === "contagem") {
+                preencherContagensDisponiveis(); // garante que o select seja populado antes de dar .value
+      
+                // Delay mínimo para garantir renderização do select
+                setTimeout(() => {
+                  document.getElementById("contagem").value = estado.campos.contagem;
+                  document.getElementById("filial").value = estado.campos.filial;
+                  document.getElementById("almoxarifado").value = estado.campos.almoxarifado;
+                  document.getElementById("dataContagem").value = estado.campos.data;
+      
+                  const produtos = produtosCarregados.filter(p => p.contagem === estado.campos.contagem);
+                  const datalist = document.getElementById("listaCodigos");
+                  datalist.innerHTML = "";
+                  produtos.forEach(p => {
+                    const opt = document.createElement("option");
+                    opt.value = p.codigo;
+                    datalist.appendChild(opt);
+                  });
+      
+                  itensRegistrados = estado.itens || [];
+                  atualizarListaItens();
+      
+                  document.getElementById("usuarioContagem").innerText = usuario;
+                  document.getElementById("contagemBox").style.display = "block";
+                  document.body.style.visibility = "visible"; // mostra a interface
+                }, 1000);
+                return;
               }
+            } catch (e) {
+              console.warn("❌ Erro ao restaurar estado:", e);
             }
           }
-        
-          // Atualiza campos ao mudar contagem
-          document.getElementById("contagem").addEventListener("change", () => {
-            const selecionada = document.getElementById("contagem").value;
-            const produtos = produtosCarregados.filter(p => p.contagem === selecionada);
-        
-            if (produtos.length > 0) {
-              document.getElementById("filial").value = produtos[0].filial;
-              document.getElementById("almoxarifado").value = produtos[0].almoxarifado;
-        
-              const datalist = document.getElementById("listaCodigos");
-              datalist.innerHTML = "";
-              produtos.forEach(p => {
-                const opt = document.createElement("option");
-                opt.value = p.codigo;
-                datalist.appendChild(opt);
-              });
-            }
-          });
-        
-          // Atualiza nome do item ao digitar código
-          document.getElementById("codigo").addEventListener("input", () => {
-            const codigoDigitado = document.getElementById("codigo").value.trim();
-            const contagemSelecionada = document.getElementById("contagem").value;
-        
-            if (!codigoDigitado || !contagemSelecionada) {
-              document.getElementById("nomeItem").value = "";
-              return;
-            }
-        
-            const produto = produtosCarregados.find(p =>
-              p.codigo === codigoDigitado && p.contagem === contagemSelecionada
-            );
-        
-            document.getElementById("nomeItem").value = produto?.nome || "";
-          });
+      
+          // Caso contrário, mostra o menu padrão
+          document.getElementById("bemVindoBox").style.display = "block";
+          document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario + "!";
+          document.body.style.visibility = "visible";
+        } else {
+          // Usuário não logado
+          document.getElementById("loginBox").style.display = "block";
+          document.body.style.visibility = "visible";
+        }
+      
+        // Atualiza campos ao mudar contagem
+        document.getElementById("contagem").addEventListener("change", () => {
+          const selecionada = document.getElementById("contagem").value;
+          const produtos = produtosCarregados.filter(p => p.contagem === selecionada);
+      
+          if (produtos.length > 0) {
+            document.getElementById("filial").value = produtos[0].filial;
+            document.getElementById("almoxarifado").value = produtos[0].almoxarifado;
+      
+            const datalist = document.getElementById("listaCodigos");
+            datalist.innerHTML = "";
+            produtos.forEach(p => {
+              const opt = document.createElement("option");
+              opt.value = p.codigo;
+              datalist.appendChild(opt);
+            });
+          }
         });
-    
+      
+        // Atualiza nome do item ao digitar código
+        document.getElementById("codigo").addEventListener("input", () => {
+          const codigoDigitado = document.getElementById("codigo").value.trim();
+          const contagemSelecionada = document.getElementById("contagem").value;
+      
+          if (!codigoDigitado || !contagemSelecionada) {
+            document.getElementById("nomeItem").value = "";
+            return;
+          }
+      
+          const produto = produtosCarregados.find(p =>
+            p.codigo === codigoDigitado && p.contagem === contagemSelecionada
+          );
+      
+          document.getElementById("nomeItem").value = produto?.nome || "";
+        });
+      });
+      
     /* ================= RESTAURA ESTADO CONTAGEM ================= */
     function restaurarContagemDeEstado(estado) {
       console.log("Restaurou Contagem Estado na propria funcao");
