@@ -452,15 +452,16 @@
       }
     }
 
-    document.addEventListener("DOMContentLoaded", async () => {
+     document.addEventListener("DOMContentLoaded", async () => {
       const estadoSalvo = localStorage.getItem("estadoTelaAtual");
     
       if (estadoSalvo) {
         try {
           const estado = JSON.parse(estadoSalvo);
           usuarioLogado = estado.usuarioLogado || "";
+          localStorage.setItem("usuarioLogado", usuarioLogado);
     
-          await carregarProdutos();
+          await carregarProdutos(); // carrega produtos antes de restaurar tela
     
           switch (estado.tela) {
             case "login":
@@ -473,25 +474,13 @@
               break;
     
             case "contagem":
-              abrirContagem(true); // carrega tela de contagem
-              document.getElementById("contagem").value = estado.campos.contagem;
-              document.getElementById("filial").value = estado.campos.filial;
-              document.getElementById("almoxarifado").value = estado.campos.almoxarifado;
-              document.getElementById("dataContagem").value = estado.campos.data;
+              document.getElementById("loginBox").style.display = "none";
+              document.getElementById("bemVindoBox").style.display = "none";
+              document.getElementById("contagemBox").style.display = "block";
+              document.getElementById("usuarioContagem").innerText = usuarioLogado;
     
-              // Atualiza datalist de códigos
-              const produtos = produtosCarregados.filter(p => p.contagem === estado.campos.contagem);
-              const datalist = document.getElementById("listaCodigos");
-              datalist.innerHTML = "";
-              produtos.forEach(p => {
-                const opt = document.createElement("option");
-                opt.value = p.codigo;
-                datalist.appendChild(opt);
-              });
-    
-              // Restaura itens registrados
-              itensRegistrados = estado.itens || [];
-              atualizarListaItens();
+              preencherContagensDisponiveis(); // garante que o select esteja preenchido
+              restaurarContagemDeEstado(estado); // restaura os campos da contagem e os itens
               break;
     
             default:
@@ -507,7 +496,6 @@
         document.getElementById("loginBox").style.display = "block";
       }
     });
-
     
     /* ================= RESTAURA ESTADO CONTAGEM ================= */
     function restaurarContagemDeEstado(estado) {    
