@@ -389,7 +389,10 @@
         itensRegistrados = [];
         await carregarProdutos();
         preencherContagensDisponiveis(produtosCarregados);
-        configurarEventoContagem();       
+        configurarEventoContagem();
+
+        salvarEstadoTela("Contagem");
+        
       } else {
         fetch(`${API_URL}?action=recuperarItensTemp`)
           .then(res => res.json())
