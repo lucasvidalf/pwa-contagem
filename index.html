@@ -419,7 +419,8 @@
           .then(res => res.json())
           .then(data => {
             itensRegistrados = data.itens || [];
-            atualizarListaItens();    
+            atualizarListaItens();
+            console.log("Atualizou Lista");
           });
       }
     }     
@@ -456,7 +457,7 @@
       }
     }
     
-        document.addEventListener("DOMContentLoaded", async () => {
+        document.addEventListener("DOMContentLoaded", async () => {          
         const usuario = localStorage.getItem("usuarioLogado");
         const estadoSalvo = localStorage.getItem("estadoTelaAtual");
         
@@ -467,6 +468,7 @@
             document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario + "!";
         
             await carregarProdutos();
+            console.log("Carregou Produtos");
         
             if (estadoSalvo) {
               try {
@@ -474,6 +476,7 @@
         
                 if (salvarEstadoTela() === "contagem") {
                   restaurarContagemDeEstado(estado);
+                  console.log("Restaurou Contagem Estado");
                 }
               } catch (e) {
                 console.warn("❌ Erro ao restaurar estado:", e);
@@ -520,6 +523,7 @@
     
     /* ================= RESTAURA ESTADO CONTAGEM ================= */
     function restaurarContagemDeEstado(estado) {
+      console.log("Restaurou Contagem Estado na propria funcao");
       document.getElementById("bemVindoBox").style.display = "none";
       document.getElementById("contagemBox").style.display = "block";
       document.getElementById("usuarioContagem").innerText = usuarioLogado;
