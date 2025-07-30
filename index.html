@@ -332,6 +332,7 @@
     async function fazerLogin() {
       const codigo = document.getElementById('codigoLogin').value.trim();
       const msg = document.getElementById('msgLogin');
+      salvarEstadoTela ();
     
       if (!codigo) {
         msg.innerHTML = "<span class='erro'>⚠️ Digite seu código!</span>";
@@ -402,7 +403,8 @@
       document.getElementById('bemVindoBox').style.display = 'none';
       document.getElementById('contagemBox').style.display = 'block';
       document.getElementById('usuarioContagem').innerText = localStorage.getItem("usuarioLogado");
-      document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');     
+      document.getElementById('dataContagem').value = new Date().toLocaleDateString('pt-BR');
+      salvarEstadoTela ();
     
       if (nova) {
         itensRegistrados = [];
@@ -415,9 +417,11 @@
           .then(res => res.json())
           .then(data => {
             itensRegistrados = data.itens || [];
-            atualizarListaItens();            
+            atualizarListaItens();
+            salvarEstadoTela ();
           });
       }
+      salvarEstadoTela ();
     }     
     /* ================= PREENCHER CONTAGENS DISPONÍVEIS ================= */
     function preencherContagensDisponiveis() {
@@ -427,12 +431,14 @@
 
       // Salva contagem selecionada
       const contagemSelecionada = select.value;
+      salvarEstadoTela ();
 
       // Filtra e extrai contagens únicas
       const contagens = [...new Set(produtosCarregados
         .filter(p => p.filial === filial)
         .map(p => p.contagem)
         .filter(c => c))];
+      salvarEstadoTela ();
 
       // Limpa e repopula o select
       select.innerHTML = "<option value=''>Selecione...</option>";
@@ -442,10 +448,12 @@
         opt.innerText = c;
         select.appendChild(opt);
       });
+      salvarEstadoTela ();
       
       // Restaura contagem selecionada
       if (contagemSelecionada && contagens.includes(contagemSelecionada)){
         select.value = contagemSelecionada;
+        salvarEstadoTela ();
 
         //Força o gatilho change
         select.dispatchEvent(new Event("change"));
