@@ -470,7 +470,7 @@
               try {
                 const estado = JSON.parse(estadoSalvo);
         
-                if (estadoSalvo.tela.toLowerCase() === "contagem") {
+                if (estadoSalvo.tela() === "contagem") {
                   restaurarContagemDeEstado(estado);
                 }
               } catch (e) {
