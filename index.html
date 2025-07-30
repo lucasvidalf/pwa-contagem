@@ -436,8 +436,9 @@
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
-      const usuario = localStorage.getItem("usuarioLogado");
-      const estadoSalvo = localStorage.getItem("estadoTelaAtual");
+    document.body.style.visibility = "hidden"; 
+    const usuario = localStorage.getItem("usuarioLogado");
+    const estadoSalvo = localStorage.getItem("estadoTelaAtual");
     
       if (usuario) {
         usuarioLogado = usuario;
