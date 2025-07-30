@@ -496,11 +496,7 @@
     });
     
     /* ================= RESTAURA ESTADO CONTAGEM ================= */
-    function restaurarContagemDeEstado(estado) {
-      document.getElementById("bemVindoBox").style.display = "none";
-      document.getElementById("contagemBox").style.display = "block";
-      document.getElementById("usuarioContagem").innerText = usuarioLogado;
-    
+    function restaurarContagemDeEstado(estado) {    
       // Preenche campos salvos
       document.getElementById("contagem").value = estado.campos.contagem || "";
       document.getElementById("filial").value = estado.campos.filial || "";
