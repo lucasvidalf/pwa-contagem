@@ -400,24 +400,7 @@
       }
     }     
     /* ================= PREENCHER CONTAGENS DISPONÍVEIS ================= */
-    function preencherContagensDisponiveis() {
-      const select = localStorage.getItem("contagem");
-      const filial = document.getElementById("filialUsuario");
-      const contagens = [...new Set(produtos
-        .filter(p => p.filial === filial)
-        .map(p => p.contagem)
-        .filter(c => c))];
-    
-      select.innerHTML = "<option value=''>Selecione...</option>";
-      contagens.forEach(c => {
-        const opt = document.createElement("option");
-        opt.value = c;
-        opt.innerText = c;
-        select.appendChild(opt);
-      });
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("contagem").addEventListener("change", () => {
         const selecionada = document.getElementById("contagem").value;
         const produtos = produtosCarregados.filter(p => p.contagem === selecionada);
@@ -435,6 +418,23 @@
         }
       });
     });
+
+    function preencherContagensDisponiveis() {
+      const select = localStorage.getItem("contagem");
+      const filial = document.getElementById("filialUsuario");
+      const contagens = [...new Set(produtos
+        .filter(p => p.filial === filial)
+        .map(p => p.contagem)
+        .filter(c => c))];
+    
+      select.innerHTML = "<option value=''>Selecione...</option>";
+      contagens.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.innerText = c;
+        select.appendChild(opt);
+      });
+    }
     
     /* ================= ATUALIZAR LISTA DE ITENS ================= */
     function atualizarListaItens() {
