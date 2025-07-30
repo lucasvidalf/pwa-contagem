@@ -298,89 +298,198 @@
   </div>
 
   <script>
-    const API_URL = "https://..."; // seu endpoint
+    
+    const API_URL = "https://script.google.com/macros/s/AKfycbxMXlGfKgoImTIsxtOZ4Uy451gQ9LqTVn2uknqfLL-BB6lcywsN93C1FKByAJ2idIQM2A/exec";
+    
     let usuarioLogado = localStorage.getItem("usuarioLogado") || "";
     let produtosCarregados = [];
     let itensRegistrados = [];
+
+    function salvarEstadoTela(tela) {
+      const estado = {
+        tela: tela,
+        usuarioLogado,
+        itens: itensRegistrados,
+        campos: {
+          contagem: document.getElementById("contagem")?.value || "",
+          filial: document.getElementById("filial")?.value || "",
+          almoxarifado: document.getElementById("almoxarifado")?.value || "",
+          data: document.getElementById("dataContagem")?.value || new Date().toLocaleDateString("pt-BR")
+        }
+      };
+      localStorage.setItem("estadoTelaAtual", JSON.stringify(estado));
+    }
 
     async function carregarProdutos() {
       try {
         const res = await fetch(${API_URL}?action=getProdutos);
         produtosCarregados = await res.json();
       } catch (e) {
-        console.warn("Erro ao carregar produtos:", e);
+        console.error("Erro ao carregar produtos:", e);
         produtosCarregados = [];
       }
     }
 
-    function restaurarContagemDeEstado(estado) {
-      document.getElementById("contagemBox").style.display = "block";
-      document.getElementById("usuarioContagem").innerText = estado.usuarioLogado;
-
-      document.getElementById("contagem").value = estado.campos.contagem;
-      document.getElementById("filial").value = estado.campos.filial;
-      document.getElementById("almoxarifado").value = estado.campos.almoxarifado;
-      document.getElementById("dataContagem").value = estado.campos.data;
-
-      const produtos = produtosCarregados.filter(p => p.contagem === estado.campos.contagem);
-      const datalist = document.getElementById("listaCodigos");
-      datalist.innerHTML = "";
-      produtos.forEach(p => {
-        const opt = document.createElement("option");
-        opt.value = p.codigo;
-        datalist.appendChild(opt);
-      });
-
-      itensRegistrados = estado.itens || [];
-      atualizarListaItens();
-
-      document.getElementById("contagem").dispatchEvent(new Event("change"));
-    }
-
     function atualizarListaItens() {
-      const lista = document.getElementById("listaItens");
-      lista.innerHTML = "";
-      itensRegistrados.forEach((item, idx) => {
+      const container = document.getElementById("listaItens");
+      container.innerHTML = "";
+      itensRegistrados.forEach(item => {
         const div = document.createElement("div");
-        div.textContent = ${item.codigo} - ${item.nome} (${item.quantidade});
-        lista.appendChild(div);
+        div.innerText = ${item.codigo} - ${item.nome};
+        container.appendChild(div);
       });
     }
 
-    document.addEventListener("DOMContentLoaded", async () => {
-      const estadoJSON = localStorage.getItem("estadoTelaAtual");
-      const usuarioSalvo = localStorage.getItem("usuarioLogado");
-      let estado = null;
+    function preencherContagensDisponiveis() {
+      const select = document.getElementById("contagem");
+      const filial = localStorage.getItem("filialUsuario");
+      const contagens = [...new Set(produtosCarregados.map(p => p.contagem).filter(c => c))];
+      select.innerHTML = "<option value=''>Selecione...</option>";
+      contagens.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.innerText = c;
+        select.appendChild(opt);
+      });
+    }
 
-      if (estadoJSON) {
-        try {
-          estado = JSON.parse(estadoJSON);
-          usuarioLogado = estado.usuarioLogado || usuarioSalvo || "";
-        } catch {
-          estado = null;
-        }
+    function abrirContagem(nova) {
+      document.getElementById("bemVindoBox").style.display = "none";
+      document.getElementById("contagemBox").style.display = "block";
+      document.getElementById("usuarioContagem").innerText = usuarioLogado;
+      document.getElementById("dataContagem").value = new Date().toLocaleDateString("pt-BR");
+
+      if (nova) {
+        itensRegistrados = [];
+        preencherContagensDisponiveis();
+        atualizarListaItens();
+        salvarEstadoTela("contagem");
       }
+    }
 
-      if (!usuarioLogado) {
-        document.getElementById("loginBox").style.display = "block";
-        document.body.style.visibility = "visible";
+    function registrarItem() {
+      const codigo = document.getElementById("codigo").value;
+      const nome = document.getElementById("nomeItem").value;
+      if (codigo && nome) {
+        itensRegistrados.push({ codigo, nome });
+        atualizarListaItens();
+        salvarEstadoTela("contagem");
+      }
+    }
+
+    function encerrarContagem() {
+      if (itensRegistrados.length === 0) {
+        alert("Nenhum item registrado.");
         return;
       }
 
-      localStorage.setItem("usuarioLogado", usuarioLogado);
+      localStorage.removeItem("estadoTelaAtual");
+      alert("Contagem encerrada!");
+      voltarMenu();
+    }
+
+    function voltarMenu() {
+      document.getElementById("contagemBox").style.display = "none";
+      document.getElementById("bemVindoBox").style.display = "block";
+      salvarEstadoTela("bemVindo");
+    }
+
+    async function login() {
+      const codigo = document.getElementById("codigoUsuario").value;
+      if (!codigo) return;
+      usuarioLogado = codigo;
+      localStorage.setItem("usuarioLogado", codigo);
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("bemVindoBox").style.display = "block";
+      document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + codigo;
+      await carregarProdutos();
+      salvarEstadoTela("bemVindo");
+    }
+
+    // DOM LOADED
+    document.addEventListener("DOMContentLoaded", async () => {
+      const estadoSalvo = localStorage.getItem("estadoTelaAtual");
+      const usuario = localStorage.getItem("usuarioLogado");
+
+      if (usuario) usuarioLogado = usuario;
       await carregarProdutos();
 
-      if (estado?.tela === "contagem") {
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("bemVindoBox").style.display = "none";
-        restaurarContagemDeEstado(estado);
-      } else {
+      if (estadoSalvo) {
+        try {
+          const estado = JSON.parse(estadoSalvo);
+          usuarioLogado = estado.usuarioLogado;
+          if (estado.tela === "contagem") {
+            document.getElementById("loginBox").style.display = "none";
+            document.getElementById("bemVindoBox").style.display = "none";
+            document.getElementById("contagemBox").style.display = "block";
+
+            document.getElementById("usuarioContagem").innerText = estado.usuarioLogado;
+            document.getElementById("contagem").value = estado.campos.contagem;
+            document.getElementById("filial").value = estado.campos.filial;
+            document.getElementById("almoxarifado").value = estado.campos.almoxarifado;
+            document.getElementById("dataContagem").value = estado.campos.data;
+
+            const datalist = document.getElementById("listaCodigos");
+            datalist.innerHTML = "";
+            produtosCarregados
+              .filter(p => p.contagem === estado.campos.contagem)
+              .forEach(p => {
+                const opt = document.createElement("option");
+                opt.value = p.codigo;
+                datalist.appendChild(opt);
+              });
+
+            itensRegistrados = estado.itens || [];
+            atualizarListaItens();
+          } else {
+            document.getElementById("loginBox").style.display = "none";
+            document.getElementById("bemVindoBox").style.display = "block";
+            document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuarioLogado;
+          }
+        } catch (e) {
+          console.warn("Erro ao restaurar estado:", e);
+          document.getElementById("loginBox").style.display = "block";
+        }
+      } else if (usuario) {
         document.getElementById("loginBox").style.display = "none";
         document.getElementById("bemVindoBox").style.display = "block";
+        document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuarioLogado;
+        salvarEstadoTela("bemVindo");
+      } else {
+        document.getElementById("loginBox").style.display = "block";
       }
 
       document.body.style.visibility = "visible";
     });
+
+    // EVENTOS
+    document.addEventListener("input", e => {
+      if (e.target.id === "codigo") {
+        const codigoDigitado = e.target.value.trim();
+        const contagemSelecionada = document.getElementById("contagem").value;
+        const produto = produtosCarregados.find(p => p.codigo === codigoDigitado && p.contagem === contagemSelecionada);
+        document.getElementById("nomeItem").value = produto?.nome || "";
+      }
+    });
+
+    document.getElementById("contagem").addEventListener("change", () => {
+      const selecionada = document.getElementById("contagem").value;
+      const produtos = produtosCarregados.filter(p => p.contagem === selecionada);
+
+      if (produtos.length > 0) {
+        document.getElementById("filial").value = produtos[0].filial;
+        document.getElementById("almoxarifado").value = produtos[0].almoxarifado;
+
+        const datalist = document.getElementById("listaCodigos");
+        datalist.innerHTML = "";
+        produtos.forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = p.codigo;
+          datalist.appendChild(opt);
+        });
+      }
+    });
+  </script>
     
   </script>
 </body>
