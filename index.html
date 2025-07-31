@@ -734,8 +734,7 @@
       const respostaImagem = await fetch(API_URL, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
-        },
+          "Content-Type": "application/json"},
         body: JSON.stringify({
           acao: "salvarImagemTemporaria",
           dados: {
@@ -768,15 +767,16 @@
       const respostaItem = await fetch(API_URL, {
         method: "POST",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+          "Content-Type": "application/json"
         },
-        body: `dados=${encodeURIComponent(JSON.stringify({
+        body: JSON.stringify({
           acao: "salvarItemContagem",
-          dados: dados
-        }))}`
+          dados: {codigo}
+        })
       });
   
       const resultadoItem = await respostaItem.json();
+      console.log("Resultao de remoção:", resultado);
   
       btn.disabled = false;
       btn.innerText = "✅ Registrar Item";
