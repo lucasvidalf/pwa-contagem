@@ -706,104 +706,103 @@
     
     /* ================= REGISTRAR ITEM ================= */
    async function registrarItem() {
-      const btn = document.getElementById('btnRegistrar');
-      btn.disabled = true;
-      btn.innerText = "⏳ Registrando...";
-    
-      const contagemSel = document.getElementById('contagem').value;
-      const filialSel = document.getElementById('filial').value;
-      const almoxSel = document.getElementById('almoxarifado').value;
-      const codigo = document.getElementById('codigo').value.trim();
-      const nome = document.getElementById('nomeItem').value.trim();
-      const quantidade = document.getElementById('quantidade').value.trim();
-      const comentario = document.getElementById('comentario').value.trim();
-      const fotoInput = document.getElementById('foto').files[0];
-    
-      if (!contagemSel || !filialSel || !almoxSel || !codigo || !nome || !quantidade || !fotoInput) {
-        showModal('Campos obrigatórios', '⚠️ Preencha todos os campos antes de registrar.');
-        btn.disabled = false;
-        btn.innerText = "✅ Registrar Item";
-        return;
-      }
-    
-      try {
-        // 1️⃣ Lê a imagem como base64
-        const base64 = await lerImagemBase64(fotoInput);
-    
-        // 2️⃣ Envia a imagem para o servidor para salvar no Drive
-        const respostaImagem = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            acao: "salvarImagemTemporaria",
-            dados: {
-              base64: base64,
-              nome: fotoInput.name
-            }
-          })
-        });
-    
-        const resultadoImagem = await respostaImagem.json();
-    
-        if (!resultadoImagem.sucesso) {
-          throw new Error("Erro ao salvar imagem: " + resultadoImagem.mensagem);
-        }
-    
-        // 3️⃣ Monta os dados do item
-        const dados = {
-          usuario: usuarioLogado,
-          contagem: contagemSel,
-          filial: filialSel,
-          almoxarifado: almoxSel,
-          codigo,
-          nome,
-          quantidade,
-          comentario,
-          imagemURL: resultadoImagem.url || ""
-        };
-    
-        // 4️⃣ Envia os dados do item para registrar
-        const respostaItem = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          body: `dados=${encodeURIComponent(JSON.stringify({
-            acao: "salvarItemContagem",
-            dados: dados
-          }))}`
-        });
-    
-        const resultadoItem = await respostaItem.json();
-    
-        btn.disabled = false;
-        btn.innerText = "✅ Registrar Item";
-    
-        if (resultadoItem.sucesso) {
-          itensRegistrados.push(dados);
-          atualizarListaItens();
-    
-          // Limpar campos
-          document.getElementById('codigo').value = '';
-          document.getElementById('nomeItem').value = '';
-          document.getElementById('quantidade').value = '';
-          document.getElementById('comentario').value = '';
-          document.getElementById('foto').value = '';
-    
-          showModal("✅ Sucesso", "Item registrado com sucesso!");
-        } else {
-          showModal("❌ Erro", "Falha ao salvar item: " + resultadoItem.mensagem);
-        }
-    
-      } catch (erro) {
-        console.error(erro);
-        btn.disabled = false;
-        btn.innerText = "✅ Registrar Item";
-        showModal("❌ Erro", "Erro ao processar o item: " + erro.message);
-      }
+    const btn = document.getElementById('btnRegistrar');
+    btn.disabled = true;
+    btn.innerText = "⏳ Registrando...";
+  
+    const contagemSel = document.getElementById('contagem').value;
+    const filialSel = document.getElementById('filial').value;
+    const almoxSel = document.getElementById('almoxarifado').value;
+    const codigo = document.getElementById('codigo').value.trim();
+    const nome = document.getElementById('nomeItem').value.trim();
+    const quantidade = document.getElementById('quantidade').value.trim();
+    const comentario = document.getElementById('comentario').value.trim();
+    const fotoInput = document.getElementById('foto').files[0];
+  
+    if (!contagemSel || !filialSel || !almoxSel || !codigo || !nome || !quantidade || !fotoInput) {
+      showModal('Campos obrigatórios', '⚠️ Preencha todos os campos antes de registrar.');
+      btn.disabled = false;
+      btn.innerText = "✅ Registrar Item";
+      return;
     }
+  
+    try {
+      // 1️⃣ Lê imagem como base64
+      const base64 = await lerImagemBase64(fotoInput);
+  
+      // 2️⃣ Envia imagem ao backend
+      const respostaImagem = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          acao: "salvarImagemTemporaria",
+          dados: {
+            base64: base64,
+            nome: fotoInput.name
+          }
+        })
+      });
+  
+      const resultadoImagem = await respostaImagem.json();
+  
+      if (!resultadoImagem.sucesso) {
+        throw new Error("Erro ao salvar imagem: " + resultadoImagem.mensagem);
+      }
+  
+      // 3️⃣ Prepara os dados
+      const dados = {
+        usuario: usuarioLogado,
+        contagem: contagemSel,
+        filial: filialSel,
+        almoxarifado: almoxSel,
+        codigo,
+        nome,
+        quantidade,
+        comentario,
+        imagemURL: resultadoImagem.url || ""
+      };
+  
+      // 4️⃣ Salva o item com os dados
+      const respostaItem = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `dados=${encodeURIComponent(JSON.stringify({
+          acao: "salvarItemContagem",
+          dados: dados
+        }))}`
+      });
+  
+      const resultadoItem = await respostaItem.json();
+  
+      btn.disabled = false;
+      btn.innerText = "✅ Registrar Item";
+  
+      if (resultadoItem.sucesso) {
+        itensRegistrados.push(dados);
+        atualizarListaItens();
+  
+        document.getElementById('codigo').value = '';
+        document.getElementById('nomeItem').value = '';
+        document.getElementById('quantidade').value = '';
+        document.getElementById('comentario').value = '';
+        document.getElementById('foto').value = '';
+  
+        showModal("✅ Sucesso", "Item registrado com sucesso!");
+      } else {
+        showModal("❌ Erro", "Falha ao salvar item: " + resultadoItem.mensagem);
+      }
+  
+    } catch (erro) {
+      console.error(erro);
+      btn.disabled = false;
+      btn.innerText = "✅ Registrar Item";
+      showModal("❌ Erro", "Erro ao processar o item: " + erro.message);
+    }
+  }
     /* ================= SALVAR ITEM NO SERVIDOR ================= */
     async function salvarItemServidor(dados, btnRef) {
       try {
