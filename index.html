@@ -313,7 +313,7 @@
     async function fazerLogin() {
       const codigo = document.getElementById('codigoLogin').value.trim();
       const msg = document.getElementById('msgLogin');
-    
+      console.log("Função fazer login() foi chamada");
       if (!codigo) {
         msg.innerHTML = "<span class='erro'>⚠️ Digite seu código!</span>";
         return;
