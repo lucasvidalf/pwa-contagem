@@ -862,15 +862,37 @@
     /* ================= OUTRAS FUNÇÕES ================= */
     function removerItem(index) {
       const codigo = itensRegistrados[index].codigo;
+    
       showModal(
         "Remover Item",
         `Deseja remover <b>${itensRegistrados[index].nome}</b>?`,
         "confirm",
         function(conf) {
           if (!conf) return;
-          google.script.run.removerItemContagem(codigo);
-          itensRegistrados.splice(index, 1);
-          atualizarListaItens();
+    
+          fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify({
+              acao: "removerItemContagem",
+              codigo: codigo
+            }),
+            headers: {
+              "Content-Type": "application/json"
+            }
+          })
+          .then(response => response.json())
+          .then(resposta => {
+            if (resposta.status === "ok") {
+              itensRegistrados.splice(index, 1);
+              atualizarListaItens();
+              console.log("Item removido com sucesso.");
+            } else {
+              console.error("Erro na resposta do servidor:", resposta.mensagem);
+            }
+          })
+          .catch(erro => {
+            console.error("Erro ao remover item:", erro);
+          });
         }
       );
     }
