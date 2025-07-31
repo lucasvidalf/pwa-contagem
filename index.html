@@ -298,17 +298,125 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxMXlGfKgoImTIsxtOZ4Uy451gQ9LqTVn2uknqfLL-BB6lcywsN93C1FKByAJ2idIQM2A/exec";
 
+
+    
+    const API_URL = "https://script.google.com/macros/s/AKfycbxMXlGfKgoImTIsxtOZ4Uy451gQ9LqTVn2uknqfLL-BB6lcywsN93C1FKByAJ2idIQM2A/exec";
+    
+    /* ================= VARIÁVEIS GLOBAIS ================= */
     let usuarioLogado = localStorage.getItem("usuarioLogado") || "";
     let itensRegistrados = [];
     let produtosCarregados = [];
 
-    /* ================= MODAL ================= */
-    function showModal(titulo, mensagem) {
-      alert(`${titulo}\n\n${mensagem}`);
-    }
-          
+    
+      // SALVAR ESTADO DE TELA
+      function salvarEstadoTela(estado, extras = {}) {
+        console.log("Função salvar Estado (estado,extras) foi chamada");
+        const dadosEstado = {
+          tela: estado,
+          usuarioLogado: usuarioLogado,
+          itens: JSON.parse(JSON.stringify(itensRegistrados || [])),
+          campos: {
+            contagem: document.getElementById('contagem')?.value || "",
+            filial: document.getElementById('filial')?.value || "",
+            almoxarifado: document.getElementById('almoxarifado')?.value || "",
+            data: document.getElementById('dataContagem')?.value || new Date().toLocaleDateString('pt-BR')
+          },
+          extras: extras,
+          timestamp: Date.now()
+        };
+        localStorage.setItem("estadoTelaAtual", JSON.stringify(dadosEstado));
+      }
+
+      /* ================= RESTAURAR ESTADO TELA ================= */
+      function restaurarEstadoTela(estado) {
+        const tela = estado.tela;
+    
+        // 🔄 Restaurar variáveis globais
+        usuarioLogado = estado.usuarioLogado || usuarioLogado;
+        itensRegistrados = estado.itens && estado.itens.length > 0 ? estado.itens : [];
+    
+        // 🔄 Restaurar tela específica
+        if (tela === "contagem") {
+          document.getElementById('bemVindoBox').style.display = 'none';
+          document.getElementById('contagemBox').style.display = 'block';
+          document.getElementById('usuarioContagem').innerText = usuarioLogado;
+    
+          // ✅ Restaurar os campos que estavam preenchidos
+          document.getElementById('contagem').value = estado.campos?.contagem || "";
+          document.getElementById('filial').value = estado.campos?.filial || "";
+          document.getElementById('almoxarifado').value = estado.campos?.almoxarifado || "";
+          document.getElementById('dataContagem').value = estado.campos?.data || new Date().toLocaleDateString('pt-BR');
+    
+          // ✅ Recarregar lista de itens na tela
+          atualizarListaItens();
+    
+          // ✅ Produtos devem ser carregados novamente
+         async function carregarProdutos() {
+          try {
+            const resposta = await fetch(`${API_URL}?action=getProdutos`);
+             produtosCarregados = await resposta.json();
+           } catch (e) {
+             console.error("Erro ao carregar produtos:", e);
+             produtosCarregados = [];
+           }
+        }
+    
+        } else if (tela === "consultarEncerradas") {
+          menuConsultas();
+    
+        } else if (tela === "contagensAbertas") {
+          menuContagensAbertas();
+    
+        } else {
+          // Caso contrário, volta pro menu
+          document.getElementById('bemVindoBox').style.display = 'flex';
+        }
+      }
+    
+        /* ========== LIMPAR ESTADO ========== */
+      function limparEstadoTela() {
+        localStorage.removeItem("estadoTela");
+      }
+    
+    
+      /* ========== MODAL GENÉRICO ========== */
+      function showModal(titulo, mensagem, tipo, callback) {
+        document.getElementById('modalTitulo').innerHTML = titulo;
+        document.getElementById('modalMensagem').innerHTML = mensagem;
+        let botoesDiv = document.getElementById('modalBotoes');
+        botoesDiv.innerHTML = "";
+    
+        if (tipo === 'confirm') {
+          let btnConfirmar = document.createElement("button");
+          btnConfirmar.innerText = "✅ Confirmar";
+          btnConfirmar.classList.add("confirmar");
+          btnConfirmar.onclick = function() {
+            fecharModal();
+            if (callback) callback(true);
+          };
+          let btnCancelar = document.createElement("button");
+          btnCancelar.innerText = "❌ Cancelar";
+          btnCancelar.classList.add("cancelar");
+          btnCancelar.onclick = function() {
+            fecharModal();
+            if (callback) callback(false);
+          };
+          botoesDiv.appendChild(btnConfirmar);
+          botoesDiv.appendChild(btnCancelar);
+        } else {
+          let btnOk = document.createElement("button");
+          btnOk.innerText = "OK";
+          btnOk.onclick = fecharModal;
+          botoesDiv.appendChild(btnOk);
+        }
+        document.getElementById('modalOverlay').style.display = 'flex';
+      }
+      function fecharModal() {
+        document.getElementById('modalOverlay').style.display = 'none';
+      }
+        
+    
     /* ================= LOGIN ================= */
     async function fazerLogin() {
       const codigo = document.getElementById('codigoLogin').value.trim();
@@ -342,7 +450,23 @@
         msg.innerHTML = "<span class='erro'>❌ Erro ao conectar ao servidor.</span>";
       }
     }
+
+        window.addEventListener("load", function() {
+        const usuarioSalvo = localStorage.getItem("usuarioLogado");
+        const estadoSalvo = JSON.parse(localStorage.getItem("estadoTelaAtual") || "{}");
     
+        if (usuarioSalvo) {
+          usuarioLogado = usuarioSalvo;
+          document.getElementById('loginBox').style.display = 'none';
+          document.getElementById('bemVindoBox').style.display = 'flex';
+          document.getElementById('nomeUsuario').innerText = "Bem-vindo(a), " + usuarioSalvo + "!";
+        }
+    
+        // ✅ Se existe um estado salvo, restaura
+        if (estadoSalvo?.tela) {
+          restaurarEstadoTela(estadoSalvo);
+        }
+      });
    
     /*==========EVENTO CONTAGEM=========*/
 
@@ -653,26 +777,8 @@
         btn.innerText = "✅ Registrar Item";
         showModal("❌ Erro", "Erro ao processar o item: " + erro.message);
       }
-    }
+    }   
     
-    // SALVAR ESTADO DE TELA
-    function salvarEstadoTela(estado, extras = {}) {
-      console.log("Função salvar Estado (estado,extras) foi chamada");
-      const dadosEstado = {
-        tela: estado,
-        usuarioLogado: usuarioLogado,
-        itens: JSON.parse(JSON.stringify(itensRegistrados || [])),
-        campos: {
-          contagem: document.getElementById('contagem')?.value || "",
-          filial: document.getElementById('filial')?.value || "",
-          almoxarifado: document.getElementById('almoxarifado')?.value || "",
-          data: document.getElementById('dataContagem')?.value || new Date().toLocaleDateString('pt-BR')
-        },
-        extras: extras,
-        timestamp: Date.now()
-      };
-      localStorage.setItem("estadoTelaAtual", JSON.stringify(dadosEstado));
-    }
     
     /* ================= SALVAR ITEM NO SERVIDOR ================= */
     async function salvarItemServidor(dados, btnRef) {
