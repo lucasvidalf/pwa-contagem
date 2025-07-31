@@ -725,15 +725,18 @@
         // 2️⃣ Envia para o servidor para salvar no Drive
         const respostaImagem = await fetch(API_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `dados=${encodeURIComponent(JSON.stringify({
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
             action: "salvarImagemTemporaria",
             dados: {
               base64: base64,
               nome: fotoInput.name
             }
-          }))}`
-        });
+          })
+        })
+        .then(res=> res,json())
+        .then(console.log)
+        .catch(console.error);
     
         const resultadoImagem = await respostaImagem.json();
     
