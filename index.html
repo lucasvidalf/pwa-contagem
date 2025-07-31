@@ -374,11 +374,25 @@
         }
       }
     
-        /* ========== LIMPAR ESTADO ========== */
+      /* ========== LIMPAR ESTADO ========== */
       function limparEstadoTela() {
         localStorage.removeItem("estadoTela");
       }
-    
+
+      /* ========== LIMPAR CAMPOS CONTAGEM ========== */
+      function limparCamposContagem() {
+        document.getElementById('contagem').value = '';
+        document.getElementById('filial').value = '';
+        document.getElementById('almoxarifado').value = '';
+        document.getElementById('codigo').value = '';
+        document.getElementById('nomeItem').value = '';
+        document.getElementById('quantidade').value = '';
+        document.getElementById('comentario').value = '';
+        document.getElementById('foto').value = '';
+        document.getElementById('listaItens').innerHTML = '';
+        document.getElementById('tituloItens').textContent = `📦 Itens lançados (0)`;
+      }
+        
     
       /* ========== MODAL GENÉRICO ========== */
       function showModal(titulo, mensagem, tipo, callback) {
