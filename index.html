@@ -442,7 +442,8 @@
         if (usuario) {
           usuarioLogado = usuario;
           document.getElementById("loginBox").style.display = "none";
-          document.getElementById("bemVindoBox").style.display = "block";
+          document.getElementById("bemVindoBox").style.display = "none";
+          document.getElementById('contagemBox').style.display = 'block';
           document.getElementById("nomeUsuario").innerText = "Bem-vindo(a), " + usuario;
       
           await carregarProdutos();
@@ -656,6 +657,7 @@
     
     // SALVAR ESTADO DE TELA
     function salvarEstadoTela(estado, extras = {}) {
+      console.log("Função salvar Estado (estado,extras) foi chamada");
       const dadosEstado = {
         tela: estado,
         usuarioLogado: usuarioLogado,
@@ -729,6 +731,7 @@
     }
     
     function voltarMenu() {
+      console.log("Função voltar menu foi chamada");
       document.getElementById('consultarBox').style.display = 'none';
       document.getElementById('contagensAbertasBox').style.display = 'none';
       document.getElementById('contagemBox').style.display = 'none';
