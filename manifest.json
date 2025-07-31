@@ -1,20 +1,21 @@
 {
-  "name": "Contagem de Estoque",
-  "short_name": "Contagem",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#317EFB",
-  "icons": [
+  name InvDP,
+  short_name InvDP,
+  start_url standalone=true,
+  display standalone,
+  background_color #ffffff,
+  theme_color #2c7be5,
+  orientation portrait,
+  icons [
     {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      src .logo-192.png,
+      sizes 192x192,
+      type imagepng
     },
     {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      src .logo-512.png,
+      sizes 512x512,
+      type imagepng
     }
   ]
 }
