@@ -878,36 +878,37 @@
         "Remover Item",
         `Deseja remover <b>${itensRegistrados[index].nome}</b>?`,
         "confirm",
-        function(conf) {
+        async function (conf) {
           if (!conf) return;
     
-          fetch(API_URL, {
-            method: "POST",
-            headers:{
-              "Content-Type":"application/json"
-            }
-            body: JSON.stringify({
-              acao: "removerItemContagem",
-              codigo: codigo
-            }),
-            headers: {
-              "Content-Type": "application/json"
-            }
-          })
-          .then(response => response.json())
-          .then(resposta => {           
+          try {
+            const resposta = await fetch(API_URL, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                acao: "removerItemContagem",
+                dados: { codigo }
+              })
+            });
+    
+            const resultado = await resposta.json();
+    
+            if (resultado?.status === "ok" || resultado?.sucesso) {
               console.log("Item removido com sucesso.");
+              itensRegistrados.splice(index, 1);
+              atualizarListaItens();
             } else {
-              console.error("Erro na resposta do servidor:", resposta.mensagem);
+              console.error("Erro na resposta do servidor:", resultado.mensagem || resultado);
             }
-          })
-          .catch(erro => {
+    
+          } catch (erro) {
             console.error("Erro ao remover item:", erro);
-          });
+          }
         }
       );
     }
-
     function confirmarCancelar() {
       showModal(
         "Cancelar Contagem",
