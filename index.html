@@ -705,7 +705,7 @@
 
     
     /* ================= REGISTRAR ITEM ================= */
-    async function registrarItem() {
+   async function registrarItem() {
       const btn = document.getElementById('btnRegistrar');
       btn.disabled = true;
       btn.innerText = "⏳ Registrando...";
@@ -730,24 +730,19 @@
         // 1️⃣ Lê a imagem como base64
         const base64 = await lerImagemBase64(fotoInput);
     
-        // 2️⃣ Envia a imagem para o servidor (Google Apps Script) para salvar no Drive
+        // 2️⃣ Envia a imagem para o servidor para salvar no Drive
         const respostaImagem = await fetch(API_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            acao: "removerItemContagem",
-            codigo: codigo
+            acao: "salvarImagemTemporaria",
+            dados: {
+              base64: base64,
+              nome: fotoInput.name
+            }
           })
-        })
-        .then(response => response.json())
-        .then(resposta => {
-          console.log("Resposta do servidor:", resposta);
-          // atualizar lista, remover item da interface, etc
-        })
-        .catch(error => {
-          console.error("Erro ao remover item:", error);
         });
     
         const resultadoImagem = await respostaImagem.json();
@@ -766,13 +761,15 @@
           nome,
           quantidade,
           comentario,
-          imagemURL: resultadoImagem.url || "" // ou resultadoImagem.id se preferir
+          imagemURL: resultadoImagem.url || ""
         };
     
         // 4️⃣ Envia os dados do item para registrar
         const respostaItem = await fetch(API_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
           body: `dados=${encodeURIComponent(JSON.stringify({
             acao: "salvarItemContagem",
             dados: dados
@@ -788,6 +785,7 @@
           itensRegistrados.push(dados);
           atualizarListaItens();
     
+          // Limpar campos
           document.getElementById('codigo').value = '';
           document.getElementById('nomeItem').value = '';
           document.getElementById('quantidade').value = '';
@@ -805,8 +803,7 @@
         btn.innerText = "✅ Registrar Item";
         showModal("❌ Erro", "Erro ao processar o item: " + erro.message);
       }
-    }    
-    
+    }
     /* ================= SALVAR ITEM NO SERVIDOR ================= */
     async function salvarItemServidor(dados, btnRef) {
       try {
