@@ -818,6 +818,32 @@
         showModal("❌ Erro", "Erro ao conectar ao servidor.");
       }
     }
+
+    /* ================= CANCELAR CONTAGEM ================= */
+    function cancelarContagem() {
+      // ❌ DESCARTA ITENS
+      itensRegistrados = [];
+      nomeArquivoAtual = "";
+      localStorage.removeItem("estadoTela"); // limpa estado salvo
+  
+      // ✅ Limpa campos da tela
+      limparCamposContagem();
+  
+      // ✅ Volta ao menu principal
+      document.getElementById('contagemBox').style.display = 'none';
+      document.getElementById('bemVindoBox').style.display = 'flex';
+    }
+  
+    function confirmarEncerrar() {
+      showModal(
+        "Encerrar Contagem",
+        "Deseja encerrar? Será gerado PDF e CSV e enviado por e-mail.",
+        "confirm",
+        function(conf) {
+          if (conf) encerrarContagem();
+        }
+      );
+    }
     
     /* ================= OUTRAS FUNÇÕES ================= */
     function removerItem(index) {
