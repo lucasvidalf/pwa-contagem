@@ -861,8 +861,29 @@
     
     /* ================= OUTRAS FUNÇÕES ================= */
     function removerItem(index) {
-      itensRegistrados.splice(index, 1);
-      atualizarListaItens();
+      const codigo = itensRegistrados[index].codigo;
+      showModal(
+        "Remover Item",
+        `Deseja remover <b>${itensRegistrados[index].nome}</b>?`,
+        "confirm",
+        function(conf) {
+          if (!conf) return;
+          google.script.run.removerItemContagem(codigo);
+          itensRegistrados.splice(index, 1);
+          atualizarListaItens();
+        }
+      );
+    }
+
+    function confirmarCancelar() {
+      showModal(
+        "Cancelar Contagem",
+        "Tem certeza que deseja cancelar?<br><b>Todos os itens lançados serão descartados e NÃO ficarão salvos.</b>",
+        "confirm",
+        function(conf) {
+          if (conf) cancelarContagem();
+        }
+      );
     }
     
     function fazerLogout() {
