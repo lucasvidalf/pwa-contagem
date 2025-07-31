@@ -1,11 +1,11 @@
 {
-  "name": InvDP,
-  "short_name": InvDP,
-  "start_url": standalone=true,
-  "display": standalone,
-  "background_color": #ffffff,
-  "theme_color": #2c7be5,
-  "orientation": portrait,
+  "name": "InvDP",
+  "short_name": "InvDP",
+  "start_url": "/.index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2c7be5",
+  "orientation": "portrait",
   "icons" [
     {
       "src": "logo-192.png",
