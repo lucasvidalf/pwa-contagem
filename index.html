@@ -733,14 +733,21 @@
         // 2️⃣ Envia a imagem para o servidor (Google Apps Script) para salvar no Drive
         const respostaImagem = await fetch(API_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
-            acao: "salvarImagemTemporaria",
-            dados: {
-              base64: base64,
-              nome: fotoInput.name
-            }
+            acao: "removerItemContagem",
+            codigo: codigo
           })
+        })
+        .then(response => response.json())
+        .then(resposta => {
+          console.log("Resposta do servidor:", resposta);
+          // atualizar lista, remover item da interface, etc
+        })
+        .catch(error => {
+          console.error("Erro ao remover item:", error);
         });
     
         const resultadoImagem = await respostaImagem.json();
