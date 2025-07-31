@@ -872,6 +872,9 @@
     
           fetch(API_URL, {
             method: "POST",
+            headers:{
+              "Content-Type":"application/json"
+            }
             body: JSON.stringify({
               acao: "removerItemContagem",
               codigo: codigo
@@ -881,10 +884,7 @@
             }
           })
           .then(response => response.json())
-          .then(resposta => {
-            if (resposta.status === "ok") {
-              itensRegistrados.splice(index, 1);
-              atualizarListaItens();
+          .then(resposta => {           
               console.log("Item removido com sucesso.");
             } else {
               console.error("Erro na resposta do servidor:", resposta.mensagem);
