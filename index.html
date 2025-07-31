@@ -878,37 +878,44 @@
         "Remover Item",
         `Deseja remover <b>${itensRegistrados[index].nome}</b>?`,
         "confirm",
-        async function (conf) {
+        function (conf) {
           if (!conf) return;
     
-          try {
-            const resposta = await fetch(API_URL, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                acao: "removerItemContagem",
-                dados: { codigo }
-              })
-            });
+          (async () => {
+            try {
+              const resposta = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  acao: "removerItemContagem",
+                  dados: { codigo }
+                })
+              });
     
-            const resultado = await resposta.json();
+              const resultado = await resposta.json();
     
-            if (resultado?.status === "ok" || resultado?.sucesso) {
-              console.log("Item removido com sucesso.");
-              itensRegistrados.splice(index, 1);
-              atualizarListaItens();
-            } else {
-              console.error("Erro na resposta do servidor:", resultado.mensagem || resultado);
+              if (resultado?.status === "ok" || resultado?.sucesso) {
+                console.log("Item removido com sucesso.");
+                itensRegistrados.splice(index, 1);
+                atualizarListaItens();
+                showModal("✅ Sucesso", "Item removido com sucesso!");
+              } else {
+                console.error("Erro na resposta do servidor:", resultado.mensagem || resultado);
+                showModal("❌ Erro", "Erro do servidor: " + (resultado.mensagem || "resposta inválida."));
+              }
+            } catch (erro) {
+              console.error("Erro ao remover item:", erro);
+              showModal("❌ Erro", "Erro ao remover item: " + erro.message);
             }
-    
-          } catch (erro) {
-            console.error("Erro ao remover item:", erro);
-          }
+          })();
         }
       );
     }
+    
+    /* ================= OUTRAS FUNÇÕES ================= */
+   
     function confirmarCancelar() {
       showModal(
         "Cancelar Contagem",
